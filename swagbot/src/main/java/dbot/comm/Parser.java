@@ -12,7 +12,7 @@ public class Parser {
 	protected static Poster pos = new Poster();//wird jedes mal gecallt? testen mit sysprint in posterconstructor
 	private IMessage message;
 	private String content;
-	private List<Param> paramList = new ArrayList<Param>();//muss linkedlist sein (fuer richtige reihenfolge von params)??? eigentlich nicht
+	private List<Param> paramList = new ArrayList<Param>();//muss linkedlist sein (fuer richtige reihenfolge von params)??? eigentlich nicht //eigenes listenobjekt machen?
 	//private IChannel channel;
 	private IUser author;
 	private static final String idNeraz = "97092184821465088";
@@ -32,28 +32,12 @@ public class Parser {
 		if (content.startsWith("!") && (content.length() < 50)) {//! dranlassen zur admincommand unterscheidung?
 			System.out.println("parsertrigger");
 			content = content.substring(1);
-			String test = null;
-			int i = 0;
-			int iWSpace = 0;
-			int paramLen = 0;
-			int contentLen = content.length();
-			int params = contentLen - content.replace(" ", "").length();
-			if (params < 6) {
-				while ((contentLen > 0)) {
-					if ((iWSpace = content.indexOf(' ')) != -1) {
-						test = content.substring(0, iWSpace);
-						paramList.add(new Param(test));
-						content = content.substring(iWSpace + 1);
-						contentLen -= (content.length() + 1);
-						i++;
-					}
-					else {
-						paramList.add(new Param(content));
-						//System.out.println(param[i]);
-						contentLen = 0;
-					}
-				}
+			String[] param = content.split(" ");
+			for (String s: param) {
+				paramList.add(new Param(s));
 			}
+			//RIP NICER CODE
+			
 			System.out.println(paramList);
 			new CDDel(message);
 			Commands.user(this);//muss Commands. davor?

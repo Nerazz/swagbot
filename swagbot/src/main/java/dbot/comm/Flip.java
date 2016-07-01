@@ -16,58 +16,60 @@ public class Flip {
 		this.pos = pos;
 	}
 	
-	public void m(IUser author, String arg, String seite, UserData uData) {//unendlichen post mit edit einfuegen
+	public void m(UserData uData, List<Param> paramList) {//unendlichen post mit edit einfuegen
+		IUser author = uData.getUser();
+		Iterator<Param> it = paramList.iterator();
+		if (it.hasNext()) {
+			Param param = it.next();
+			if (param.getValue() instanceof Integer) {
+				int value = (int)paramList.get(0).getValue();
+				if (it.hasNext()) {
+					if (it.hasNext()) {
+						
+					}
+				}
+			}
+			else if (param.getValue() instanceof String) {
+				if (param.getValue().toString().equals("close")) {//schoener machen
+					System.out.println("close");
+					close(author, uData);
+				}
+			}
+			
+		}
+		/*int arg = (int)paramList.get(1).getValue();
+		String seite = (String)paramList.get(2).getValue();
 		if (arg.equals("close")) {
 			System.out.println("close");
 			close(author, uData);
 		}
 		else if (!containsUser(author)) {
-			try {
-				int bet = Integer.parseInt(arg);
-				if ((uData.getGems() < bet) || (bet < 1)) {
-					pos.post("zu wenig :gem:");
-					return;
-				}
-				if (seite.equals("top") || seite.equals("kek")) {
+			int bet = Integer.parseInt(arg);
+			if ((uData.getGems() < bet) || (bet < 1)) {
+				pos.post("zu wenig :gem:");
+				return;
+			}
+			if (seite.equals("top") || seite.equals("kek")) {
+				uData.subGems(bet);
+				open(author, bet, seite, uData);
+			}
+			else {
+				double rnd = Math.random();
+				if (rnd < 0.5) {
 					uData.subGems(bet);
-					open(author, bet, seite, uData);
+					open(author, bet, "top", uData);
 				}
 				else {
-					double rnd = Math.random();
-					if (rnd < 0.5) {
-						uData.subGems(bet);
-						open(author, bet, "top", uData);
-					}
-					else {
-						uData.subGems(bet);
-						open(author, bet, "kek", uData);
-					}
+					uData.subGems(bet);
+					open(author, bet, "kek", uData);
 				}
-			} catch(Exception e) {
-				System.out.println("parseerror (flip.m)");
-				/*if (arg.equals("join")) {
-					System.out.println("join versucht " + argid);
-					join(author, argid);
-					
-					//FlipRoom fr = getRoomByID(argid);
-					int testid = -1;
-					try {
-						testid = Integer.parseInt(argid);
-					} catch(Exception ex) {
-						System.out.println("deletefail" + ex);
-					}
-					lRooms.remove(getRoomIndexByID(testid));
-					System.out.println("join durch");
-				}*/
-				
-				
 			}
 			
 		}
 		
 		else {
 			pos.post("schon vorhanden");
-		}
+		}*/
 	}
 	
 	public void join(IUser author, String roomID, UserData uData) {

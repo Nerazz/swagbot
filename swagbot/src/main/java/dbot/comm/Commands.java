@@ -19,6 +19,7 @@ public class Commands {
 		IUser author = parser.getAuthor();
 		System.out.println("usertrigger");
 		String command = parser.getParams().get(0).toString();//vielleicht zwischenspeichern
+		parser.getParams().remove(0);
 		String param1 = null;
 		String param2 = null;
 		try {
@@ -30,11 +31,6 @@ public class Commands {
 		System.out.println("switch");
 		switch (command) {
 			case "roll":
-				/*Iterator<UserData> iterator = lUDB.iterator();
-				while (iterator.hasNext()) {
-					uData = iterator.next();
-					aUser[i] = uData.getUser();
-				}*/
 				Roll.m(pos, author, parser.getParams());
 				break;
 			case "stats":
@@ -82,7 +78,7 @@ public class Commands {
 				}
 				break;
 			case "flip":
-				flip.m(author, param1, param1, DB.getData(author));
+				flip.m(DB.getData(author), parser.getParams());
 				break;
 			case "join":
 				flip.join(author, param1, DB.getData(author));
