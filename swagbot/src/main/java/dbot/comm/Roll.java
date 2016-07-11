@@ -1,7 +1,5 @@
 package dbot.comm;
 
-import mib.*;
-import dbot.timer.CDDel;
 import dbot.Poster;
 
 import sx.blah.discord.handle.obj.IMessage;
@@ -9,52 +7,35 @@ import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
 
 import sx.blah.discord.api.IDiscordClient;
-
-import java.util.List;
-import java.util.*;
+import java.util.regex.*;
 
 public final class Roll {
-	public static void m(Poster pos, IUser author, List<Param> paramList) {
-		//for
-		//if ((paramList.get(1) == null) && ())//vorher fehler abfangen oder einfach mit exception?(param1 instanceof Integer) && (
+	public static void m(Poster pos, IUser author, String params) {
+		Pattern pattern = Pattern.compile("(\\d+)(\\s(\\d+))?");
+		Matcher matcher = pattern.matcher(params);
 		
-		//mit return was nices machen
-		Iterator<Param> iterator = paramList.iterator();
-		//iterator.next();//um befehl zu ueberspringen
-		Param param = null;
-		if (iterator.hasNext()) {
-			param = iterator.next();//vielleicht switch fuer anzahl parameter
-			if (param.getValue() instanceof Integer) {
-				int param1 = (int)param.getValue();
-				if (iterator.hasNext()) {
-					param = iterator.next();
-					if (param.getValue() instanceof Integer) {
-						int param2 = (int)param.getValue();
-						if ((param2 > 0) && (param1 <= param2)) {
-							int rnd = (int)(Math.random() * (param2 - param1 + 1)) + param1;
-							pos.post(":game_die: " + author + " hat eine " + rnd + " aus " + param1 + " - " + param2 + " gewürfelt! :game_die:");
-						}
-					}
+		if (matcher.matches()) {
+			int first = Integer.parseInt(matcher.group(1));
+			if (matcher.group(3) != null) {
+				int second = Integer.parseInt(matcher.group(3));
+				if ((second > 0) && (first <= second)) {
+					int rnd = (int)(Math.random() * (second - first + 1)) + first;
+					pos.post(":game_die: " + author + " hat eine " + rnd + " aus " + first + " - " + second + " gewürfelt! :game_die:");
 				}
-				else {
-					if (param1 > 0) {
-						int rnd = (int)(Math.random() * param1) + 1;
-						pos.post(":game_die: " + author + " hat eine " + rnd + " aus " + param1 + " gewürfelt! :game_die:");
-					}
+			} else {
+				if (first > 0) {
+					int rnd = (int)(Math.random() * first) + 1;
+					pos.post(":game_die: " + author + " hat eine " + rnd + " aus " + first + " gewürfelt! :game_die:");
 				}
 			}
-			
+		} else {
+			int rnd = (int)(Math.random() * 100) + 1;
+			if (rnd != 100) {
+				pos.post(":game_die: " + author + " hat eine " + rnd + " gewürfelt! :game_die:");
+			}
+			else {
+				pos.post(":slot_machine: " + author + " hat eine :100: gewürfelt!!! :slot_machine:\ngz :ok_hand:");
+			}
 		}
-		else {
-				int rnd = (int)(Math.random() * 100) + 1;
-				if (rnd != 100) {
-					pos.post(":game_die: " + author + " hat eine " + rnd + " gewürfelt! :game_die:");
-				}
-				else {
-					pos.post(":slot_machine: " + author + " hat eine :100: gewürfelt!!! :slot_machine:\ngz :ok_hand:");
-				}
-		}
-		
-		System.out.println("durch");
 	}
 }

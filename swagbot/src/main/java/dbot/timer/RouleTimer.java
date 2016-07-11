@@ -1,7 +1,5 @@
 package dbot;
 
-import mib.*;
-
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IMessage;
@@ -15,7 +13,7 @@ import java.util.List;
 import java.util.*;
 
 
-public class RouleTimer extends Events implements Runnable {
+/*public class RouleTimer implements Runnable {
 	
 	public static List<IUser> lRouleUser = new ArrayList<IUser>(); //private mit setter + getter machen
 	public static IChannel RouleChannel;
@@ -37,7 +35,7 @@ public class RouleTimer extends Events implements Runnable {
 			System.out.println("dabei waren: " + lRouleUser);
 			int erg = (int)(Math.random() * 37);
 			System.out.println("erg: " + erg);
-			for (int i = 0; i < lInts.size(); i++) {
+			/*for (int i = 0; i < lInts.size(); i++) {
 				if (lInts.get(i) == erg) {
 					System.out.println("roule IF");
 					ml.bMes(bClient, RouleChannel, "gz, " + lRouleUser.get(i) + ", du hast gewonnen :)");
@@ -54,7 +52,7 @@ public class RouleTimer extends Events implements Runnable {
 		} catch(HTTP429Exception e) {
 			e.printStackTrace();
 		} catch(DiscordException e) {
-			e.printStackTrace();*/
+			e.printStackTrace();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -64,4 +62,4 @@ public class RouleTimer extends Events implements Runnable {
 		lRouleUser.add(uRouleUser);
 		System.out.println("added " + uRouleUser);
 	}
-}
+}*/

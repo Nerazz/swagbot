@@ -2,6 +2,8 @@ package dbot;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Presences;
 
+import dbot.Events;
+
 import java.util.List;
 import java.util.*;
 import java.io.*;
@@ -22,25 +24,27 @@ punkte	was tun
 */
 
 
-public class Timer extends Events implements Runnable {
+public class MainTimer extends Events implements Runnable {
 	
 	private final Presences ONLINE = Presences.valueOf("ONLINE");
 	private final Presences IDLE = Presences.valueOf("IDLE");
-	//private final String botID = "183234453122973697";//MAIN
-	//private final String botID = "189453076111949824";//TEST
+	
+	private static int minuteCount	= 0;
+	private static int hourCount	= 0;
+	private static int dayCount		= 0;
 	
 	private List<IUser> lUser = new ArrayList<IUser>();
 	private IUser user;
 	
 	
-	Timer() {
-		Thread tTimer = new Thread(this, "Timer Thread");
-		System.out.println("created: " + tTimer);
-		bClient.updatePresence(false, Optional.of("frisch online"));
+	protected MainTimer() {
+		Thread tMainTimer = new Thread(this, "MainTimer Thread");
+		System.out.println("created: " + tMainTimer);
+		botClient.updatePresence(false, Optional.of("frisch online"));
 		
 		//deFile();
 		
-		tTimer.start();
+		tMainTimer.start();
 	}
 
 
@@ -50,19 +54,30 @@ public class Timer extends Events implements Runnable {
 		try {
 			while (true) {
 				Thread.sleep(60000);//60000 gute zeit
-				minuteStat += 1;
-				if ((minuteStat % 60) == 0) {
-					hourStat += 1;
-				}
-				if (((hourStat % 3) == 0) && ((minuteStat % 60) == 0)) {
-					DB.save();
-					System.out.println("wrote to file!!");
-				}
-				if (hourStat != 0) {
-					bClient.updatePresence(false, Optional.of("seit " + hourStat + "h " + (minuteStat % 60) + "m online"));
-				}
-				else {
-					bClient.updatePresence(false, Optional.of("seit " + minuteStat + "m online"));
+				minuteCount += 1;
+				if ((minuteCount % 5) == 0) {
+					if ((minuteCount % 60) == 0) {
+						hourCount += 1;
+						minuteCount = 0;
+					}
+					
+					if ((hourCount % 24) == 0) {
+						dayCount += 1;
+						hourCount = 0;
+					}
+					
+					if (dayCount != 0) {
+						botClient.updatePresence(false, Optional.of("seit " + dayCount + "d " + hourCount + "h online"));
+					} else if (hourCount != 0) {
+						botClient.updatePresence(false, Optional.of("seit " + hourCount + "h " + minuteCount + "m online"));
+					} else {
+						botClient.updatePresence(false, Optional.of("seit " + minuteCount + "m online"));
+					}
+					
+					if (((hourCount % 5) == 0) && (minuteCount == 0)) {
+						DB.save();
+						System.out.println("DataBase durch MainTimer gesaved");
+					}
 				}
 				
 				lUser = guild.getUsers();
@@ -74,15 +89,15 @@ public class Timer extends Events implements Runnable {
 					
 				for (int i = 0; i < lUser.size(); i++) {
 					user = lUser.get(i);
-					if (!user.getID().equals(idBot)) {
+					if (!user.getID().equals(Statics.ID_BOT)) {
 						if (user.getPresence() == ONLINE) {
 							update(user, 3);
 							countO += 1;
 						}
-						//else if (user.getPresence() == IDLE) {
-						//	update(user, 1);
-						//	countI += 1;
-						//}
+						/*else if (user.getPresence() == IDLE) {
+							update(user, 1);
+							countI += 1;
+						}*/
 					}
 					
 				}

@@ -7,10 +7,110 @@ import dbot.Poster;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
+import java.util.regex.*;
 
 public class Commands {
+	public static void trigger(IMessage message) {
+		Poster pos = new Poster();
+		DataBase DB = new DataBase();
+		Flip flip = new Flip(pos);
+		IUser author = message.getAuthor();
+		
+		System.out.println("commandstrigger");
+		
+		Pattern pattern = Pattern.compile("^!([a-z]+)(\\s(.+))?");
+		Matcher matcher = pattern.matcher(message.getContent().toLowerCase());
+		/*if (matcher.matches()) {
+
+			System.out.println("'" + matcher.group() + "'");
+		}*/
+		if (matcher.matches()) {
+			
+			String params = "";
+			if (matcher.group(3) != null) {
+				params = matcher.group(3);
+			}
+			
+			switch (matcher.group(1)) {
+				case "roll":
+					Roll.m(pos, author, params);
+					break;
+				
+				/*case "stats":
+					UserData dAuthor = DB.getData(author);
+					pos.post(author + " ist Level " + dAuthor.getLevel() + " " + dAuthor.getrpgClass() + " mit " + dAuthor.getExp() + "/" + DB.getLevelThreshold(dAuthor.getLevel()) + " Exp.", 60000);
+					break;
+				
+				case "gems":
+					pos.post(author + ", du hast im Moment " + DB.getData(author).getGems() + ":gem:.");
+					break;
+				
+				case "top":
+					DB.getTop(author);
+					break;
+				
+				case "buy":
+					if ((param1 != null) && (param2 != null)) {
+					Buy.two(DB.getData(author), param1, param2);
+					}
+					else if (param1 != null) {
+						Buy.one(DB.getData(author), param1);
+					}
+					else {
+						System.out.println("event.buy fail");
+					}
+					break;
+				*/
+				//case ""
+				default:
+					System.out.println("ERROR IN COMMANDS");
+					break;
+			}
+			System.out.println("*Matches:*");
+			for (int i = 1; i < matcher.groupCount() + 1; i++) {
+				if (matcher.group(i) != null) {
+					System.out.println(matcher.group(i));
+					System.out.println("-----------");
+				}
+			}
+		} else if (author.getID().equals(Statics.ID_NERAZ)) {
+			pattern = Pattern.compile("^§([a-z]+)(\\s(.+))?");
+			matcher = pattern.matcher(message.getContent().toLowerCase());
+			
+			if (matcher.matches()) {
+			
+				String params = "";
+				if (matcher.group(3) != null) {
+					params = matcher.group(3);
+				}
+			
+				/*switch (matcher.group(1)) {
+					case ""
+				}*/
+			}
+		}
+		pos.del(message, 10000);
+		
+	}
 	
-	public static void user(Parser parser) {
+	
+	/*if (author.getID().equals("97092184821465088")) {
+				String param = parser.getMessage().toString().substring(1);
+				
+			
+				if (param.equals("save")) {
+					DB.save();
+					pos.post("Aye aye, Meister " + author + " :ok_hand:");
+				}
+				else if (param.equals("load")) {
+					DB.load();
+					pos.post("Aye aye, Meister " + author + " :ok_hand:");
+				}
+			}
+			else {
+				pos.post(author + ", auf dich Scrub höre ich nicht :joy:");
+			}*/
+	/*public static void user(Parser parser) {
 		Poster pos = new Poster();
 		DataBase DB = new DataBase();//object mit allen wichtigen sachen (static) einmal am anfang initialisieren und dann ueberall rein?
 		Flip flip = new Flip(pos);
@@ -65,7 +165,7 @@ public class Commands {
 			/*case "version":
 				pos.post("läuft auf Version " + bVersion);
 				break;*/
-			case "prestige":
+			/*case "prestige":
 				UserData d2Author = DB.getData(author);
 				if (d2Author.getLevel() == 100) {
 					System.out.println("level gut");
@@ -118,7 +218,7 @@ public class Commands {
 				}
 				
 				break;*/
-			case "buy":
+			/*case "buy":
 				if ((param1 != null) && (param2 != null)) {
 					Buy.two(DB.getData(author), param1, param2);
 				}
@@ -157,7 +257,7 @@ public class Commands {
 			else {
 				pos.post(author + ", auf dich Scrub höre ich nicht :joy:");
 			}
-	}
+	}*/
 }
 
 

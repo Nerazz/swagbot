@@ -1,8 +1,6 @@
 package dbot;
 
-import mib.*;
 import dbot.comm.*;
-import dbot.timer.*;
 
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
@@ -38,7 +36,7 @@ import java.util.*;
 import java.lang.String.*;
 import java.io.*;
 
-public class Events extends Bot {
+public class Events {
 
 	/**
 	 * Handeln von Events
@@ -46,29 +44,38 @@ public class Events extends Bot {
 	 */
 	 
 	private int rnd;
-	public RouleTimer rt = null;
 	protected static int nBrag = 0;
 	private Poster pos;//static?
 	private Flip flip;
-	
-	private static String idGuild;
-	private static String idGeneral;
-	private static String idLink;
-	private static String idSpam;
-	private static final String idNeraz = "97092184821465088";//UEBERALL
-	protected static String idBot;
-	//protected static IUser bot
 	
 	private static IVoiceChannel vChannel = null;
 	private static AudioChannel aChannel;
 	private static File file;
 	
+	
+	protected static DataBase DB;
+	protected static IDiscordClient botClient;
+	protected static IGuild guild;
+	private static boolean bInit = false;
+	
+	/*public static String idGuild;
+	public static String idGeneral;
+	public static String idSpam;
+	public static String idBot;*/
+	
 	private String[] sBrags = new String[] {"RUHE HIER!!elf", "Git off mah lawn", "Ihr kleinen Kinners kriegt gleich ordentlich aufs Maul", "Wer reden kann, muss auch mal die Schnauze halten können!", "HALT STOPP, JETZT REDE ICH", "S T F U B O Y S", "Wengier labern, sonst gibts Vokabeltest!", "Psst ihr Ottos"};
 	
+	protected Events() {
+		
+	}
+	
+	protected Events(IDiscordClient botClient) {
+		this.botClient = botClient;
+	}
 	
 	@EventSubscriber
 	public void onReadyEvent(ReadyEvent event) {
-		ml.cpr("~BotReadyEvent~");
+		System.out.println("~BotReadyEvent~");
 		
 	}
 	
@@ -76,31 +83,14 @@ public class Events extends Bot {
 	public void onGuildCreateEvent(GuildCreateEvent event) {
 		System.out.println("~GuildCreateEvent~");
 		if (bInit == false) {
-			if (botNR == 0) { //test
-				idGuild		= "189459280590667777";//noch zu channels umwandeln?
-				idGeneral	= "189459280590667777";
-				idSpam		= "189461033096577025";
-				idBot		= "189453076111949824";
-				
-			}
-			else if (botNR == 1) { //swag
-				idGuild		= "97105817550999552";
-				idGeneral	= "97105817550999552";
-				idLink		= "104539738651774976";
-				idSpam		= "186471214548647936";
-				idBot		= "183234453122973697";
-			}
-			
-			
-			
-			guild = bClient.getGuildByID(idGuild);
-			pos = new Poster(bClient, guild, guild.getChannelByID(idSpam));//vorher schon alle channel initialisieren?
+			guild = botClient.getGuildByID(Statics.ID_GUILD);
+			pos = new Poster(botClient, guild, guild.getChannelByID(Statics.ID_BOTSPAM));//vorher schon alle channel initialisieren?
 			DB = new DataBase(guild);
 			DB.load();
 			flip = new Flip(pos);
-			ml.cpr("Bot joined guild: " + guild.getName());
+			System.out.println("Bot joined guild: " + guild.getName());
 			
-			Timer tTimer = new Timer();
+			new MainTimer();
 			bInit = true;
 		}
 		System.out.println("~BOT~READY~");
@@ -109,21 +99,21 @@ public class Events extends Bot {
 	@EventSubscriber
 	public void onDiscordDisconnectedEvent(DiscordDisconnectedEvent event) {
 		
-		ml.cpr("DISCONNECTED!!");
+		System.out.println("DISCONNECTED!!");
 		try {
 			DB.save();
 			/*bClient.logout();
 			Thread.sleep(10000);
 			bClient.login();*/
-			while(!bClient.isReady()) {
+			while(!botClient.isReady()) {
 				Thread.sleep(10000);
-				ml.cpr("try rec");
-				bClient.login();
+				System.out.println("try rec");
+				botClient.login();
 			}
 		} catch(Exception e) {
 			System.out.println("--DisconnectEX-- " + e);
 		}
-		ml.cpr("RECONNECTED!!"); 
+		System.out.println("RECONNECTED!!"); 
 		System.exit(1);
 	}
 	
@@ -152,10 +142,10 @@ public class Events extends Bot {
 	public void onMessageEvent(MessageReceivedEvent event) {//BIS ZUM ERSTEN WHITESPACE FILTERN (!test" "hallo) und als command (content) benutzen
 		
 		IMessage message = event.getMessage();
-		IChannel channel = message.getChannel();
-		if (channel == guild.getChannelByID(idSpam)) {//1
-			System.out.println("messagetrigger");
-			Parser parser = new Parser(message);
+		if (message.getChannel() == guild.getChannelByID(Statics.ID_BOTSPAM)) {//1
+			System.out.println("messagetrigger durch " + message.getContent());
+			Commands.trigger(message);
+			//Parser parser = new Parser(message);
 		}
 		
 		//System.out.println(bClient.getGuilds().get(1).getRegion());
@@ -190,7 +180,7 @@ public class Events extends Bot {
 		
 		
 		else {
-			ml.cpr("in falschem Channel");
+			System.out.println("in falschem Channel MUSS ERSCHEINEN, kann danach weg");
 		}
 	}
 	

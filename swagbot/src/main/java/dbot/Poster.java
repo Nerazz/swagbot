@@ -1,7 +1,6 @@
 package dbot;
 
-import mib.ml;
-import dbot.timer.CDDel;
+import dbot.timer.DelTimer;
 
 //import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IMessage;
@@ -19,6 +18,7 @@ public class Poster {
 	private static IDiscordClient bClient;
 	private static IGuild guild;
 	private static IChannel channel;
+	//private IMessage message = null;
 	
 	public Poster() {//abfrage if bClient, guild == null??
 	}
@@ -29,59 +29,68 @@ public class Poster {
 		this.channel = channel;
 	}
 	
-	public IMessage post(String message, int duration) {
-		IMessage tMessage = bMes(bClient, channel, message, duration);
-		return tMessage;
+	public IMessage post(String s, int duration) {
+		try {
+			IMessage message = new MessageBuilder(bClient).withChannel(channel).withContent(s).build();
+			new DelTimer(message, duration);
+			return message;
+		} catch(MissingPermissionsException e) {
+			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+			System.out.println("MissingEX: Poster.post+dur");
+			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+		} catch(HTTP429Exception e) {
+			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+			System.out.println("HTTPEX: Poster.post+dur");
+			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+		} catch(DiscordException e) {
+			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+			System.out.println("DiscordEX: Poster.post+dur");
+			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+		}
+		return null;
 	}
 	
-	public IMessage post(String message) {
-		IMessage tMessage = bMes(bClient, channel, message);
-		return tMessage;
+	public IMessage post(String s) {
+		try {
+		IMessage message = new MessageBuilder(bClient).withChannel(channel).withContent(s).build();
+		new DelTimer(message);
+		return message;
+		} catch(MissingPermissionsException e) {
+			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+			System.out.println("MissingEX: Poster.post");
+			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+		} catch(HTTP429Exception e) {
+			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+			System.out.println("HTTPEX: Poster.post");
+			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+		} catch(DiscordException e) {
+			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+			System.out.println("DiscordEX: Poster.post");
+			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+		}
+		return null;
 	}
 	
 	public void del(IMessage message) {
 		try {
 			message.delete();
 		} catch(MissingPermissionsException e) {
-			System.out.println("EX: Poster.del: " + e);
+			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+			System.out.println("MissingEX: Poster.del");
+			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
 		} catch(HTTP429Exception e) {
-			System.out.println("EX: Poster.del: " + e);
+			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+			System.out.println("HTTPEX: Poster.del");
+			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
 		} catch(DiscordException e) {
-			System.out.println("EX: Poster.del: " + e);
+			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+			System.out.println("DiscordEX: Poster.del");
+			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
 		}
 	}
 	
-	//public edit //notwendig?
-	
-	public static IMessage bMes(IDiscordClient client, IChannel channel, String s) {//exceptions pimpen
-		try {
-			IMessage message = new MessageBuilder(client).withChannel(channel).withContent(s).build();
-			new CDDel(message);
-			return message;
-		} catch(DiscordException e) {
-			System.out.println("EX: Poster.del: " + e);
-		} catch(HTTP429Exception e) {
-			System.out.println("EX: Poster.del: " + e);
-		} catch(MissingPermissionsException e) {
-			System.out.println("EX: Poster.del: " + e);
-		}
-		return null;
+	public void del(IMessage message, int duration) {
+		new DelTimer(message, duration);
 	}
 	
-	public static IMessage bMes(IDiscordClient client, IChannel channel, String s, int duration) {//exceptions pimpen
-		try {
-			IMessage message = new MessageBuilder(client).withChannel(channel).withContent(s).build();
-			if (duration > -1) {
-				new CDDel(message, duration);
-			}
-			return message;
-		} catch(DiscordException e) {
-			System.out.println("EX: Poster.del: " + e);
-		} catch(HTTP429Exception e) {
-			System.out.println("EX: Poster.del: " + e);
-		} catch(MissingPermissionsException e) {
-			System.out.println("EX: Poster.del: " + e);
-		}
-		return null;
-	}
 }
