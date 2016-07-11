@@ -3,6 +3,7 @@ package dbot.comm;
 import dbot.UserData;
 import dbot.DataBase;
 import dbot.Poster;
+import dbot.Statics;
 
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
