@@ -7,7 +7,11 @@ import java.util.List;
 import java.util.*;
 import dbot.UserData;
 
+import java.util.regex.*;
+
 public class Flip {
+	
+	
 	
 	private static List<FlipRoom> lRooms = new ArrayList<FlipRoom>();
 	protected static Poster pos;
@@ -16,29 +20,40 @@ public class Flip {
 		this.pos = pos;
 	}
 	
-	public void m(UserData uData, List<Param> paramList) {//unendlichen post mit edit einfuegen
+	public void m(UserData uData, String params) {//unendlichen post mit edit einfuegen
 		IUser author = uData.getUser();
-		Iterator<Param> it = paramList.iterator();
-		if (it.hasNext()) {
-			Param param = it.next();
-			if (param.getValue() instanceof Integer) {
-				int value = (int)paramList.get(0).getValue();
-				if (it.hasNext()) {
-					if (it.hasNext()) {
-						
-					}
-				}
-			}
-			else if (param.getValue() instanceof String) {
-				if (param.getValue().toString().equals("close")) {//schoener machen
-					System.out.println("close");
-					close(author, uData);
-				}
-			}
-			
+		
+		Pattern pattern = Pattern.compile("(\\d+|allin|join|close)(\\s(top|kek))?");
+		Matcher matcher = pattern.matcher(params);
+		
+		if (!matcher.matches()) {
+			return;
 		}
-		/*int arg = (int)paramList.get(1).getValue();
-		String seite = (String)paramList.get(2).getValue();
+		int bet = -1;
+		switch (matcher.group(1)) {
+			case "join":
+				join(uData, params);
+				break;
+			case "close":
+				close(author, uData);
+				break;
+			case "allin":
+				bet = uData.getGems();
+				break;
+			default:
+				bet = Integer.parseInt(matcher.group(1));
+				break;
+		}
+		
+		if (bet < 1) {
+			return;
+		}
+
+		//--------------bis hier
+		
+		
+		
+		/*String seite = (String)paramList.get(2).getValue();
 		if (arg.equals("close")) {
 			System.out.println("close");
 			close(author, uData);
@@ -72,7 +87,9 @@ public class Flip {
 		}*/
 	}
 	
-	public void join(IUser author, String roomID, UserData uData) {
+	public void join(UserData uData, String params) {
+		/*Pattern pattern = Pattern.compile("(\\d+)");
+		Matcher matcher = pattern.matcher(params);
 		try {
 			System.out.println(roomID);
 			int iRoomID = Integer.parseInt(roomID);
@@ -93,7 +110,7 @@ public class Flip {
 			}
 		} catch(Exception e) {
 			System.out.println("parseerror (flip.join)");
-		}
+		}*/
 	}
 	
 	private void open(IUser author, int bet, String seite, UserData uData) {
@@ -114,6 +131,13 @@ public class Flip {
 			}
 		}
 		//remove room(author)//FEHLT
+	}
+	
+	public void closeAll() {
+		for (int i = 0; i < lRooms.size(); i++) {
+			//logik
+		}
+		System.out.println("Alle Flipräume geschlossen");
 	}
 	
 	private boolean containsUser(IUser user) {

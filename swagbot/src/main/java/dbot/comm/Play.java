@@ -49,7 +49,7 @@ public class Play {
 		try {
 			vChannel.join();
 			//join dings event
-			AudioChannel aChannel = vChannel.getAudioChannel();
+			/*AudioChannel aChannel = vChannel.getAudioChannel();
 			//aChannel.join();
 			File file = new File("sounds/" + title + ".mp3");
 			//File testFile = new File();

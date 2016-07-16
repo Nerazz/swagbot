@@ -14,6 +14,8 @@ import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageBuilder;
 
+import sx.blah.discord.util.RequestBuffer;
+
 public class Poster {
 	private static IDiscordClient bClient;
 	private static IGuild guild;
@@ -30,63 +32,59 @@ public class Poster {
 	}
 	
 	public IMessage post(String s, int duration) {
-		try {
-			IMessage message = new MessageBuilder(bClient).withChannel(channel).withContent(s).build();
-			new DelTimer(message, duration);
-			return message;
-		} catch(MissingPermissionsException e) {
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-			System.out.println("MissingEX: Poster.post+dur");
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-		} catch(HTTP429Exception e) {
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-			System.out.println("HTTPEX: Poster.post+dur");
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-		} catch(DiscordException e) {
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-			System.out.println("DiscordEX: Poster.post+dur");
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-		}
-		return null;
+		RequestBuffer.request(() -> {
+			try {
+				IMessage message = new MessageBuilder(bClient).withChannel(channel).withContent(s).build();
+				new DelTimer(message, duration);
+				return message;
+			} catch(MissingPermissionsException e) {
+				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+				System.out.println("MissingEX: Poster.post+dur");
+				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+			} catch(DiscordException e) {
+				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+				System.out.println("DiscordEX: Poster.post+dur");
+				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+			}
+			return null;
+		});
+		return null;//notwendig??
 	}
 	
 	public IMessage post(String s) {
-		try {
-		IMessage message = new MessageBuilder(bClient).withChannel(channel).withContent(s).build();
-		new DelTimer(message);
-		return message;
-		} catch(MissingPermissionsException e) {
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-			System.out.println("MissingEX: Poster.post");
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-		} catch(HTTP429Exception e) {
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-			System.out.println("HTTPEX: Poster.post");
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-		} catch(DiscordException e) {
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-			System.out.println("DiscordEX: Poster.post");
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-		}
-		return null;
+		RequestBuffer.request(() -> {
+			try {
+			IMessage message = new MessageBuilder(bClient).withChannel(channel).withContent(s).build();
+			new DelTimer(message);
+			return message;
+			} catch(MissingPermissionsException e) {
+				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+				System.out.println("MissingEX: Poster.post");
+				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+			} catch(DiscordException e) {
+				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+				System.out.println("DiscordEX: Poster.post");
+				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+			}
+			return null;
+		});
+		return null;//notwendig??
 	}
 	
 	public void del(IMessage message) {
-		try {
-			message.delete();
-		} catch(MissingPermissionsException e) {
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-			System.out.println("MissingEX: Poster.del");
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-		} catch(HTTP429Exception e) {
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-			System.out.println("HTTPEX: Poster.del");
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-		} catch(DiscordException e) {
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-			System.out.println("DiscordEX: Poster.del");
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-		}
+		RequestBuffer.request(() -> {
+			try {
+				message.delete();
+			} catch(MissingPermissionsException e) {
+				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+				System.out.println("MissingEX: Poster.del");
+				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+			}  catch(DiscordException e) {
+				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+				System.out.println("DiscordEX: Poster.del");
+				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+			}
+		});
 	}
 	
 	public void del(IMessage message, int duration) {

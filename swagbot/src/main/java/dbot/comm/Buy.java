@@ -6,19 +6,26 @@ import sx.blah.discord.handle.obj.IUser;
 import dbot.Poster;
 import dbot.timer.ExpTimer;
 
+import java.util.regex.*;
+
 public final class Buy {
 	
-	public static void one(UserData dBuyer, String item) {
-		
-	}
-	
-	public static void two(UserData dBuyer, String item, String type) {
+	public static void m(UserData dBuyer, String params) {
 		Poster pos = new Poster();
 		int g = dBuyer.getGems();
 		IUser uBuyer = dBuyer.getUser();
-		switch (item) {//switch item
+		
+		Pattern pattern = Pattern.compile("([a-z]+)(\\s(.+))?");
+		Matcher matcher = pattern.matcher(params);
+		if (!matcher.matches()) return;
+				
+		switch (matcher.group(1)) {//switch item
 			case "xpot":
-				switch (type) {//switch type
+				if (matcher.group(3) == null) return;
+				pattern = Pattern.compile("([a-z]+)");
+				matcher = pattern.matcher(matcher.group(3));
+				if (!matcher.matches()) return;
+				switch (matcher.group(1)) {//switch type
 					case "tall":
 						if (g < 500) {//get price von json
 							pos.post(uBuyer + ", du hast zu wenig :gem:");

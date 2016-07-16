@@ -67,7 +67,7 @@ public class DataBase {//soll eigentlich static sein
 		while (iterator.hasNext()) {
 			uData = iterator.next();
 			aUser[i] = uData.getUser();
-			aScore[i] = Math.floor(((uData.getExp() / (double)rpgLevelThreshold[uData.getLevel() - 1]) + uData.getLevel()) * 1000) / 1000;
+			aScore[i] = Math.floor(((uData.getExp() / (double)rpgLevelThreshold[uData.getLevel() - 1]) + uData.getLevel()) * 100) / 100; //*100/100 für Nachkommastellenrundung
 			//System.out.println(aScore[i]);
 			i++;
 		}
@@ -86,16 +86,15 @@ public class DataBase {//soll eigentlich static sein
 		s = "TOP 5:\n";
 		
 		if (lUDB.size() > 5) {
-			
 			for (i = 0; i < 5; i++) {
 				if (aUser[i].getID().equals(author.getID())) {
 					s += (i + 1) + ". " + author + " - " + aScore[i] + "\n";
 					top = true;
-				}
-				else {
+				} else {
 					s += (i + 1) + ". " + aUser[i].getName() + " - " + aScore[i] + "\n";
 				}
 			}
+			
 			if (!top) {
 				while ((!aUser[i].getID().equals(author.getID())) && (i < lUDB.size())) {
 					i++;
@@ -137,26 +136,32 @@ public class DataBase {//soll eigentlich static sein
 			while (iterator.hasNext()) {
 				jtest = (JSONObject)iterator.next();
 				String ID = (String)jtest.get("ID");
-				IUser user = guild.getUserByID(ID);
-				if (!containsUser(user)) {
-					//String name = (String)jtest.get("name");
-					uData = new UserData(user);
-					uData.setGems((int)((long)jtest.get("gems")));
-					uData.setExp((int)((long)jtest.get("rpgExp")));
-					uData.setLevel((int)((long)jtest.get("rpgLevel")));
-					uData.setPresLevel((int)((long)jtest.get("rpgPresLevel")));
-					uData.setrpgClass((String)jtest.get("rpgClass"));
+				try {
+					IUser user = guild.getUserByID(ID);
+					if (!containsUser(user)) {
+						//String name = (String)jtest.get("name");
+						uData = new UserData(user);
+						uData.setGems((int)((long)jtest.get("gems")));
+						uData.setExp((int)((long)jtest.get("rpgExp")));
+						uData.setLevel((int)((long)jtest.get("rpgLevel")));
+						uData.setPresLevel((int)((long)jtest.get("rpgPresLevel")));
+						uData.setrpgClass((String)jtest.get("rpgClass"));
 				
-					this.add(uData);
+						this.add(uData);
+					} else {
+						System.out.println(user.getName() + " ist schon vorhanden.");
+					}
+					
+				} catch(Exception de) {//zu discordexception machen oder was immer das ist
+					System.out.println(de);
+					System.out.println("User mit ID: " + ID + " nicht gefunden.");
 				}
-				else {
-					System.out.println(user.getName() + " ist schon vorhanden.");
-				}
+				
 			}
 			System.out.println(size + " User aus userDB geladen");
 			
 		} catch(Exception e) {
-			
+			System.out.println("LOADERROR IN DATABASE");
 		}
 	}
 	

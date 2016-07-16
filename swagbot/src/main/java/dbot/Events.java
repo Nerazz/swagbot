@@ -21,7 +21,7 @@ import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IRole;
 import sx.blah.discord.handle.obj.Presences;
 
-import sx.blah.discord.api.EventSubscriber;
+import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.IDiscordClient;
 //import sx.blah.discord.api.internal;
 
@@ -96,54 +96,20 @@ public class Events {
 		System.out.println("~BOT~READY~");
 	}
 	
+	
+	
 	@EventSubscriber
 	public void onDiscordDisconnectedEvent(DiscordDisconnectedEvent event) {
-		
 		System.out.println("DISCONNECTED!!");
-		try {
-			DB.save();
-			/*bClient.logout();
-			Thread.sleep(10000);
-			bClient.login();*/
-			while(!botClient.isReady()) {
-				Thread.sleep(10000);
-				System.out.println("try rec");
-				botClient.login();
-			}
-		} catch(Exception e) {
-			System.out.println("--DisconnectEX-- " + e);
-		}
-		System.out.println("RECONNECTED!!"); 
-		System.exit(1);
+		//DB.save();??
 	}
-	
-	/*@EventSubscriber
-	public void onDiscordDisconnectedEvent(DiscordDisconnectedEvent event) {
-		
-		ml.cpr("DISCONNECTED!!");
-		try {
-			DB.save();
-			Thread.sleep(3000);
-			bClient.login();
-			Thread.sleep(5000);
-			while(!bClient.isReady()) {
-				Thread.sleep(10000);
-				ml.cpr("try rec");
-				bClient.login();
-			}
-			ml.cpr("RECONNECTED!!??");
-		} catch(Exception e) {
-			System.out.println("DISCOEXCEPTION: " + e);//genauer
-		}
-		
-	}*/
 	
 	@EventSubscriber
 	public void onMessageEvent(MessageReceivedEvent event) {//BIS ZUM ERSTEN WHITESPACE FILTERN (!test" "hallo) und als command (content) benutzen
 		
 		IMessage message = event.getMessage();
 		if (message.getChannel() == guild.getChannelByID(Statics.ID_BOTSPAM)) {//1
-			System.out.println("messagetrigger durch " + message.getContent());
+			System.out.println("messagetrigger durch '" + message.getContent() + "'");
 			Commands.trigger(message);
 			//Parser parser = new Parser(message);
 		}
@@ -176,12 +142,6 @@ public class Events {
 				
 			}
 		}*/
-		
-		
-		
-		else {
-			System.out.println("in falschem Channel MUSS ERSCHEINEN, kann danach weg");
-		}
 	}
 	
 	/*@EventSubscriber

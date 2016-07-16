@@ -64,7 +64,7 @@ public class Bot {
 	public static void main(String[] args) throws Exception {
 		statics = new Statics();
 		
-		botClient = new ClientBuilder().withToken(Statics.BOT_TOKEN).login();
+		botClient = new ClientBuilder().withToken(Statics.BOT_TOKEN).withReconnects().login();
 		botClient.getDispatcher().registerListener(new Events(botClient));
 		System.out.println("~Main~fertig~");
 	}

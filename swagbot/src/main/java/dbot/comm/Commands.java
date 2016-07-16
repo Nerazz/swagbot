@@ -17,8 +17,6 @@ public class Commands {
 		Flip flip = new Flip(pos);
 		IUser author = message.getAuthor();
 		
-		System.out.println("commandstrigger");
-		
 		Pattern pattern = Pattern.compile("^!([a-z]+)(\\s(.+))?");
 		Matcher matcher = pattern.matcher(message.getContent().toLowerCase());
 		/*if (matcher.matches()) {
@@ -27,7 +25,7 @@ public class Commands {
 		}*/
 		if (matcher.matches()) {
 			
-			String params = "";
+			String params = "";//statt params matcher.group(3) übergeben, nullbehandlung nach übergabe machen
 			if (matcher.group(3) != null) {
 				params = matcher.group(3);
 			}
@@ -37,9 +35,9 @@ public class Commands {
 					Roll.m(pos, author, params);
 					break;
 				
-				/*case "stats":
+				case "stats":
 					UserData dAuthor = DB.getData(author);
-					pos.post(author + " ist Level " + dAuthor.getLevel() + " " + dAuthor.getrpgClass() + " mit " + dAuthor.getExp() + "/" + DB.getLevelThreshold(dAuthor.getLevel()) + " Exp.", 60000);
+					pos.post(author + " ist Level " + dAuthor.getLevel() + " " + dAuthor.getrpgClass() + " mit " + dAuthor.getExp() + "/" + DB.getLevelThreshold(dAuthor.getLevel()) + " Exp.");
 					break;
 				
 				case "gems":
@@ -51,29 +49,31 @@ public class Commands {
 					break;
 				
 				case "buy":
-					if ((param1 != null) && (param2 != null)) {
-					Buy.two(DB.getData(author), param1, param2);
-					}
-					else if (param1 != null) {
-						Buy.one(DB.getData(author), param1);
-					}
-					else {
-						System.out.println("event.buy fail");
+					if (params != "") {
+						System.out.println("buy nicht null");
+						Buy.m(DB.getData(author), params);
 					}
 					break;
-				*/
-				//case ""
+				
+				case "version":
+					pos.post("v" + Statics.VERSION);
+					break;
+				
+				/*case "flip":
+					flip.m(DB.getData(author), params);
+					break;*/
+				
 				default:
 					System.out.println("ERROR IN COMMANDS");
 					break;
 			}
-			System.out.println("*Matches:*");
+			/*System.out.println("*Matches:*");
 			for (int i = 1; i < matcher.groupCount() + 1; i++) {
 				if (matcher.group(i) != null) {
-					System.out.println(matcher.group(i));
+					System.out.println(matcher.group());
 					System.out.println("-----------");
 				}
-			}
+			}*/
 		} else if (author.getID().equals(Statics.ID_NERAZ)) {
 			pattern = Pattern.compile("^§([a-z]+)(\\s(.+))?");
 			matcher = pattern.matcher(message.getContent().toLowerCase());
@@ -85,65 +85,26 @@ public class Commands {
 					params = matcher.group(3);
 				}
 			
-				/*switch (matcher.group(1)) {
-					case ""
+				switch (matcher.group(1)) {
+					case "save":
+						DB.save();
+						pos.post("Aye aye, Meister " + author + " :ok_hand:", 5000);
+						break;
+					default:
+						break;
+				} /*else {
+					pos.post(author + ", auf dich Scrub höre ich nicht :joy:");
 				}*/
+				
 			}
 		}
 		pos.del(message, 10000);
 		
 	}
+}
 	
 	
-	/*if (author.getID().equals("97092184821465088")) {
-				String param = parser.getMessage().toString().substring(1);
-				
-			
-				if (param.equals("save")) {
-					DB.save();
-					pos.post("Aye aye, Meister " + author + " :ok_hand:");
-				}
-				else if (param.equals("load")) {
-					DB.load();
-					pos.post("Aye aye, Meister " + author + " :ok_hand:");
-				}
-			}
-			else {
-				pos.post(author + ", auf dich Scrub höre ich nicht :joy:");
-			}*/
-	/*public static void user(Parser parser) {
-		Poster pos = new Poster();
-		DataBase DB = new DataBase();//object mit allen wichtigen sachen (static) einmal am anfang initialisieren und dann ueberall rein?
-		Flip flip = new Flip(pos);
-		//DataBase DB = new Info().getDB();//irgendwie so
-		//IUser author = super.getAuthor();
-		IUser author = parser.getAuthor();
-		System.out.println("usertrigger");
-		String command = parser.getParams().get(0).toString();//vielleicht zwischenspeichern
-		parser.getParams().remove(0);
-		String param1 = null;
-		String param2 = null;
-		try {
-			param1 = parser.getParams().get(1).toString();
-			param2 = parser.getParams().get(2).toString();//einfach jedem befehl ganze liste uebergeben
-		} catch(Exception e) {
-			System.out.println("commands. " + e);
-		}
-		System.out.println("switch");
-		switch (command) {
-			case "roll":
-				Roll.m(pos, author, parser.getParams());
-				break;
-			case "stats":
-				UserData dAuthor = DB.getData(author);
-				pos.post(author + " ist Level " + dAuthor.getLevel() + " " + dAuthor.getrpgClass() + " mit " + dAuthor.getExp() + "/" + DB.getLevelThreshold(dAuthor.getLevel()) + " Exp.", 60000);
-				break;
-			case "gems":
-				pos.post(author + ", du hast im Moment " + DB.getData(author).getGems() + ":gem:.");
-				break;
-			case "top":
-				DB.getTop(author);
-				break;
+	
 			/*case "give":
 				try {
 					//System.out.println("give start");
@@ -219,51 +180,6 @@ public class Commands {
 				}
 				
 				break;*/
-			/*case "buy":
-				if ((param1 != null) && (param2 != null)) {
-					Buy.two(DB.getData(author), param1, param2);
-				}
-				else if (param1 != null) {
-					Buy.one(DB.getData(author), param1);
-				}
-				else {
-					System.out.println("event.buy fail");
-				}
-				break;
-			default:
-				System.out.println("Command nicht gefunden.");
-				break;
-		}//4z
-	}//3z
-	
-	public static void admin(Parser parser) {
-		DataBase DB = new DataBase();
-		Poster pos = new Poster();
-		IUser author = parser.getAuthor();
-		System.out.println("admintrigger");
-		//private static final String idNeraz = "97092184821465088";
-			if (author.getID().equals("97092184821465088")) {
-				String param = parser.getMessage().toString().substring(1);
-				
-			
-				if (param.equals("save")) {
-					DB.save();
-					pos.post("Aye aye, Meister " + author + " :ok_hand:");
-				}
-				else if (param.equals("load")) {
-					DB.load();
-					pos.post("Aye aye, Meister " + author + " :ok_hand:");
-				}
-			}
-			else {
-				pos.post(author + ", auf dich Scrub höre ich nicht :joy:");
-			}
-	}*/
-}
-
-
-
-					
 			
 		/*	else if ((channel == guild.getChannelByID(idGeneral)) && (nBrag > 0)) {
 				nBrag -= 1;

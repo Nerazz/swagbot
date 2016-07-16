@@ -59,11 +59,11 @@ public class MainTimer extends Events implements Runnable {
 					if ((minuteCount % 60) == 0) {
 						hourCount += 1;
 						minuteCount = 0;
-					}
-					
-					if ((hourCount % 24) == 0) {
-						dayCount += 1;
-						hourCount = 0;
+						
+						if ((hourCount % 24) == 0) {
+							dayCount += 1;
+							hourCount = 0;
+						}
 					}
 					
 					if (dayCount != 0) {
@@ -81,12 +81,9 @@ public class MainTimer extends Events implements Runnable {
 				}
 				
 				lUser = guild.getUsers();
-				
-				
 				int countO = 0;
 				int countI = 0;
-					
-					
+				
 				for (int i = 0; i < lUser.size(); i++) {
 					user = lUser.get(i);
 					if (!user.getID().equals(Statics.ID_BOT)) {
