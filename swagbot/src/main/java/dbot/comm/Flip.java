@@ -3,27 +3,39 @@ package dbot.comm;
 import dbot.Poster;
 
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.IMessage;
 import java.util.List;
 import java.util.*;
 import dbot.UserData;
 
 import java.util.regex.*;
+import sx.blah.discord.util.RequestBuffer.RequestFuture;
+import java.util.concurrent.*;
 
 public class Flip {
-	
-	
-	
 	private static List<FlipRoom> lRooms = new ArrayList<FlipRoom>();
 	protected static Poster pos;
+	private static IMessage roomPost;
+	private static String startString = "Offene Flip-Räume:";
+	private static String emptyRoomsString = "\n\t\t\t\tkeine :sob:";
+	
+	public Flip() {}
 	
 	public Flip(Poster pos) {
+		System.out.println("flip init!");
 		this.pos = pos;
+		Future<IMessage> fMessage = pos.post(startString + emptyRoomsString, -1);
+		try {
+			roomPost = fMessage.get();
+		} catch(InterruptedException|ExecutionException e) {
+			System.out.println(e);
+		}
 	}
 	
-	public void m(UserData uData, String params) {//unendlichen post mit edit einfuegen
+	public void m(UserData uData, String params) {
 		IUser author = uData.getUser();
 		
-		Pattern pattern = Pattern.compile("(\\d+|allin|join|close)(\\s(top|kek))?");
+		Pattern pattern = Pattern.compile("(\\d+|allin|join|close)(\\s(top|kek|\\d+))?");
 		Matcher matcher = pattern.matcher(params);
 		
 		if (!matcher.matches()) {
@@ -33,90 +45,74 @@ public class Flip {
 		switch (matcher.group(1)) {
 			case "join":
 				join(uData, params);
-				break;
+				return;
 			case "close":
 				close(author, uData);
-				break;
+				return;
 			case "allin":
 				bet = uData.getGems();
 				break;
 			default:
 				bet = Integer.parseInt(matcher.group(1));
+				if (uData.getGems() < bet) {
+					pos.post(author + ", du hast zu wenig :gem:");
+					return;
+				} else if (bet < 1) {
+					pos.post("nanana, wer will denn da cheaten?? :thinking:");
+					return;
+				} else if (containsUser(author)) {
+					pos.post(author + ", du hast schon einen Raum offen...");
+					return;
+				}
 				break;
 		}
 		
-		if (bet < 1) {
-			return;
-		}
-
-		//--------------bis hier
-		
-		
-		
-		/*String seite = (String)paramList.get(2).getValue();
-		if (arg.equals("close")) {
-			System.out.println("close");
-			close(author, uData);
-		}
-		else if (!containsUser(author)) {
-			int bet = Integer.parseInt(arg);
-			if ((uData.getGems() < bet) || (bet < 1)) {
-				pos.post("zu wenig :gem:");
-				return;
+		uData.subGems(bet);
+		String seite;
+		if (matcher.group(3) == null) {
+			System.out.println("null in flip");
+			if (Math.random() < 0.5) {
+				seite = "TOP";
+			} else {
+				seite = "KEK";
 			}
-			if (seite.equals("top") || seite.equals("kek")) {
-				uData.subGems(bet);
-				open(author, bet, seite, uData);
-			}
-			else {
-				double rnd = Math.random();
-				if (rnd < 0.5) {
-					uData.subGems(bet);
-					open(author, bet, "top", uData);
-				}
-				else {
-					uData.subGems(bet);
-					open(author, bet, "kek", uData);
-				}
-			}
-			
+		} else {
+			seite = matcher.group(3);
 		}
-		
-		else {
-			pos.post("schon vorhanden");
-		}*/
+		open(author, bet, seite.toUpperCase(), uData);//TODO:besser machen
 	}
 	
 	public void join(UserData uData, String params) {
-		/*Pattern pattern = Pattern.compile("(\\d+)");
+		System.out.println(params);
+		Pattern pattern = Pattern.compile(".+\\s(\\d+)$");
 		Matcher matcher = pattern.matcher(params);
-		try {
-			System.out.println(roomID);
-			int iRoomID = Integer.parseInt(roomID);
-			FlipRoom gettedRoom = lRooms.get(getRoomIndexByID(iRoomID));
-			if (gettedRoom != null) {
-				if (uData.getGems() < gettedRoom.getPot()) {
-					pos.post("zu wenig :gem:");
-					return;
-				}
-				uData.subGems(gettedRoom.getPot());
-				gettedRoom.join(author, uData);
-				lRooms.remove(getRoomIndexByID(iRoomID));
-				//pos.post(winner + " hat den Pot gewonnen!");
-			}
-			
-			else {
-				pos.post("Room-ID nicht gefunden.");
-			}
-		} catch(Exception e) {
-			System.out.println("parseerror (flip.join)");
-		}*/
+		
+		if (!matcher.matches()) {
+			System.out.println("matcht nicht in Flip.join");
+			return;
+		}
+		IUser author = uData.getUser();
+		int roomID = Integer.parseInt(matcher.group(1));
+		FlipRoom gettedRoom = lRooms.get(getRoomIndexByID(roomID));
+		if (gettedRoom == null) {
+			pos.post("Raum " + roomID + " nicht gefunden.");
+			return;
+		} else if (uData.getGems() < gettedRoom.getPot()) {
+			pos.post(author + ", du hast zu wenig :gem: um beizutreten.");
+			return;
+		}
+		
+		uData.subGems(gettedRoom.getPot());
+		gettedRoom.join(author, uData);
+		lRooms.remove(getRoomIndexByID(roomID));
+		postRooms();
 	}
 	
 	private void open(IUser author, int bet, String seite, UserData uData) {
 		FlipRoom fRoom = new FlipRoom(author, bet, seite, uData);
-		pos.post(author + " hat neuen Raum um " + fRoom.getPot() + ":gem: geöffnet mit ID: " + fRoom.getRoomID() + " (" + seite.toUpperCase() + ")", 600000);//bestehenden Post posten(ggf. editieren)
+		pos.post(author + " hat neuen Raum um " + fRoom.getPot() + ":gem: geöffnet mit ID: " + fRoom.getRoomID() + " (" + seite + ")");
 		lRooms.add(fRoom);
+		postRooms();
 	}
 	
 	public void close(IUser author, UserData uData) {
@@ -126,18 +122,32 @@ public class Flip {
 				uData.addGems(lRooms.get(i).getPot());
 				pos.post("closing room " + lRooms.get(i).getRoomID());
 				lRooms.remove(i);
-				
-				System.out.println("removed room");
+				postRooms();
 			}
 		}
 		//remove room(author)//FEHLT
 	}
 	
-	public void closeAll() {
+	public void closeAll() {//für bot dc und logout benutzen
 		for (int i = 0; i < lRooms.size(); i++) {
-			//logik
+			lRooms.remove(i);
 		}
 		System.out.println("Alle Flipräume geschlossen");
+	}
+	
+	private void postRooms() {
+		System.out.println("postRooms.start");
+		String post = startString;
+		int count = 0;
+		for (int i = 0; i < lRooms.size(); i++) {
+			post += lRooms.get(i).toString();
+			count++;
+		}
+		if (count != 0) {
+			pos.edit(roomPost, post);
+		} else {
+			pos.edit(roomPost, post + emptyRoomsString);
+		}
 	}
 	
 	private boolean containsUser(IUser user) {

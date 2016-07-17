@@ -37,7 +37,12 @@ public final class Buy {
 							dBuyer.subGems(500);
 							pos.post(uBuyer + ", hier ist dein xpot tall!");
 							System.out.println(uBuyer.getName() + " -> xpot 1");
-							new ExpTimer(dBuyer, 1.5, 4200000);//abzaehlen bei timer (-= 1)
+							
+							dBuyer.setExpRate(1.5);//TODO:exppotklasse mit guten parametern
+							dBuyer.setPotDuration(70);
+							
+							
+							//new ExpTimer(dBuyer, 1.5, 4200000);//abzaehlen bei timer (-= 1)
 						}
 						break;
 					case "grande":
@@ -51,7 +56,11 @@ public final class Buy {
 							dBuyer.subGems(1000);
 							pos.post(uBuyer + ", hier ist dein xpot grande!");
 							System.out.println(uBuyer.getName() + " -> xpot 2");
-							new ExpTimer(dBuyer, 2, 3900000);//abzaehlen bei timer (-= 1)
+							
+							dBuyer.setExpRate(2);
+							dBuyer.setPotDuration(65);
+							
+							//new ExpTimer(dBuyer, 2, 3900000);//abzaehlen bei timer (-= 1)
 						}
 						break;
 					case "venti":
@@ -65,7 +74,11 @@ public final class Buy {
 							dBuyer.subGems(2000);
 							pos.post(uBuyer + ", hier ist dein xpot venti!");
 							System.out.println(uBuyer.getName() + " -> xpot 3");
-							new ExpTimer(dBuyer, 3, 3600000);//abzaehlen bei timer (-= 1)
+							
+							dBuyer.setExpRate(3);
+							dBuyer.setPotDuration(60);
+							
+							//new ExpTimer(dBuyer, 3, 3600000);//abzaehlen bei timer (-= 1)
 						}
 						break;
 						

@@ -95,6 +95,7 @@ public class MainTimer extends Events implements Runnable {
 							update(user, 1);
 							countI += 1;
 						}*/
+						DB.getData(user).reducePotDuration();
 					}
 					
 				}

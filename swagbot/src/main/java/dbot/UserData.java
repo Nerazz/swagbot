@@ -15,6 +15,8 @@ public class UserData extends DataBase {//implements comparable?
 	private int rpgPresLevel = -1;
 	private double rpgExpRate = 1;
 	
+	private int rpgPotDuration = 0;
+	
 	protected UserData(IUser user) {
 		this.user = user;
 		id = user.getID();
@@ -119,6 +121,28 @@ public class UserData extends DataBase {//implements comparable?
 	
 	public void setExpRate(double rpgExpRate) {
 		this.rpgExpRate = rpgExpRate;
+	}
+	
+	public int getPotDuration() {
+		return rpgPotDuration;
+	}
+	
+	public void setPotDuration(int rpgPotDuration) {
+		if (rpgPotDuration < 0) {
+			System.out.println("ERROR: PotDuration darf nicht < 0 sein!");
+			return;
+		}
+		this.rpgPotDuration = rpgPotDuration;
+	}
+	
+	public void reducePotDuration() {
+		if (rpgPotDuration > 0) {
+			rpgPotDuration -= 1;
+			if (rpgPotDuration < 1) {
+				setExpRate(1);
+				System.out.println("xpot von " + name + " durch");
+			}
+		}
 	}
 	
 	/*@Override

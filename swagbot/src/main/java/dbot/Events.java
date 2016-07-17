@@ -88,6 +88,8 @@ public class Events {
 			DB = new DataBase(guild);
 			DB.load();
 			flip = new Flip(pos);
+			
+			Commands.init(flip, pos, DB);
 			System.out.println("Bot joined guild: " + guild.getName());
 			
 			new MainTimer();

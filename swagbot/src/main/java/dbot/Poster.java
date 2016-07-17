@@ -15,6 +15,10 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageBuilder;
 
 import sx.blah.discord.util.RequestBuffer;
+import sx.blah.discord.util.RequestBuffer.RequestFuture;
+
+//import java.util.*;
+import java.util.concurrent.*;
 
 public class Poster {
 	private static IDiscordClient bClient;
@@ -31,44 +35,39 @@ public class Poster {
 		this.channel = channel;
 	}
 	
-	public IMessage post(String s, int duration) {
-		RequestBuffer.request(() -> {
+	public Future<IMessage> post(String s, int duration) {
+		return RequestBuffer.request(() -> {
 			try {
 				IMessage message = new MessageBuilder(bClient).withChannel(channel).withContent(s).build();
-				new DelTimer(message, duration);
+				if (duration > 0) {//oder -1?
+					new DelTimer(message, duration);
+				}
 				return message;
 			} catch(MissingPermissionsException e) {
-				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-				System.out.println("MissingEX: Poster.post+dur");
-				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+				System.out.println("MissingPermEX: Poster.post+dur");
 			} catch(DiscordException e) {
-				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
 				System.out.println("DiscordEX: Poster.post+dur");
-				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
 			}
 			return null;
 		});
-		return null;//notwendig??
+		//return null;//notwendig??
 	}
 	
-	public IMessage post(String s) {
-		RequestBuffer.request(() -> {
+	public Future<IMessage> post(String s) {
+		//Future<IMessage> message;
+		return RequestBuffer.request(() -> {
 			try {
-			IMessage message = new MessageBuilder(bClient).withChannel(channel).withContent(s).build();
-			new DelTimer(message);
-			return message;
+				IMessage message = new MessageBuilder(bClient).withChannel(channel).withContent(s).build();
+				new DelTimer(message);
+				return message;
 			} catch(MissingPermissionsException e) {
-				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-				System.out.println("MissingEX: Poster.post");
-				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+				System.out.println("MissingPermEX: Poster.post");
 			} catch(DiscordException e) {
-				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
 				System.out.println("DiscordEX: Poster.post");
-				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
 			}
 			return null;
 		});
-		return null;//notwendig??
+		//return null;//notwendig??//TODO:return ist immer null, fail
 	}
 	
 	public void del(IMessage message) {
@@ -76,19 +75,30 @@ public class Poster {
 			try {
 				message.delete();
 			} catch(MissingPermissionsException e) {
-				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-				System.out.println("MissingEX: Poster.del");
-				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
+				System.out.println("MissingPermEX: Poster.del");
 			}  catch(DiscordException e) {
-				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
 				System.out.println("DiscordEX: Poster.del");
-				System.out.println("XXXXXXXXXXXXXXXXXXXXX");
 			}
 		});
 	}
 	
 	public void del(IMessage message, int duration) {
 		new DelTimer(message, duration);
+	}
+	
+	public Future<IMessage> edit(IMessage message, String s) {
+		return RequestBuffer.request(() -> {
+			try {
+				message.edit(s);
+				return message;
+			} catch(MissingPermissionsException e) {
+				System.out.println("MissingPermEX: Poster.edit");
+			} catch(DiscordException e) {
+				System.out.println("DiscordEX: Poster.edit");
+			}
+			return null;
+		});
+		//return null;
 	}
 	
 }

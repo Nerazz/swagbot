@@ -10,11 +10,15 @@ import sx.blah.discord.handle.obj.IUser;
 
 import java.util.regex.*;
 
-public class Commands {
+public class Commands {//noch paar static attribute initialisieren am anfang!!
+	private static Poster pos;
+	private static DataBase DB;
+	private static Flip flip;
+	
 	public static void trigger(IMessage message) {
-		Poster pos = new Poster();
+		/*Poster pos = new Poster();
 		DataBase DB = new DataBase();
-		Flip flip = new Flip(pos);
+		Flip flip = new Flip();*/
 		IUser author = message.getAuthor();
 		
 		Pattern pattern = Pattern.compile("^!([a-z]+)(\\s(.+))?");
@@ -24,7 +28,7 @@ public class Commands {
 			System.out.println("'" + matcher.group() + "'");
 		}*/
 		if (matcher.matches()) {
-			
+			UserData dAuthor = DB.getData(author);
 			String params = "";//statt params matcher.group(3) übergeben, nullbehandlung nach übergabe machen
 			if (matcher.group(3) != null) {
 				params = matcher.group(3);
@@ -36,12 +40,19 @@ public class Commands {
 					break;
 				
 				case "stats":
-					UserData dAuthor = DB.getData(author);
 					pos.post(author + " ist Level " + dAuthor.getLevel() + " " + dAuthor.getrpgClass() + " mit " + dAuthor.getExp() + "/" + DB.getLevelThreshold(dAuthor.getLevel()) + " Exp.");
 					break;
 				
 				case "gems":
 					pos.post(author + ", du hast im Moment " + DB.getData(author).getGems() + ":gem:.");
+					break;
+					
+				case "timeleft":
+					if (dAuthor.getPotDuration() > 0) {
+						pos.post(author + ", dein xpot geht noch " + dAuthor.getPotDuration() + "min.");
+					} else {
+						pos.post(author + ", du hast keinen aktiven Boost.");
+					}
 					break;
 				
 				case "top":
@@ -50,8 +61,7 @@ public class Commands {
 				
 				case "buy":
 					if (params != "") {
-						System.out.println("buy nicht null");
-						Buy.m(DB.getData(author), params);
+						Buy.m(dAuthor, params);
 					}
 					break;
 				
@@ -59,9 +69,9 @@ public class Commands {
 					pos.post("v" + Statics.VERSION);
 					break;
 				
-				/*case "flip":
-					flip.m(DB.getData(author), params);
-					break;*/
+				case "flip":
+					flip.m(dAuthor, params);
+					break;
 				
 				default:
 					System.out.println("ERROR IN COMMANDS");
@@ -88,7 +98,7 @@ public class Commands {
 				switch (matcher.group(1)) {
 					case "save":
 						DB.save();
-						pos.post("Aye aye, Meister " + author + " :ok_hand:", 5000);
+						pos.post("Aye aye, Meister " + author + " :ok_hand:", 5000);// TODO:sollte nur kurz dasein (5000 ist gut), siehe futuremessageproblem?
 						break;
 					default:
 						break;
@@ -100,6 +110,13 @@ public class Commands {
 		}
 		pos.del(message, 10000);
 		
+	}
+	
+	public static void init(Flip tFlip, Poster tPos, DataBase tDB) {
+		flip = tFlip;
+		pos = tPos;
+		DB = tDB;
+		System.out.println("TRIGGER INIT");
 	}
 }
 	
