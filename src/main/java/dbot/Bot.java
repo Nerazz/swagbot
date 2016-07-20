@@ -4,7 +4,6 @@ package dbot;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.handle.obj.IGuild;
 import java.util.List;
 import java.util.*;
 /**
