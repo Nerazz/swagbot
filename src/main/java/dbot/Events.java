@@ -6,7 +6,6 @@ import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.GuildCreateEvent;
 import sx.blah.discord.handle.impl.events.DiscordDisconnectedEvent;
-import sx.blah.discord.handle.AudioChannel;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IGuild;
@@ -28,7 +27,6 @@ public class Events {
 	private Flip flip;
 	
 	private static IVoiceChannel vChannel = null;
-	private static AudioChannel aChannel;
 	private static File file;
 	
 	

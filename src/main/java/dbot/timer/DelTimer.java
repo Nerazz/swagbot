@@ -1,12 +1,10 @@
 package dbot.timer;
 
-import sx.blah.discord.handle.obj.IVoiceChannel;
-import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IMessage;
 
-import sx.blah.discord.util.HTTP429Exception;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.RateLimitException;
 
 public class DelTimer implements Runnable {
 	
@@ -38,9 +36,9 @@ public class DelTimer implements Runnable {
 			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
 			System.out.println("MissingEX: DelTimer.run");
 			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-		} catch(HTTP429Exception e) {
+		} catch(RateLimitException e) {
 			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
-			System.out.println("HTTPEX: DelTimer.run");
+			System.out.println("RateLimitEX: DelTimer.run");
 			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
 		} catch(DiscordException e) {
 			System.out.println("XXXXXXXXXXXXXXXXXXXXX");

@@ -2,6 +2,7 @@ package dbot;
 
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Presences;
+import sx.blah.discord.handle.obj.Status;
 import java.util.List;
 import java.util.*;
 
@@ -32,7 +33,7 @@ public class MainTimer extends Events implements Runnable {
 	protected MainTimer() {
 		Thread tMainTimer = new Thread(this, "MainTimer Thread");
 		System.out.println("created: " + tMainTimer);
-		botClient.updatePresence(false, Optional.of("frisch online"));
+		botClient.changeStatus(Status.game("frisch online"));
 		
 		//deFile();
 		
@@ -59,11 +60,11 @@ public class MainTimer extends Events implements Runnable {
 					}
 					
 					if (dayCount != 0) {
-						botClient.updatePresence(false, Optional.of("seit " + dayCount + "d " + hourCount + "h online"));
+						botClient.changeStatus(Status.game("seit " + dayCount + "d " + hourCount + "h online"));
 					} else if (hourCount != 0) {
-						botClient.updatePresence(false, Optional.of("seit " + hourCount + "h " + minuteCount + "m online"));
+						botClient.changeStatus(Status.game("seit " + hourCount + "h " + minuteCount + "m online"));
 					} else {
-						botClient.updatePresence(false, Optional.of("seit " + minuteCount + "m online"));
+						botClient.changeStatus(Status.game("seit " + minuteCount + "m online"));
 					}
 					
 					if (((hourCount % 5) == 0) && (minuteCount == 0)) {

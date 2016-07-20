@@ -5,7 +5,6 @@ import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IChannel;
 
-import sx.blah.discord.util.HTTP429Exception;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.DiscordException;
 
@@ -49,7 +48,7 @@ import java.util.*;
 			lRouleUser.clear();
 		/*} catch(MissingPermissionsException e) {
 			e.printStackTrace();
-		} catch(HTTP429Exception e) {
+		} catch(RateLimitException e) {
 			e.printStackTrace();
 		} catch(DiscordException e) {
 			e.printStackTrace();
