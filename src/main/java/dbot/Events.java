@@ -23,7 +23,6 @@ import sx.blah.discord.handle.obj.Presences;
 
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.IDiscordClient;
-//import sx.blah.discord.api.internal;
 
 import sx.blah.discord.util.HTTP429Exception;
 import sx.blah.discord.util.MissingPermissionsException;
