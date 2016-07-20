@@ -9,7 +9,6 @@ import java.util.*;
 import dbot.UserData;
 
 import java.util.regex.*;
-import sx.blah.discord.util.RequestBuffer.RequestFuture;
 import java.util.concurrent.*;
 
 public class Flip {

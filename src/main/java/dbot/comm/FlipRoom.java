@@ -1,6 +1,4 @@
 package dbot.comm;
-
-import dbot.Poster;
 import dbot.UserData;
 
 import sx.blah.discord.handle.obj.IUser;

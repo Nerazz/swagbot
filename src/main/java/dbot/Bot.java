@@ -1,11 +1,7 @@
 package dbot;
 
-//import org.slf4j.*;
-import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
-import java.util.List;
-import java.util.*;
 /**
  * Bot - Mainclass
  * @author	Niklas Zd

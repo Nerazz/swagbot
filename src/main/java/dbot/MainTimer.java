@@ -1,17 +1,9 @@
 package dbot;
+
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Presences;
-
-import dbot.Events;
-
 import java.util.List;
 import java.util.*;
-import java.io.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.FileWriter;
-
 
 /*
 event für tick?

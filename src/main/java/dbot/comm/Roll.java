@@ -1,12 +1,7 @@
 package dbot.comm;
 
 import dbot.Poster;
-
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
-
-import sx.blah.discord.api.IDiscordClient;
 import java.util.regex.*;
 
 public final class Roll {

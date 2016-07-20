@@ -1,11 +1,8 @@
 package dbot;
 
-import dbot.Poster;
-
 import java.io.*;
 import org.json.simple.*;
 import org.json.simple.parser.*;
-//import com.google.gson.JsonParser;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IGuild;
 import java.util.List;

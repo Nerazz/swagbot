@@ -2,10 +2,7 @@ package dbot.comm;
 
 import dbot.UserData;
 import sx.blah.discord.handle.obj.IUser;
-
 import dbot.Poster;
-import dbot.timer.ExpTimer;
-
 import java.util.regex.*;
 
 public final class Buy {

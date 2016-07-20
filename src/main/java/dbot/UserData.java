@@ -1,6 +1,4 @@
 package dbot;
-
-import dbot.Poster;
 import sx.blah.discord.handle.obj.IUser;
 
 public class UserData extends DataBase {//implements comparable?

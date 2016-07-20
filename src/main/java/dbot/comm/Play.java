@@ -1,9 +1,6 @@
 package dbot.comm;
 
 import sx.blah.discord.handle.obj.IVoiceChannel;
-import sx.blah.discord.handle.AudioChannel;
-
-import java.io.*;
 
 public class Play {
 	

@@ -6,33 +6,13 @@ import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.GuildCreateEvent;
 import sx.blah.discord.handle.impl.events.DiscordDisconnectedEvent;
-
-import sx.blah.discord.handle.impl.events.UserVoiceChannelJoinEvent;
-import sx.blah.discord.handle.impl.events.AudioStopEvent;
-
 import sx.blah.discord.handle.AudioChannel;
-
-import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IRegion;
 import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.IRole;
-import sx.blah.discord.handle.obj.Presences;
 
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.IDiscordClient;
-
-import sx.blah.discord.util.HTTP429Exception;
-import sx.blah.discord.util.MissingPermissionsException;
-import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.MessageBuilder;
-
-import java.util.Optional;
-import java.util.List;
-import java.util.*;
-import java.lang.String.*;
 import java.io.*;
 
 public class Events {
