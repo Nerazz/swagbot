@@ -1,4 +1,4 @@
-package dbot;
+package dbot.timer;
 
 import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.IUser;

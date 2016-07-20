@@ -1,5 +1,16 @@
 *.class
-Bot.class
+.gradle
+.idea
+build
+gradle
+modules
+build.gradle
+gradlew
+gradlew.bat
+settings.gradle
+
+Statics.java
+
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/

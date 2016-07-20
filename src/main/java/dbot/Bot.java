@@ -8,13 +8,13 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import java.util.List;
 import java.util.*;
-
+/**
+ * Bot - Mainclass
+ * @author	Niklas Zd
+ */
 public class Bot {
 	
-	/**
-	 * Bot - Mainclass
-	 * @author	Niklas Zd
-	 */
+
 	 
 	 /*TODO:
 	  * logger
