@@ -6,10 +6,8 @@ import sx.blah.discord.api.IDiscordClient;
  * Bot - Mainclass
  * @author	Niklas Zd
  */
-public class Bot {
-	
+class Bot {
 
-	 
 	 /*TODO:
 	  * logger
 	  * eigenes package fuer timer
@@ -51,14 +49,14 @@ public class Bot {
 	   * Data = dName
 	   */
 	
-	public static IDiscordClient botClient;
+	private static IDiscordClient botClient;
 	//protected static DataBase DB;/* = new DataBase();*/
 	private static Statics statics;//um referenz nicht zu verlieren?
 	
 	public static void main(String[] args) throws Exception {
 		statics = new Statics();
 		
-		botClient = new ClientBuilder().withToken(Statics.BOT_TOKEN).withReconnects().login();
+		botClient = new ClientBuilder().withToken(Statics.BOT_TOKEN).setMaxReconnectAttempts(10).login();
 		botClient.getDispatcher().registerListener(new Events(botClient));
 		System.out.println("~Main~fertig~");
 	}

@@ -3,7 +3,7 @@ import sx.blah.discord.handle.obj.IUser;
 
 public class UserData extends DataBase {//implements comparable?
 	private String id = null;
-	private IUser user = null;
+	private transient IUser user = null;
 	private String name = null;
 	private int gems = -1;
 	
@@ -15,7 +15,7 @@ public class UserData extends DataBase {//implements comparable?
 	
 	private int rpgPotDuration = 0;
 	
-	protected UserData(IUser user) {
+	public UserData(IUser user) {
 		this.user = user;
 		id = user.getID();
 		name = user.getName();
@@ -32,6 +32,7 @@ public class UserData extends DataBase {//implements comparable?
 	
 	public IUser getUser() {
 		return user;
+		//return getGuild().getUserByID(id);
 	}
 	
 	public String getName() {

@@ -15,7 +15,7 @@ public class Flip {
 	private static List<FlipRoom> lRooms = new ArrayList<FlipRoom>();
 	protected static Poster pos;
 	private static IMessage roomPost;
-	private static String startString = "Offene Flip-RÃ¤ume:";
+	private static String startString = "Offene Flip-Räume:";
 	private static String emptyRoomsString = "\n\t\t\t\tkeine :sob:";
 	
 	public Flip() {}
@@ -109,7 +109,7 @@ public class Flip {
 	
 	private void open(IUser author, int bet, String seite, UserData uData) {
 		FlipRoom fRoom = new FlipRoom(author, bet, seite, uData);
-		pos.post(author + " hat neuen Raum um " + fRoom.getPot() + ":gem: geÃ¶ffnet mit ID: " + fRoom.getRoomID() + " (" + seite + ")");
+		pos.post(author + " hat neuen Raum um " + fRoom.getPot() + ":gem: geöffnet mit ID: " + fRoom.getRoomID() + " (" + seite + ")");
 		lRooms.add(fRoom);
 		postRooms();
 	}
@@ -127,11 +127,11 @@ public class Flip {
 		//remove room(author)//FEHLT
 	}
 	
-	public void closeAll() {//fÃ¼r bot dc und logout benutzen
+	public void closeAll() {//für bot dc und logout benutzen
 		for (int i = 0; i < lRooms.size(); i++) {
 			lRooms.remove(i);
 		}
-		System.out.println("Alle FliprÃ¤ume geschlossen");
+		System.out.println("Alle Flipräume geschlossen");
 	}
 	
 	private void postRooms() {

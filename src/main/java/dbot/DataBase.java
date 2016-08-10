@@ -1,20 +1,21 @@
 package dbot;
 
 import java.io.*;
-import org.json.simple.*;
-import org.json.simple.parser.*;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IGuild;
 import java.util.List;
 import java.util.*;
 
+import com.google.gson.*;
+
 public class DataBase {//soll eigentlich static sein
-	
-	private static int size = 0;
-	private static final List<UserData> lUDB = new ArrayList<UserData>();
-	public static final ServerData SD = new ServerData();//lieber mit getter durchreichen?
+
+	private static List<UserData> lUDB;
+	public static ServerData SD;//lieber mit getter durchreichen?
 	private static IGuild guild;
 	protected final static int[] rpgLevelThreshold = new int[100];
+	//private static final String FILE_PATH = "./database.json";
+	private static final String FILE_PATH = "C:\\database.json";
 	
 	public DataBase(IGuild guild) {
 		this.guild = guild;
@@ -33,7 +34,6 @@ public class DataBase {//soll eigentlich static sein
 		if (!containsUser(user)) {
 			UserData uData = new UserData(user);
 			lUDB.add(uData);
-			size++;//lieber = lDB.size() setzen?
 		}
 		else {
 			System.out.println(user.getName() + " ist in DB schon vorhanden!");
@@ -42,7 +42,6 @@ public class DataBase {//soll eigentlich static sein
 	
 	public void add(UserData uData) {
 		lUDB.add(uData);
-		size++;
 	}
 	
 	public static int getLevelThreshold(int level) {
@@ -68,6 +67,7 @@ public class DataBase {//soll eigentlich static sein
 			//System.out.println(aScore[i]);
 			i++;
 		}
+
 		for (; i > 1; i--) {//bubblesort
 			for (int j = 0; j < (i - 1); j++) {
 				if (aScore[j] < aScore[j + 1]) {
@@ -103,27 +103,26 @@ public class DataBase {//soll eigentlich static sein
 		
 	}
 	
-	/*public void save() {
-		System.out.println("save start");
-		Gson gson = new Gson();
-		gson.toJson(1);
-		gson.toJson("test");
-		gson.toJson("abc");
-	}
-	
-	public void load() {
-		System.out.println("load start");
-		int one = gson.fromJson("1", int.class);
-		System.out.println(one);
-		
-	}*/
-	
-	
 	public void load() {//filenotfound, ... exceptions
-		try {
+		System.out.println("loading Databases...");
+		try (FileReader fr = new FileReader(FILE_PATH)){
+			Gson gson = new Gson();
+			DataBaseWrapper dbw = gson.fromJson(fr, DataBaseWrapper.class);
+			lUDB = dbw.getUserDataBase();
+			SD = dbw.getServerData();
+			System.out.println("loaded " + lUDB.size() + " Users and Serverdata from Database");
+		} catch(Exception e) {
+			System.out.println("loadError: " + e);
+			lUDB = new ArrayList<UserData>();
+			SD = new ServerData();
+			System.out.println("New Databases for Users and Server initiated");
+		}
+
+
+		/*try {
 			System.out.println("load start");
 			JSONParser parser = new JSONParser();
-			Object obj = parser.parse(new FileReader("./userdatabase.json"));
+			Object obj = parser.parse(new FileReader(FILE_PATH));
 			JSONArray jobj = (JSONArray) obj;
 			JSONObject jtest = new JSONObject();
 			Iterator<JSONObject> iterator = jobj.iterator();
@@ -159,44 +158,31 @@ public class DataBase {//soll eigentlich static sein
 			
 		} catch(Exception e) {
 			System.out.println("LOADERROR IN DATABASE");
-		}
+		}*/
 	}
 	
 	public void save() {
-		System.out.println("save start");
-		//JSONObject oUser = new JSONObject();//unwichtig
-		JSONObject userArray = new JSONObject();//array fuer userobjekte mit infos
-		JSONArray jArray = new JSONArray();
-		JSONObject[] objs = new JSONObject[size];
-		
-		//JSONObject test = new JSONObject();
-		
-		for (int i = 0; i < size; i++) {
-			objs[i] = new JSONObject();
+		System.out.println("saving Database...");
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();//.serializeNulls?
+		try (FileWriter fw = new FileWriter(FILE_PATH)){
+			DataBaseWrapper dbw = new DataBaseWrapper();
+			dbw.setServerData(SD);
+			dbw.setUserDataBase(lUDB);
+			gson.toJson(dbw, fw);
+			System.out.println("saved Database");
+		} catch (IOException e) {
+			System.out.println("IO-Exception, save interrupted: " + e);
 		}
-		for (int i = 0; i < size; i++) {
-			//JSONObject obj = new JSONObject();
-			UserData tUData = lUDB.get(i);
-			objs[i].put("ID", tUData.getID());
-			//objs[i].put("user", tData.getUser());
-			objs[i].put("name", tUData.getName());
-			objs[i].put("gems", tUData.getGems());
-			objs[i].put("rpgClass", tUData.getrpgClass());
-			objs[i].put("rpgExp", tUData.getExp());
-			objs[i].put("rpgLevel", tUData.getLevel());
-			objs[i].put("rpgPresLevel", tUData.getPresLevel());
-			jArray.add(objs[i]);
-			//System.out.println(objs[i].toString());
-		}
-		//test.put("rpg", jArray);
-		
+
+	}
+	/*
 		try {
-			File oFile = new File("./userdatabase.json");
+			File oFile = new File(FILE_PATH);
 			if (!oFile.exists()) {
 				oFile.createNewFile();
 				System.out.println("file created");
 			}
-			FileWriter fw = new FileWriter(oFile/*.getAbsoluteFile()*/);
+			FileWriter fw = new FileWriter(oFile);//TODO: relativer path
 			BufferedWriter bw = new BufferedWriter(fw);
 			//for (int i = 0; i < size; i++) {
 			//	bw.write(jArray.toJSONString());
@@ -211,7 +197,7 @@ public class DataBase {//soll eigentlich static sein
 			
 		} catch(IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 		
 		
 		/*try {
@@ -224,39 +210,14 @@ public class DataBase {//soll eigentlich static sein
 		//FileWriter fw = new FileWriter(oFile/*.getAbsoluteFile());
 		
 		} catch(Exception e) {
-		}
-		
-		obj.put("name", "niklas");
-		obj.put("ID", new Integer(123123));
-		obj.put("gems", "533");
-		
-		System.out.println(obj);
-		
-		try {
-			FileWriter fw = new FileWriter("./test.json");
-			fw.write(obj.toJSONString());
-			
-			System.out.println("json created");
-			
-			BufferedWriter bw = new BufferedWriter(fw);
-			bw.write(obj.toJSONString() + "nice");
-			fw.flush();
-			fw.close();
-			bw.close();
-			System.out.println("fertig fw");
-		} catch(Exception e) {
-			
 		}*/
-		
-	}
-	
+
 	public boolean containsUser(IUser user) {
 		if (user == null) {
-			//throw new NullUserException("User darf nicht null sein!");
 			throw new IllegalArgumentException("User darf nicht null sein!");//braucht return?
 		}
-		for (int i = 0; i < size; i++) {
-				if (lUDB.get(i).getID() == user.getID()) {
+		for (int i = 0; i < lUDB.size(); i++) {
+				if (lUDB.get(i).getID().equals(user.getID())) {
 					return true;
 				}
 			}
@@ -271,7 +232,7 @@ public class DataBase {//soll eigentlich static sein
 		Iterator<UserData> iterator = lUDB.iterator();
 		while (iterator.hasNext()) {
 			UserData foundData = iterator.next();
-			if (foundData.getID() == user.getID()) {
+			if (foundData.getID().equals(user.getID())) {
 				return foundData;
 			}
 		}

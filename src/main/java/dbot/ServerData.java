@@ -1,9 +1,10 @@
 package dbot;
 
-public class ServerData extends DataBase {
-	private static int gems;
-	
-	protected ServerData() {
+class ServerData extends DataBase {
+	private static int gems = 100;
+	private String test = "test";
+
+	ServerData() {
 		
 	}
 	
@@ -13,7 +14,7 @@ public class ServerData extends DataBase {
 	
 	public boolean subGems(int sGems) {
 		if ((gems - sGems) >= 0) {
-			this.gems -= gems;
+			gems -= sGems;
 			return true;
 		}
 		else {

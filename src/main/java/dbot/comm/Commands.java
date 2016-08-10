@@ -20,7 +20,9 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 		DataBase DB = new DataBase();
 		Flip flip = new Flip();*/
 		IUser author = message.getAuthor();
-		
+
+		System.out.println("messagetrigger durch '" + message.getContent() + "' von " + author.getName());
+
 		Pattern pattern = Pattern.compile("^!([a-z]+)(\\s(.+))?");
 		Matcher matcher = pattern.matcher(message.getContent().toLowerCase());
 		/*if (matcher.matches()) {
@@ -29,7 +31,7 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 		}*/
 		if (matcher.matches()) {
 			UserData dAuthor = DB.getData(author);
-			String params = "";//statt params matcher.group(3) Ã¼bergeben, nullbehandlung nach Ã¼bergabe machen
+			String params = "";//statt params matcher.group(3) übergeben, nullbehandlung nach übergabe machen
 			if (matcher.group(3) != null) {
 				params = matcher.group(3);
 			}
@@ -60,7 +62,7 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 					break;
 				
 				case "buy":
-					if (params != "") {
+					if (params.equals("")) {
 						Buy.m(dAuthor, params);
 					}
 					break;
@@ -85,16 +87,13 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 				}
 			}*/
 		} else if (author.getID().equals(Statics.ID_NERAZ)) {
-			pattern = Pattern.compile("^Â§([a-z]+)(\\s(.+))?");
+			pattern = Pattern.compile("^§([a-z]+)(\\s(.+))?");
 			matcher = pattern.matcher(message.getContent().toLowerCase());
-			
 			if (matcher.matches()) {
-			
 				String params = "";
 				if (matcher.group(3) != null) {
 					params = matcher.group(3);
 				}
-			
 				switch (matcher.group(1)) {
 					case "save":
 						DB.save();
@@ -102,10 +101,7 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 						break;
 					default:
 						break;
-				} /*else {
-					pos.post(author + ", auf dich Scrub hÃ¶re ich nicht :joy:");
-				}*/
-				
+				}
 			}
 		}
 		pos.del(message, 10000);
@@ -142,7 +138,7 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 				}
 				break;*/
 			/*case "version":
-				pos.post("lÃ¤uft auf Version " + bVersion);
+				pos.post("läuft auf Version " + bVersion);
 				break;*/
 			/*case "prestige":
 				UserData d2Author = DB.getData(author);
@@ -153,7 +149,7 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 					d2Author.resetLevel();
 				}
 				else {
-					pos.post("Lowlevelnoobs dÃ¼rfen das nicht benutzen...");
+					pos.post("Lowlevelnoobs dürfen das nicht benutzen...");
 				}
 				break;
 			case "flip":
@@ -257,7 +253,7 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 						ml.bMes(bClient, channel, author + ", du bist schon eingetragen!");
 					}
 					break;
-				/*case "Â§logout":
+				/*case "§logout":
 				
 					if (author.getID().equals(idNeraz)) {
 						while(bClient.isReady()) {

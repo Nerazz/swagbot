@@ -14,7 +14,7 @@ import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.IDiscordClient;
 import java.io.*;
 
-public class Events {
+class Events {
 
 	/**
 	 * Handeln von Events
@@ -88,9 +88,11 @@ public class Events {
 		
 		IMessage message = event.getMessage();
 		if (message.getChannel() == guild.getChannelByID(Statics.ID_BOTSPAM)) {//1
-			System.out.println("messagetrigger durch '" + message.getContent() + "'");
-			Commands.trigger(message);
-			//Parser parser = new Parser(message);
+			if (DB.containsUser(message.getAuthor())) {
+				Commands.trigger(message);
+			} else {
+				System.out.println("Schreibenden User nicht gefunden.");
+			}
 		}
 		
 		//System.out.println(bClient.getGuilds().get(1).getRegion());
