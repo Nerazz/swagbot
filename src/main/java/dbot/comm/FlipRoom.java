@@ -4,7 +4,7 @@ import dbot.UserData;
 import sx.blah.discord.handle.obj.IUser;
 
 
-public class FlipRoom extends Flip {//flip extenden?
+class FlipRoom extends Flip {//flip extenden?
 	private IUser uHost;
 	private IUser uClient;
 	private UserData dHost;
@@ -14,7 +14,7 @@ public class FlipRoom extends Flip {//flip extenden?
 	private String seite;
 	private static int nextID = 1;
 	
-	protected FlipRoom(IUser uHost, int bet, String seite, UserData dHost) {
+	FlipRoom(IUser uHost, int bet, String seite, UserData dHost) {
 		this.uHost = uHost;
 		this.dHost = dHost;
 		pot = bet;
@@ -23,14 +23,14 @@ public class FlipRoom extends Flip {//flip extenden?
 	}
 	
 	
-	protected void join(IUser uClient, UserData dClient) {
+	void join(IUser uClient, UserData dClient) {
 		this.uClient = uClient;
 		this.dClient = dClient;
 		roll();
 	}
 	
 	private void roll() {//schlauer machen
-		String flipSeite = null;
+		String flipSeite;
 		if (Math.random() < 0.5) {
 			flipSeite = "TOP";
 		} else {
@@ -47,21 +47,21 @@ public class FlipRoom extends Flip {//flip extenden?
 	
 	private int updateID() {
 		return nextID++;
-	}
+	}//sollte dann ++nextID (nach serverData load-implementation)
 	
-	public int getRoomID() {
+	int getRoomID() {
 		return roomID;
 	}
 	
-	public int getPot() {
+	int getPot() {
 		return pot;
 	}
 	
-	public IUser getHost() {
+	IUser getHost() {
 		return uHost;
 	}
 	
-	public String getHostID() {
+	String getHostID() {
 		return uHost.getID();
 	}
 	

@@ -15,39 +15,28 @@ import sx.blah.discord.api.IDiscordClient;
 import java.io.*;
 
 class Events {
-
-	/**
-	 * Handeln von Events
-	 * @author	Niklas Zd
-	 */
-	 
 	private int rnd;
 	protected static int nBrag = 0;
-	private Poster pos;//static?
-	private Flip flip;
+	//private Poster pos;//static?
+	//private Flip flip;
 	
 	private static IVoiceChannel vChannel = null;
 	private static File file;
 	
 	
-	protected static DataBase DB;
-	protected static IDiscordClient botClient;
-	protected static IGuild guild;
+	static DataBase DB;
+	static IDiscordClient botClient;
+	static IGuild guild;
 	private static boolean bInit = false;
 	
-	/*public static String idGuild;
-	public static String idGeneral;
-	public static String idSpam;
-	public static String idBot;*/
+	private String[] sBrags = new String[] {"RUHE HIER!!elf", "Git off mah lawn", "Ihr kleinen Kinners kriegt gleich ordentlich aufs Maul", "Wer reden kann, muss auch mal die Schnauze halten können!", "HALT STOPP, JETZT REDE ICH", "S T F U B O Y S", "Wengier labern, sonst gibts Vokabeltest!", "Psst ihr Ottos"};
 	
-	private String[] sBrags = new String[] {"RUHE HIER!!elf", "Git off mah lawn", "Ihr kleinen Kinners kriegt gleich ordentlich aufs Maul", "Wer reden kann, muss auch mal die Schnauze halten kÃ¶nnen!", "HALT STOPP, JETZT REDE ICH", "S T F U B O Y S", "Wengier labern, sonst gibts Vokabeltest!", "Psst ihr Ottos"};
-	
-	protected Events() {
+	Events() {
 		
 	}
 	
-	protected Events(IDiscordClient botClient) {
-		this.botClient = botClient;
+	Events(IDiscordClient botClient) {
+		Events.botClient = botClient;
 	}
 	
 	@EventSubscriber
@@ -59,18 +48,19 @@ class Events {
 	@EventSubscriber
 	public void onGuildCreateEvent(GuildCreateEvent event) {
 		System.out.println("~GuildCreateEvent~");
-		if (bInit == false) {
+		if (!bInit) {
 			guild = botClient.getGuildByID(Statics.ID_GUILD);
-			pos = new Poster(botClient, guild, guild.getChannelByID(Statics.ID_BOTSPAM));//vorher schon alle channel initialisieren?
-			DB = new DataBase(guild);
-			DB.load();
-			flip = new Flip(pos);
-			
-			Commands.init(flip, pos, DB);
 			System.out.println("Bot joined guild: " + guild.getName());
-			
+			Poster pos = new Poster(botClient, guild.getChannelByID(Statics.ID_BOTSPAM));//vorher schon alle channel initialisieren?
+			DataBase.init(guild);
+			DB = new DataBase();
+			DB.load();
+			Flip.init(pos);
+			Flip flip = new Flip();
+			Commands.init(pos, DB, flip);
 			new MainTimer();
 			bInit = true;
+			System.out.println("Everything initialized");
 		}
 		System.out.println("~BOT~READY~");
 	}
@@ -84,7 +74,7 @@ class Events {
 	}
 	
 	@EventSubscriber
-	public void onMessageEvent(MessageReceivedEvent event) {//BIS ZUM ERSTEN WHITESPACE FILTERN (!test" "hallo) und als command (content) benutzen
+	public synchronized void onMessageEvent(MessageReceivedEvent event) {//synchronized richtig hier?
 		
 		IMessage message = event.getMessage();
 		if (message.getChannel() == guild.getChannelByID(Statics.ID_BOTSPAM)) {//1

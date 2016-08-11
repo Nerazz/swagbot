@@ -14,27 +14,24 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 	private static Poster pos;
 	private static DataBase DB;
 	private static Flip flip;
-	
+
+	public static void init(Poster pos, DataBase DB, Flip flip) {
+		Commands.pos = pos;
+		Commands.DB = DB;
+		Commands.flip = flip;
+		System.out.println("Commands initialized");
+	}
+
 	public static void trigger(IMessage message) {
-		/*Poster pos = new Poster();
-		DataBase DB = new DataBase();
-		Flip flip = new Flip();*/
 		IUser author = message.getAuthor();
 
 		System.out.println("messagetrigger durch '" + message.getContent() + "' von " + author.getName());
 
 		Pattern pattern = Pattern.compile("^!([a-z]+)(\\s(.+))?");
 		Matcher matcher = pattern.matcher(message.getContent().toLowerCase());
-		/*if (matcher.matches()) {
-
-			System.out.println("'" + matcher.group() + "'");
-		}*/
 		if (matcher.matches()) {
 			UserData dAuthor = DB.getData(author);
-			String params = "";//statt params matcher.group(3) übergeben, nullbehandlung nach übergabe machen
-			if (matcher.group(3) != null) {
-				params = matcher.group(3);
-			}
+			String params = "" + matcher.group(3);
 			
 			switch (matcher.group(1)) {
 				case "roll":
@@ -42,7 +39,7 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 					break;
 				
 				case "stats":
-					pos.post(author + " ist Level " + dAuthor.getLevel() + " " + dAuthor.getrpgClass() + " mit " + dAuthor.getExp() + "/" + DB.getLevelThreshold(dAuthor.getLevel()) + " Exp.");
+					pos.post(author + " ist Level " + dAuthor.getLevel() + " " + dAuthor.getrpgClass() + " mit " + dAuthor.getExp() + "/" + DataBase.getLevelThreshold(dAuthor.getLevel()) + " Exp.");
 					break;
 				
 				case "gems":
@@ -62,9 +59,7 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 					break;
 				
 				case "buy":
-					if (params.equals("")) {
-						Buy.m(dAuthor, params);
-					}
+					Buy.m(dAuthor, params);
 					break;
 				
 				case "version":
@@ -74,26 +69,41 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 				case "flip":
 					flip.m(dAuthor, params);
 					break;
-				
+
+				case "give":
+					Give.m(dAuthor, params);
+					break;
+
+				/*case "give":
+				try {
+					//System.out.println("give start");
+					String test = param2.substring(param2.indexOf('<') + 2, param2.indexOf('>'));
+					System.out.println(test);
+					IUser ugetter = guild.getUserByID(test);
+					if (ugetter.getPresence() == Presences.valueOf("ONLINE")) {
+						UserData getter = DB.getData(ugetter);
+						Give.m(DB.getData(author), param1, getter);
+						pos.post("hat geklappt");
+						System.out.println("gave gems");
+				}
+					else {
+						System.out.println("error");
+					}
+				} catch(Exception e) {
+					System.out.println("give error");
+				}
+				break;*/
+
+
 				default:
-					System.out.println("ERROR IN COMMANDS");
+					System.out.println("Command '" + message.getContent() +  "' nicht gefunden.");
 					break;
 			}
-			/*System.out.println("*Matches:*");
-			for (int i = 1; i < matcher.groupCount() + 1; i++) {
-				if (matcher.group(i) != null) {
-					System.out.println(matcher.group());
-					System.out.println("-----------");
-				}
-			}*/
 		} else if (author.getID().equals(Statics.ID_NERAZ)) {
 			pattern = Pattern.compile("^§([a-z]+)(\\s(.+))?");
 			matcher = pattern.matcher(message.getContent().toLowerCase());
 			if (matcher.matches()) {
-				String params = "";
-				if (matcher.group(3) != null) {
-					params = matcher.group(3);
-				}
+				String params = "" + matcher.group(3);
 				switch (matcher.group(1)) {
 					case "save":
 						DB.save();
@@ -107,17 +117,8 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 		pos.del(message, 10000);
 		
 	}
-	
-	public static void init(Flip tFlip, Poster tPos, DataBase tDB) {
-		flip = tFlip;
-		pos = tPos;
-		DB = tDB;
-		System.out.println("TRIGGER INIT");
-	}
+
 }
-	
-	
-	
 			/*case "give":
 				try {
 					//System.out.println("give start");

@@ -13,34 +13,33 @@ import java.util.concurrent.*;
 
 public class Flip {
 	private static List<FlipRoom> lRooms = new ArrayList<FlipRoom>();
-	protected static Poster pos;
+	static Poster pos;
 	private static IMessage roomPost;
 	private static String startString = "Offene Flip-Räume:";
-	private static String emptyRoomsString = "\n\t\t\t\tkeine :sob:";
+	private static String emptyRoomsString = "\n\t\t\t\t\tkeine :sob:";
 	
 	public Flip() {}
-	
-	public Flip(Poster pos) {
-		System.out.println("flip init!");
-		this.pos = pos;
+
+	public static void init(Poster pos) {
+		Flip.pos = pos;
 		Future<IMessage> fMessage = pos.post(startString + emptyRoomsString, -1);
 		try {
 			roomPost = fMessage.get();
 		} catch(InterruptedException|ExecutionException e) {
 			System.out.println(e);
 		}
+		System.out.println("Flip initialized");
 	}
 	
-	public void m(UserData uData, String params) {
+	void m(UserData uData, String params) {
 		IUser author = uData.getUser();
 		
 		Pattern pattern = Pattern.compile("(\\d+|allin|join|close)(\\s(top|kek|\\d+))?");
 		Matcher matcher = pattern.matcher(params);
 		
-		if (!matcher.matches()) {
-			return;
-		}
-		int bet = -1;
+		if (!matcher.matches()) return;
+
+		int bet = -1;//TODO: angucken
 		switch (matcher.group(1)) {
 			case "join":
 				join(uData, params);
@@ -81,7 +80,7 @@ public class Flip {
 		open(author, bet, seite.toUpperCase(), uData);//TODO:besser machen
 	}
 	
-	public void join(UserData uData, String params) {
+	private void join(UserData uData, String params) {
 		System.out.println(params);
 		Pattern pattern = Pattern.compile(".+\\s(\\d+)$");
 		Matcher matcher = pattern.matcher(params);
@@ -114,7 +113,7 @@ public class Flip {
 		postRooms();
 	}
 	
-	public void close(IUser author, UserData uData) {
+	private void close(IUser author, UserData uData) {
 		for (int i = 0; i < lRooms.size(); i++) {
 			if (lRooms.get(i).getHostID().equals(author.getID())) {
 				System.out.println(lRooms.get(i).getPot());
@@ -129,7 +128,7 @@ public class Flip {
 	
 	public void closeAll() {//für bot dc und logout benutzen
 		for (int i = 0; i < lRooms.size(); i++) {
-			lRooms.remove(i);
+			lRooms.remove(i);//TODO: gems müssen erstattet werden
 		}
 		System.out.println("Alle Flipräume geschlossen");
 	}
@@ -148,7 +147,7 @@ public class Flip {
 			pos.edit(roomPost, post + emptyRoomsString);
 		}
 	}
-	
+	//TODO: fors mit foreachkram ersetzen
 	private boolean containsUser(IUser user) {
 		if (user == null) {
 			throw new IllegalArgumentException("User darf nicht null sein!");//braucht return?

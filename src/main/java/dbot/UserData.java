@@ -15,7 +15,7 @@ public class UserData extends DataBase {//implements comparable?
 	
 	private int rpgPotDuration = 0;
 	
-	public UserData(IUser user) {
+	UserData(IUser user) {
 		this.user = user;
 		id = user.getID();
 		name = user.getName();
@@ -26,13 +26,21 @@ public class UserData extends DataBase {//implements comparable?
 		rpgPresLevel = 0;
 	}
 	
-	public String getID() {
+	String getID() {
 		return id;
 	}
 	
 	public IUser getUser() {
 		return user;
 		//return getGuild().getUserByID(id);
+	}
+
+	void setUser() {
+		try {
+			user = getGuild().getUserByID(id);
+		} catch(Exception e) {
+			System.out.println("User not found: " + name);
+		}
 	}
 	
 	public String getName() {
@@ -63,16 +71,12 @@ public class UserData extends DataBase {//implements comparable?
 		this.rpgExp = rpgExp;
 	}
 	
-	public void addExp(int rpgExp) {
+	void addExp(int rpgExp) {
 		this.rpgExp += rpgExp;
-		if(this.rpgLevel == 100) {
-			
-		}
-		else if (this.rpgExp >= rpgLevelThreshold[getLevel() - 1]) {
-			this.rpgLevel += 1;//setter benutzen?
+		while (this.rpgExp >= rpgLevelThreshold[getLevel() - 1]) {
+			addLevel(1);
 			this.rpgExp -= rpgLevelThreshold[getLevel() - 2];
-			//new Poster pos;
-			new Poster().post(":tada: DING! " + user + " ist Level " + this.getLevel() + "! :tada:");
+			new Poster().post(":tada: DING! " + user + " ist Level " + getLevel() + "! :tada:");
 		}
 	}
 	
@@ -82,6 +86,14 @@ public class UserData extends DataBase {//implements comparable?
 	
 	protected void setLevel(int rpgLevel) {
 		this.rpgLevel = rpgLevel;
+	}
+
+	private void addLevel(int level) {
+		if ((rpgLevel < 100) && (level > 0)) {
+			rpgLevel += level;
+		} else {
+			System.out.println("Level von " + name + " konnte nicht erhöht werden");
+		}
 	}
 	
 	public void resetLevel() {
@@ -102,7 +114,7 @@ public class UserData extends DataBase {//implements comparable?
 		System.out.println("klasse nicht geupdated");
 	}
 	
-	public int getPresLevel() {
+	int getPresLevel() {
 		return rpgPresLevel;
 	}
 	
@@ -134,7 +146,7 @@ public class UserData extends DataBase {//implements comparable?
 		this.rpgPotDuration = rpgPotDuration;
 	}
 	
-	public void reducePotDuration() {
+	void reducePotDuration() {
 		if (rpgPotDuration > 0) {
 			rpgPotDuration -= 1;
 			if (rpgPotDuration < 1) {
@@ -143,7 +155,12 @@ public class UserData extends DataBase {//implements comparable?
 			}
 		}
 	}
-	
+
+	@Override
+	public String toString() {
+		return "User: " + name;
+	}
+
 	/*@Override
 	public boolean equals(Object o) {
 		Data data = new Data((IUser)o);

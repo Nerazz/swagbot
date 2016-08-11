@@ -1,7 +1,10 @@
 package dbot;
 
 class ServerData extends DataBase {
-	private static int gems = 100;
+	private int gems = 100;
+	//längste online-zeit
+	//flip-room id
+	private int flipRoomID = 1;
 	private String test = "test";
 
 	ServerData() {

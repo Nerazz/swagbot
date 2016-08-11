@@ -4,8 +4,8 @@ import dbot.Poster;
 import sx.blah.discord.handle.obj.IUser;
 import java.util.regex.*;
 
-public final class Roll {
-	public static void m(Poster pos, IUser author, String params) {
+final class Roll {
+	static void m(Poster pos, IUser author, String params) {
 		Pattern pattern = Pattern.compile("(\\d+)(\\s(\\d+))?");
 		Matcher matcher = pattern.matcher(params);
 		

@@ -33,21 +33,13 @@ public class DelTimer implements Runnable {
 				System.out.println("DelTimer.Message == null");
 			}
 		} catch(MissingPermissionsException e) {
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
 			System.out.println("MissingEX: DelTimer.run");
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
 		} catch(RateLimitException e) {
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
 			System.out.println("RateLimitEX: DelTimer.run");
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
 		} catch(DiscordException e) {
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
 			System.out.println("DiscordEX: DelTimer.run");
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
 		} catch(InterruptedException e) {
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
 			System.out.println("InterruptedEX: DelTimer.run");
-			System.out.println("XXXXXXXXXXXXXXXXXXXXX");
 		}
 	}
 }

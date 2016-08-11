@@ -16,7 +16,6 @@ punkte	was tun
 
 */
 
-
 class MainTimer extends Events implements Runnable {
 	
 	private final Presences ONLINE = Presences.valueOf("ONLINE");
@@ -27,23 +26,16 @@ class MainTimer extends Events implements Runnable {
 	private static int dayCount		= 0;
 	
 	private List<IUser> lUser = new ArrayList<IUser>();
-	//private IUser user;
 	
-	
-	protected MainTimer() {
+	MainTimer() {
 		Thread tMainTimer = new Thread(this, "MainTimer Thread");
 		System.out.println("created: " + tMainTimer);
 		botClient.changeStatus(Status.game("frisch online"));
-		
-		//deFile();
-		
 		tMainTimer.start();
 	}
 
 
 	public void run() {
-		// TODO: relativer path
-
 		while (true) {
 			try {
 				Thread.sleep(6000);//60000 gute zeit
@@ -77,19 +69,12 @@ class MainTimer extends Events implements Runnable {
 			}
 
 			lUser = guild.getUsers();
-			//int countO = 0;
-			//int countI = 0;
-
-			//for (int i = 0; i < lUser.size(); i++) {
 			for(IUser user: lUser) {
-				//user = lUser.get(i);
 				if (!user.getID().equals(Statics.ID_BOT)) {
 					if (user.getPresence() == ONLINE) {
 						update(user, 3);
-						//countO += 1;
 					} /*else if (user.getPresence() == IDLE) {
 						update(user, 0);
-						//countI += 1;
 					}*/
 					if (DB.containsUser(user)) {
 						DB.getData(user).reducePotDuration();
@@ -97,7 +82,6 @@ class MainTimer extends Events implements Runnable {
 				}
 
 			}
-				//System.out.print("<" + countO + " Online, " + countI + " Idle>");
 		}
 	}
 

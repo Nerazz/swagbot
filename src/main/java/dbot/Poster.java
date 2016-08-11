@@ -2,7 +2,6 @@ package dbot;
 
 import dbot.timer.DelTimer;
 import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.util.MissingPermissionsException;
@@ -13,20 +12,17 @@ import java.util.concurrent.*;
 
 public class Poster {
 	private static IDiscordClient bClient;
-	private static IGuild guild;
 	private static IChannel channel;
-	//private IMessage message = null;
 	
 	public Poster() {//abfrage if bClient, guild == null??
 	}
 	
-	public Poster(IDiscordClient bClient, IGuild guild, IChannel channel) {
-		this.bClient = bClient;
-		this.guild = guild;
-		this.channel = channel;
+	Poster(IDiscordClient bClient, IChannel channel) {
+		Poster.bClient = bClient;
+		Poster.channel = channel;
 	}
 	
-	public Future<IMessage> post(String s, int duration) {
+	public Future<IMessage> post(String s, int duration) {// static machen?
 		return RequestBuffer.request(() -> {
 			try {
 				IMessage message = new MessageBuilder(bClient).withChannel(channel).withContent(s).build();

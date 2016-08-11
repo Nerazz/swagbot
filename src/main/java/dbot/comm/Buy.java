@@ -5,9 +5,9 @@ import sx.blah.discord.handle.obj.IUser;
 import dbot.Poster;
 import java.util.regex.*;
 
-public final class Buy {
+final class Buy {
 	
-	public static void m(UserData dBuyer, String params) {
+	static void m(UserData dBuyer, String params) {
 		Poster pos = new Poster();
 		int g = dBuyer.getGems();
 		IUser uBuyer = dBuyer.getUser();
@@ -37,9 +37,6 @@ public final class Buy {
 							
 							dBuyer.setExpRate(1.5);//TODO:exppotklasse mit guten parametern
 							dBuyer.setPotDuration(70);
-							
-							
-							//new ExpTimer(dBuyer, 1.5, 4200000);//abzaehlen bei timer (-= 1)
 						}
 						break;
 					case "grande":
@@ -56,8 +53,6 @@ public final class Buy {
 							
 							dBuyer.setExpRate(2);
 							dBuyer.setPotDuration(65);
-							
-							//new ExpTimer(dBuyer, 2, 3900000);//abzaehlen bei timer (-= 1)
 						}
 						break;
 					case "venti":
@@ -74,8 +69,6 @@ public final class Buy {
 							
 							dBuyer.setExpRate(3);
 							dBuyer.setPotDuration(60);
-							
-							//new ExpTimer(dBuyer, 3, 3600000);//abzaehlen bei timer (-= 1)
 						}
 						break;
 						
