@@ -109,6 +109,11 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 						DB.save();
 						pos.post("Aye aye, Meister " + author + " :ok_hand:", 5000);// TODO:sollte nur kurz dasein (5000 ist gut), siehe futuremessageproblem?
 						break;
+					case "logout":
+						DB.save();
+						flip.closeAll();
+
+						break;
 					default:
 						break;
 				}

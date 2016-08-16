@@ -30,5 +30,13 @@ class ServerData extends DataBase {
 	public int getGems() {
 		return gems;
 	}
+
+	public int getFlipRoomID() {
+		return flipRoomID;
+	}
+
+	public void setFlipRoomID(int flipRoomID) {
+		this.flipRoomID = flipRoomID;
+	}
 	
 }

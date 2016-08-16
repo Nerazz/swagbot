@@ -24,6 +24,7 @@ final class Give {
 		int gems = Integer.parseInt(matcher.group(2));
 		if ((dGiver.getGems() < gems) || (gems < 1)) {
 			System.out.println("fail");
+			return;
 		}
 		dGiver.subGems(gems);
 		dGetter.addGems(gems);

@@ -25,6 +25,7 @@ class Events {
 	
 	
 	static DataBase DB;
+	static ServerData SD;
 	static IDiscordClient botClient;
 	static IGuild guild;
 	private static boolean bInit = false;
@@ -55,7 +56,8 @@ class Events {
 			DataBase.init(guild);
 			DB = new DataBase();
 			DB.load();
-			Flip.init(pos);
+			SD = DB.getServerData();
+			Flip.init(pos, SD.getFlipRoomID());
 			Flip flip = new Flip();
 			Commands.init(pos, DB, flip);
 			new MainTimer();

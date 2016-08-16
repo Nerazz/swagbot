@@ -136,6 +136,10 @@ public class DataBase {//soll eigentlich static sein?
 
 	}
 
+	ServerData getServerData() {
+		return SD;
+	}
+
 	boolean containsUser(IUser user) {//lieber static?
 		if (getData(user) == null) return false;
 		return true;

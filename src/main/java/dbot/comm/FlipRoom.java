@@ -12,7 +12,7 @@ class FlipRoom extends Flip {//flip extenden?
 	private int pot;
 	private int roomID;
 	private String seite;
-	private static int nextID = 1;
+	private static int nextID;
 	
 	FlipRoom(IUser uHost, int bet, String seite, UserData dHost) {
 		this.uHost = uHost;
@@ -60,9 +60,17 @@ class FlipRoom extends Flip {//flip extenden?
 	IUser getHost() {
 		return uHost;
 	}
+
+	UserData getHostData() {
+		return dHost;
+	}
 	
 	String getHostID() {
 		return uHost.getID();
+	}
+
+	static void setNextID(int nextID) {
+		FlipRoom.nextID = nextID;
 	}
 	
 	@Override

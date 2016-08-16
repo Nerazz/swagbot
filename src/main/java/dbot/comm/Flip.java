@@ -20,8 +20,9 @@ public class Flip {
 	
 	public Flip() {}
 
-	public static void init(Poster pos) {
+	public static void init(Poster pos, int nextID) {
 		Flip.pos = pos;
+		FlipRoom.setNextID(nextID);
 		Future<IMessage> fMessage = pos.post(startString + emptyRoomsString, -1);
 		try {
 			roomPost = fMessage.get();
@@ -39,7 +40,7 @@ public class Flip {
 		
 		if (!matcher.matches()) return;
 
-		int bet = -1;//TODO: angucken
+		int bet;
 		switch (matcher.group(1)) {
 			case "join":
 				join(uData, params);
@@ -126,11 +127,15 @@ public class Flip {
 		//remove room(author)//FEHLT
 	}
 	
-	public void closeAll() {//für bot dc und logout benutzen
-		for (int i = 0; i < lRooms.size(); i++) {
-			lRooms.remove(i);//TODO: gems müssen erstattet werden
+	void closeAll() {//für bot dc und logout benutzen
+		for (Iterator<FlipRoom> it = lRooms.iterator(); it.hasNext();) {
+			FlipRoom tmpFR = it.next();
+			tmpFR.getHostData().addGems(tmpFR.getPot());
+			System.out.println("closing room " + tmpFR.getRoomID());
+			it.remove();
 		}
-		System.out.println("Alle Flipräume geschlossen");
+		postRooms();
+		System.out.println("closed all Fliprooms");
 	}
 	
 	private void postRooms() {
