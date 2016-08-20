@@ -71,7 +71,7 @@ class FlipRoom extends Flip {//flip extenden?
 
 	static void setNextID(int nextID) {
 		FlipRoom.nextID = nextID;
-	}
+	}//TODO: muss noch in serverdata gesetzt werden im richtigen moment
 	
 	@Override
 	public String toString() {

@@ -43,7 +43,7 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 					break;
 				
 				case "gems":
-					pos.post(author + ", du hast im Moment " + DB.getData(author).getGems() + ":gem:.");
+					pos.post(author + ", du hast im Moment " + dAuthor.getGems() + ":gem:.");
 					break;
 					
 				case "timeleft":
@@ -63,7 +63,7 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 					break;
 				
 				case "version":
-					pos.post("v" + Statics.VERSION);
+					pos.post("v" + Statics.VERSION + "; D4J v" + Statics.DFJ_VERSION);
 					break;
 				
 				case "flip":

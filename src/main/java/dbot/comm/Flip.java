@@ -92,7 +92,7 @@ public class Flip {
 		}
 		IUser author = uData.getUser();
 		int roomID = Integer.parseInt(matcher.group(1));
-		FlipRoom gettedRoom = lRooms.get(getRoomIndexByID(roomID));
+		FlipRoom gettedRoom = getRoomByID(roomID);
 		if (gettedRoom == null) {
 			pos.post("Raum " + roomID + " nicht gefunden.");
 			return;
