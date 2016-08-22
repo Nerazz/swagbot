@@ -1,5 +1,7 @@
 package dbot;
 
+import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Presences;
 import sx.blah.discord.handle.obj.Status;
@@ -20,6 +22,8 @@ class MainTimer extends Events implements Runnable {
 	
 	private final Presences ONLINE = Presences.valueOf("ONLINE");
 	private final Presences IDLE = Presences.valueOf("IDLE");
+	private static final IDiscordClient botClient = Statics.BOT_CLIENT;
+	private static final IGuild guild = Statics.GUILD;
 	
 	private static int minuteCount	= 0;
 	private static int hourCount	= 0;

@@ -1,5 +1,6 @@
 package dbot.comm;
 import dbot.UserData;
+import static dbot.Poster.post;
 
 import sx.blah.discord.handle.obj.IUser;
 
@@ -37,10 +38,10 @@ class FlipRoom extends Flip {//flip extenden?
 			flipSeite = "KEK";
 		}
 		if (seite.equals(flipSeite)) {
-			pos.post(uHost + " hat mit " + seite + " gegen " + uClient + " gewonnen und bekommt " + (pot * 2) + ":gem:!!");
+			post(uHost + " hat mit " + seite + " gegen " + uClient + " gewonnen und bekommt " + (pot * 2) + ":gem:!!");
 			dHost.addGems(pot * 2);
 		} else {
-			pos.post(uClient + " hat mit " + flipSeite + " gegen " + uHost + " gewonnen und bekommt " + (pot * 2) + ":gem:!!");
+			post(uClient + " hat mit " + flipSeite + " gegen " + uHost + " gewonnen und bekommt " + (pot * 2) + ":gem:!!");
 			dClient.addGems(pot * 2);
 		}
 	}
@@ -75,7 +76,7 @@ class FlipRoom extends Flip {//flip extenden?
 	
 	@Override
 	public String toString() {
-		return "\nID: " + roomID + " Einsatz: " + pot + " Seite: " + seite + " von: " + uHost;
+		return "\nID: " + roomID + " Einsatz: " + pot + " Seite: " + seite + " von: " + uHost.getName();
 	}
 	
 }

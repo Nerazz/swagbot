@@ -2,7 +2,7 @@ package dbot.comm;
 
 import dbot.UserData;
 import dbot.DataBase;
-import dbot.Poster;
+import static dbot.Poster.post;
 import java.util.regex.*;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Presences;
@@ -28,7 +28,7 @@ final class Give {
 		}
 		dGiver.subGems(gems);
 		dGetter.addGems(gems);
-		new Poster().post(uGetter + " bekommt " + gems + " :gem: von " + dGiver.getUser());
+		post(uGetter + " bekommt " + gems + " :gem: von " + dGiver.getUser());
 		System.out.println(dGiver.getName() + " gave " + uGetter.getName() + gems + " gems");
 
 		/*String sGems = "";

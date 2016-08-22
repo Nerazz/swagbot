@@ -2,7 +2,8 @@ package dbot.comm;
 
 import dbot.UserData;
 import dbot.DataBase;
-import dbot.Poster;
+import static dbot.Poster.post;
+import static dbot.Poster.del;
 import dbot.Statics;
 
 import sx.blah.discord.handle.obj.IMessage;
@@ -11,12 +12,10 @@ import sx.blah.discord.handle.obj.IUser;
 import java.util.regex.*;
 
 public class Commands {//noch paar static attribute initialisieren am anfang!!
-	private static Poster pos;
 	private static DataBase DB;
 	private static Flip flip;
 
-	public static void init(Poster pos, DataBase DB, Flip flip) {
-		Commands.pos = pos;
+	public static void init(DataBase DB, Flip flip) {
 		Commands.DB = DB;
 		Commands.flip = flip;
 		System.out.println("Commands initialized");
@@ -35,22 +34,22 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 			
 			switch (matcher.group(1)) {
 				case "roll":
-					Roll.m(pos, author, params);
+					Roll.m(author, params);
 					break;
 				
 				case "stats":
-					pos.post(author + " ist Level " + dAuthor.getLevel() + " " + dAuthor.getrpgClass() + " mit " + dAuthor.getExp() + "/" + DataBase.getLevelThreshold(dAuthor.getLevel()) + " Exp.");
+					post(author + " ist Level " + dAuthor.getLevel() + " " + dAuthor.getrpgClass() + " mit " + dAuthor.getExp() + "/" + DataBase.getLevelThreshold(dAuthor.getLevel()) + " Exp.");
 					break;
 				
 				case "gems":
-					pos.post(author + ", du hast im Moment " + dAuthor.getGems() + ":gem:.");
+					post(author + ", du hast im Moment " + dAuthor.getGems() + ":gem:.");
 					break;
 					
 				case "timeleft":
 					if (dAuthor.getPotDuration() > 0) {
-						pos.post(author + ", dein xpot geht noch " + dAuthor.getPotDuration() + "min.");
+						post(author + ", dein xpot geht noch " + dAuthor.getPotDuration() + "min (x" + dAuthor.getExpRate() + ").");
 					} else {
-						pos.post(author + ", du hast keinen aktiven Boost.");
+						post(author + ", du hast keinen aktiven Boost.");
 					}
 					break;
 				
@@ -63,7 +62,7 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 					break;
 				
 				case "version":
-					pos.post("v" + Statics.VERSION + "; D4J v" + Statics.DFJ_VERSION);
+					post("v" + Statics.VERSION + "; D4J v" + Statics.DFJ_VERSION);
 					break;
 				
 				case "flip":
@@ -107,7 +106,7 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 				switch (matcher.group(1)) {
 					case "save":
 						DB.save();
-						pos.post("Aye aye, Meister " + author + " :ok_hand:", 5000);// TODO:sollte nur kurz dasein (5000 ist gut), siehe futuremessageproblem?
+						post("Aye aye, Meister " + author + " :ok_hand:", 5000);// TODO:sollte nur kurz dasein (5000 ist gut), siehe futuremessageproblem?
 						break;
 					case "logout":
 						DB.save();
@@ -119,7 +118,7 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 				}
 			}
 		}
-		pos.del(message, 10000);
+		del(message, 10000);
 		
 	}
 

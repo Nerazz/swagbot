@@ -11,18 +11,13 @@ import sx.blah.discord.util.RequestBuffer;
 import java.util.concurrent.*;
 
 public class Poster {
-	private static IDiscordClient bClient;
-	private static IChannel channel;
+	private static final IDiscordClient bClient = Statics.BOT_CLIENT;
+	private static final IChannel channel = Statics.GUILD.getChannelByID(Statics.ID_BOTSPAM);
 	
 	public Poster() {//abfrage if bClient, guild == null??
 	}
 	
-	Poster(IDiscordClient bClient, IChannel channel) {
-		Poster.bClient = bClient;
-		Poster.channel = channel;
-	}
-	
-	public Future<IMessage> post(String s, int duration) {// static machen?
+	public static Future<IMessage> post(String s, int duration) {// static machen?
 		return RequestBuffer.request(() -> {
 			try {
 				IMessage message = new MessageBuilder(bClient).withChannel(channel).withContent(s).build();
@@ -40,7 +35,7 @@ public class Poster {
 		//return null;//notwendig??
 	}
 	
-	public Future<IMessage> post(String s) {
+	public static Future<IMessage> post(String s) {
 		//Future<IMessage> message;
 		return RequestBuffer.request(() -> {
 			try {
@@ -57,7 +52,7 @@ public class Poster {
 		//return null;//notwendig??//TODO:return ist immer null, fail
 	}
 	
-	public void del(IMessage message) {
+	public static void del(IMessage message) {
 		RequestBuffer.request(() -> {
 			try {
 				message.delete();
@@ -69,11 +64,11 @@ public class Poster {
 		});
 	}
 	
-	public void del(IMessage message, int duration) {
+	public static void del(IMessage message, int duration) {
 		new DelTimer(message, duration);
 	}
 	
-	public Future<IMessage> edit(IMessage message, String s) {
+	public static Future<IMessage> edit(IMessage message, String s) {
 		return RequestBuffer.request(() -> {
 			try {
 				message.edit(s);

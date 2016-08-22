@@ -1,5 +1,6 @@
 package dbot;
 
+import static dbot.Poster.post;
 import java.io.*;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IGuild;
@@ -48,7 +49,7 @@ public class DataBase {//soll eigentlich static sein?
 		return rpgLevelThreshold[level - 1];
 	}
 	
-	public void getTop(IUser author) {//koennte mit static array schlauer werden
+	public void getTop(IUser author) {//TODO: in commands verschieben
 		int i = 0;
 		int rangAuthor;
 		String s;
@@ -98,7 +99,7 @@ public class DataBase {//soll eigentlich static sein?
 				s += (author + ", du bist Rang " + (i + 1) + " mit " + aScore[i] + " Punkten.");
 			}
 		}
-		new Poster().post(s);
+		post(s);
 		
 	}
 	

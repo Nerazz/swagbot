@@ -42,14 +42,13 @@ class Events {
 			Statics.GUILD = botClient.getGuildByID(Statics.ID_GUILD);
 			guild = Statics.GUILD;
 			System.out.println("Bot joined guild: " + guild.getName());
-			Poster pos = new Poster(botClient, guild.getChannelByID(Statics.ID_BOTSPAM));//vorher schon alle channel initialisieren?
 			DataBase.init(guild);
 			DB = new DataBase();
 			DB.load();
 			SD = DB.getServerData();
-			Flip.init(pos, SD.getFlipRoomID());
+			Flip.init(SD.getFlipRoomID());
 			Flip flip = new Flip();
-			Commands.init(pos, DB, flip);
+			Commands.init(DB, flip);
 			new MainTimer();
 			bInit = true;
 			System.out.println("Everything initialized");

@@ -1,82 +1,26 @@
 package dbot.comm;
 
 import dbot.UserData;
-import sx.blah.discord.handle.obj.IUser;
-import dbot.Poster;
 import java.util.regex.*;
+import dbot.comm.items.Xpot;
 
 final class Buy {
 	
 	static void m(UserData dBuyer, String params) {
-		Poster pos = new Poster();
-		int g = dBuyer.getGems();
-		IUser uBuyer = dBuyer.getUser();
-		
 		Pattern pattern = Pattern.compile("([a-z]+)(\\s(.+))?");
 		Matcher matcher = pattern.matcher(params);
 		if (!matcher.matches()) return;
 				
-		switch (matcher.group(1)) {//switch item
+		switch (matcher.group(1)) {
 			case "xpot":
 				if (matcher.group(3) == null) return;
 				pattern = Pattern.compile("([a-z]+)");
 				matcher = pattern.matcher(matcher.group(3));
 				if (!matcher.matches()) return;
-				switch (matcher.group(1)) {//switch type
-					case "tall":
-						if (g < 500) {//get price von json
-							pos.post(uBuyer + ", du hast zu wenig :gem:");
-						}
-						else if (dBuyer.getExpRate() > 1.0) {
-							pos.post(uBuyer + ", Boost ist schon aktiv du Noob");
-						}
-						else {
-							dBuyer.subGems(500);
-							pos.post(uBuyer + ", hier ist dein xpot tall!");
-							System.out.println(uBuyer.getName() + " -> xpot 1");
-							
-							dBuyer.setExpRate(1.5);//TODO:exppotklasse mit guten parametern
-							dBuyer.setPotDuration(70);
-						}
-						break;
-					case "grande":
-						if (g < 1000) {
-							pos.post(uBuyer + ", du hast zu wenig :gem:");
-						}
-						else if (dBuyer.getExpRate() > 1.0) {
-							pos.post(uBuyer + ", Boost ist schon aktiv du Noob");
-						}
-						else {
-							dBuyer.subGems(1000);
-							pos.post(uBuyer + ", hier ist dein xpot grande!");
-							System.out.println(uBuyer.getName() + " -> xpot 2");
-							
-							dBuyer.setExpRate(2);
-							dBuyer.setPotDuration(65);
-						}
-						break;
-					case "venti":
-						if (g < 2000) {
-							pos.post(uBuyer + ", du hast zu wenig :gem:");
-						}
-						else if (dBuyer.getExpRate() > 1.0) {
-							pos.post(uBuyer + ", Boost ist schon aktiv du Noob");
-						}
-						else {
-							dBuyer.subGems(2000);
-							pos.post(uBuyer + ", hier ist dein xpot venti!");
-							System.out.println(uBuyer.getName() + " -> xpot 3");
-							
-							dBuyer.setExpRate(3);
-							dBuyer.setPotDuration(60);
-						}
-						break;
-						
-					default:
-						break;
-				}//switch /type
+				new Xpot(dBuyer, matcher.group(1));
+
 			default:
 				break;
-			}//switch /item
+			}
 		}
 }

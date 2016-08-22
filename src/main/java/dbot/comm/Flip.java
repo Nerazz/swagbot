@@ -1,6 +1,7 @@
 package dbot.comm;
 
-import dbot.Poster;
+import static dbot.Poster.post;
+import static dbot.Poster.edit;
 
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IMessage;
@@ -13,17 +14,15 @@ import java.util.concurrent.*;
 
 public class Flip {
 	private static List<FlipRoom> lRooms = new ArrayList<FlipRoom>();
-	static Poster pos;
 	private static IMessage roomPost;
 	private static String startString = "Offene Flip-Räume:";
 	private static String emptyRoomsString = "\n\t\t\t\t\tkeine :sob:";
 	
 	public Flip() {}
 
-	public static void init(Poster pos, int nextID) {
-		Flip.pos = pos;
+	public static void init(int nextID) {
 		FlipRoom.setNextID(nextID);
-		Future<IMessage> fMessage = pos.post(startString + emptyRoomsString, -1);
+		Future<IMessage> fMessage = post(startString + emptyRoomsString, -1);
 		try {
 			roomPost = fMessage.get();
 		} catch(InterruptedException|ExecutionException e) {
@@ -54,13 +53,13 @@ public class Flip {
 			default:
 				bet = Integer.parseInt(matcher.group(1));
 				if (uData.getGems() < bet) {
-					pos.post(author + ", du hast zu wenig :gem:");
+					post(author.getName() + ", du hast zu wenig :gem:");
 					return;
 				} else if (bet < 1) {
-					pos.post("nanana, wer will denn da cheaten?? :thinking:");
+					post("nanana, wer macht denn da Scheisse?? :thinking:");
 					return;
 				} else if (containsUser(author)) {
-					pos.post(author + ", du hast schon einen Raum offen...");
+					post(author.getName() + ", du hast schon einen Raum offen...");
 					return;
 				}
 				break;
@@ -94,10 +93,10 @@ public class Flip {
 		int roomID = Integer.parseInt(matcher.group(1));
 		FlipRoom gettedRoom = getRoomByID(roomID);
 		if (gettedRoom == null) {
-			pos.post("Raum " + roomID + " nicht gefunden.");
+			post("Raum " + roomID + " nicht gefunden.");
 			return;
 		} else if (uData.getGems() < gettedRoom.getPot()) {
-			pos.post(author + ", du hast zu wenig :gem: um beizutreten.");
+			post(author.getName() + ", du hast zu wenig :gem: um beizutreten.");
 			return;
 		}
 		
@@ -109,7 +108,7 @@ public class Flip {
 	
 	private void open(IUser author, int bet, String seite, UserData uData) {
 		FlipRoom fRoom = new FlipRoom(author, bet, seite, uData);
-		pos.post(author + " hat neuen Raum um " + fRoom.getPot() + ":gem: geöffnet mit ID: " + fRoom.getRoomID() + " (" + seite + ")");
+		post(author.getName() + " hat neuen Raum um " + fRoom.getPot() + ":gem: geöffnet mit ID: " + fRoom.getRoomID() + " (" + seite + ")");
 		lRooms.add(fRoom);
 		postRooms();
 	}
@@ -119,7 +118,7 @@ public class Flip {
 			if (lRooms.get(i).getHostID().equals(author.getID())) {
 				System.out.println(lRooms.get(i).getPot());
 				uData.addGems(lRooms.get(i).getPot());
-				pos.post("closing room " + lRooms.get(i).getRoomID());
+				post("closing room " + lRooms.get(i).getRoomID());
 				lRooms.remove(i);
 				postRooms();
 			}
@@ -147,9 +146,9 @@ public class Flip {
 			count++;
 		}
 		if (count != 0) {
-			pos.edit(roomPost, post);
+			edit(roomPost, post);
 		} else {
-			pos.edit(roomPost, post + emptyRoomsString);
+			edit(roomPost, post + emptyRoomsString);
 		}
 	}
 	//TODO: fors mit foreachkram ersetzen
