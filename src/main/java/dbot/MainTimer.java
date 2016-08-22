@@ -38,7 +38,7 @@ class MainTimer extends Events implements Runnable {
 	public void run() {
 		while (true) {
 			try {
-				Thread.sleep(60000);//60000 gute zeit
+				Thread.sleep(6000);//60000 gute zeit
 			} catch(InterruptedException e) {
 				System.out.println("MainTimer Interrupted!!" + e);
 			}
