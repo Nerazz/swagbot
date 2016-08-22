@@ -9,9 +9,10 @@ import sx.blah.discord.api.IDiscordClient;
 class Bot {
 	
 	public static void main(String[] args) throws Exception {
-		new Statics();//init
+		Statics.init();//init
 		IDiscordClient botClient = new ClientBuilder().withToken(Statics.BOT_TOKEN).setMaxReconnectAttempts(10).login();
-		botClient.getDispatcher().registerListener(new Events(botClient));
+		Statics.BOT_CLIENT = botClient;
+		botClient.getDispatcher().registerListener(new Events());
 		System.out.println("~Main~fertig~");
 	}
 }

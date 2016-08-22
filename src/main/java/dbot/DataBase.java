@@ -14,8 +14,8 @@ public class DataBase {//soll eigentlich static sein?
 	private static ServerData SD;//lieber mit getter durchreichen?
 	private static IGuild guild;
 	final static int[] rpgLevelThreshold = new int[100];
-	//private static final String FILE_PATH = "./database.json";
-	private static final String FILE_PATH = "C:\\database.json";
+	private static final String FILE_PATH = "/home/database.json";
+	//private static final String FILE_PATH = "C:\\database.json";
 	
 	public DataBase() {
 		

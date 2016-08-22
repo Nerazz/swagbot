@@ -1,6 +1,7 @@
 package dbot;
 
-import dbot.comm.*;
+import dbot.comm.Commands;
+import dbot.comm.Flip;
 
 import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
@@ -15,42 +16,31 @@ import sx.blah.discord.api.IDiscordClient;
 import java.io.*;
 
 class Events {
-	private int rnd;
+	private static IGuild guild;
 	protected static int nBrag = 0;
-	//private Poster pos;//static?
-	//private Flip flip;
-	
 	private static IVoiceChannel vChannel = null;
 	private static File file;
 	
-	
 	static DataBase DB;
 	static ServerData SD;
-	static IDiscordClient botClient;
-	static IGuild guild;
 	private static boolean bInit = false;
 	
 	private String[] sBrags = new String[] {"RUHE HIER!!elf", "Git off mah lawn", "Ihr kleinen Kinners kriegt gleich ordentlich aufs Maul", "Wer reden kann, muss auch mal die Schnauze halten können!", "HALT STOPP, JETZT REDE ICH", "S T F U B O Y S", "Wengier labern, sonst gibts Vokabeltest!", "Psst ihr Ottos"};
 	
-	Events() {
-		
-	}
-	
-	Events(IDiscordClient botClient) {
-		Events.botClient = botClient;
-	}
-	
+	Events() {}
+
 	@EventSubscriber
 	public void onReadyEvent(ReadyEvent event) {
 		System.out.println("~BotReadyEvent~");
-		
 	}
 	
 	@EventSubscriber
 	public void onGuildCreateEvent(GuildCreateEvent event) {
 		System.out.println("~GuildCreateEvent~");
 		if (!bInit) {
-			guild = botClient.getGuildByID(Statics.ID_GUILD);
+			IDiscordClient botClient = Statics.BOT_CLIENT;
+			Statics.GUILD = botClient.getGuildByID(Statics.ID_GUILD);
+			guild = Statics.GUILD;
 			System.out.println("Bot joined guild: " + guild.getName());
 			Poster pos = new Poster(botClient, guild.getChannelByID(Statics.ID_BOTSPAM));//vorher schon alle channel initialisieren?
 			DataBase.init(guild);
