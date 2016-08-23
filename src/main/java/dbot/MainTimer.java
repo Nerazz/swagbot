@@ -29,7 +29,7 @@ class MainTimer extends Events implements Runnable {
 	private static int hourCount	= 0;
 	private static int dayCount		= 0;
 	
-	private List<IUser> lUser = new ArrayList<IUser>();
+	private List<IUser> lUser = new ArrayList<>();
 	
 	MainTimer() {
 		Thread tMainTimer = new Thread(this, "MainTimer Thread");
@@ -90,18 +90,18 @@ class MainTimer extends Events implements Runnable {
 	}
 
 
-	private void update(IUser u, int p) {//TODO: u durch user ersetzen; bei playerjoin event wird liste aktualisiert, nicht bei jedem update
+	private void update(IUser user, int p) {//TODO: bei playerjoin event wird liste aktualisiert, nicht bei jedem update
 		
-		if (!DB.containsUser(u)) {//OPTIMIEREN (DOUBLE-CHECK!!)
-			DB.add(u);
+		if (!DB.containsUser(user)) {//OPTIMIEREN (DOUBLE-CHECK!!)
+			DB.add(user);
 			System.out.println("----------------------------------");
-			System.out.println(u.getName() + " added to DB!");
+			System.out.println(user.getName() + " added to DB!");
 			System.out.println("----------------------------------");
 		}
 		if (p > 0) {
 			//DB.getData(u).addExp((p + DB.getData(u).getPresLevel() * 2) + (int)(Math.random() * 10));//aendern, dass idle groessere auswirkungen hat
-			DB.getData(u).addExp((int) (((p * (Math.random() * 3.0)) / 2.0 + (p + 1.0 + DB.getData(u).getPresLevel())) * DB.getData(u).getExpRate()));
-			DB.getData(u).addGems(p * (DB.getData(u).getPresLevel() + 1));//nochmal fixen!!!
+			DB.getData(user).addExp((int) (((p * (Math.random() * 3.0)) / 2.0 + (p + 1.0 + DB.getData(user).getPresLevel())) * DB.getData(user).getExpRate()));
+			DB.getData(user).addGems(p * (DB.getData(user).getPresLevel() + 1));//nochmal fixen!!!
 		}
 	}
 	

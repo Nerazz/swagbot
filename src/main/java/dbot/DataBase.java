@@ -3,7 +3,6 @@ package dbot;
 import static dbot.Poster.post;
 import java.io.*;
 import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.IGuild;
 import java.util.List;
 import java.util.*;
 
@@ -13,7 +12,6 @@ public class DataBase {//soll eigentlich static sein?
 
 	private static List<UserData> lUDB;
 	private static ServerData SD;//lieber mit getter durchreichen?
-	private static IGuild guild;
 	final static int[] rpgLevelThreshold = new int[100];
 	private static final String FILE_PATH = "/home/database.json";
 	//private static final String FILE_PATH = "C:\\database.json";
@@ -22,8 +20,7 @@ public class DataBase {//soll eigentlich static sein?
 		
 	}
 
-	static void init(IGuild guild) {
-		DataBase.guild = guild;
+	static void init() { //TODO: rpgLevelkram nach statics verschieben, init entfernen
 		for (int i = 0; i < 100; i++) {
 			rpgLevelThreshold[i] = i * 80 + 1000;
 			//System.out.print("Level " + (i + 1) + " = " + rpgLevelThreshold[i] + "\t|| ");
@@ -51,19 +48,15 @@ public class DataBase {//soll eigentlich static sein?
 	
 	public void getTop(IUser author) {//TODO: in commands verschieben
 		int i = 0;
-		int rangAuthor;
 		String s;
 		IUser u;
 		double d;
 		IUser[] aUser = new IUser[lUDB.size()];
 		double[] aScore = new double[lUDB.size()];
-		UserData uData;
 		boolean top = false;
-		Iterator<UserData> iterator = lUDB.iterator();
-		while (iterator.hasNext()) {
-			uData = iterator.next();
-			aUser[i] = uData.getUser();
-			aScore[i] = Math.floor(((uData.getExp() / (double)rpgLevelThreshold[uData.getLevel() - 1]) + uData.getLevel()) * 100) / 100; //*100/100 für Nachkommastellenrundung
+		for (UserData userData : lUDB) {
+			aUser[i] = userData.getUser();
+			aScore[i] = Math.floor(((userData.getExp() / (double)rpgLevelThreshold[userData.getLevel() - 1]) + userData.getLevel()) * 100) / 100; //*100/100 für Nachkommastellenrundung
 			//System.out.println(aScore[i]);
 			i++;
 		}
@@ -110,13 +103,13 @@ public class DataBase {//soll eigentlich static sein?
 			DataBaseWrapper dbw = gson.fromJson(fr, DataBaseWrapper.class);
 			lUDB = dbw.getUserDataBase();
 			SD = dbw.getServerData();
-			for (Iterator<UserData> it = lUDB.iterator(); it.hasNext();) {
-				it.next().setUser();
+			for (UserData userData : lUDB) {
+				userData.setUser();
 			}
 			System.out.println("loaded " + lUDB.size() + " Users and Serverdata from Database");
 		} catch(Exception e) {
 			System.out.println("loadError: " + e);
-			lUDB = new ArrayList<UserData>();
+			lUDB = new ArrayList<>();
 			SD = new ServerData();
 			System.out.println("New Databases for Users and Server created");
 		}
@@ -170,23 +163,17 @@ public class DataBase {//soll eigentlich static sein?
 	public UserData getData(IUser user) {//lieber static?
 		if (user == null) throw new IllegalArgumentException("User ist NULL in DataBase.findUserData!");
 		String id = user.getID();
-		UserData tmpData;
-		for (Iterator<UserData> it = lUDB.iterator(); it.hasNext();) {
-			tmpData = it.next();
-			if (tmpData.getID().equals(id)) return tmpData;
+		for (UserData userData : lUDB) {
+			if (userData.getID().equals(id)) return userData;
 		}
 		return null;
-	}
-
-	public static IGuild getGuild() {//TODO: besser machen, z.B. von Statics abfragen, wenn es benötigt wird
-		return guild;
 	}
 	
 	@Override
 	public String toString() {
 		String items = "DB: [";
-		for (Iterator<UserData> it = lUDB.iterator(); it.hasNext();) {
-			items += it.next().toString() + "; ";
+		for (UserData userdata : lUDB) {
+			items += userdata + "; ";
 		}
 		return items + "]";
 	}

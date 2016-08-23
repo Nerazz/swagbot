@@ -7,20 +7,15 @@ import sx.blah.discord.handle.impl.events.ReadyEvent;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.GuildCreateEvent;
 import sx.blah.discord.handle.impl.events.DiscordDisconnectedEvent;
-import sx.blah.discord.handle.obj.IVoiceChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IGuild;
 
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.IDiscordClient;
-import java.io.*;
 
 class Events {
 	private static IGuild guild;
 	protected static int nBrag = 0;
-	private static IVoiceChannel vChannel = null;
-	private static File file;
-	
 	static DataBase DB;
 	static ServerData SD;
 	private static boolean bInit = false;
@@ -42,7 +37,7 @@ class Events {
 			Statics.GUILD = botClient.getGuildByID(Statics.ID_GUILD);
 			guild = Statics.GUILD;
 			System.out.println("Bot joined guild: " + guild.getName());
-			DataBase.init(guild);
+			DataBase.init();
 			DB = new DataBase();
 			DB.load();
 			SD = DB.getServerData();

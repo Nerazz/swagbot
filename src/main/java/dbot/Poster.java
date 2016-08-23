@@ -14,7 +14,7 @@ public class Poster {
 	private static final IDiscordClient bClient = Statics.BOT_CLIENT;
 	private static final IChannel channel = Statics.GUILD.getChannelByID(Statics.ID_BOTSPAM);
 	
-	public Poster() {//abfrage if bClient, guild == null??
+	Poster() {//abfrage if bClient, guild == null??
 	}
 	
 	public static Future<IMessage> post(String s, int duration) {// static machen?
@@ -32,7 +32,6 @@ public class Poster {
 			}
 			return null;
 		});
-		//return null;//notwendig??
 	}
 	
 	public static Future<IMessage> post(String s) {
@@ -49,7 +48,6 @@ public class Poster {
 			}
 			return null;
 		});
-		//return null;//notwendig??//TODO:return ist immer null, fail
 	}
 	
 	public static void del(IMessage message) {
@@ -80,7 +78,6 @@ public class Poster {
 			}
 			return null;
 		});
-		//return null;
 	}
 	
 }

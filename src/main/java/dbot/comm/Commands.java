@@ -102,11 +102,11 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 			pattern = Pattern.compile("^§([a-z]+)(\\s(.+))?");
 			matcher = pattern.matcher(message.getContent().toLowerCase());
 			if (matcher.matches()) {
-				String params = "" + matcher.group(3);
+				//String params = "" + matcher.group(3);
 				switch (matcher.group(1)) {
 					case "save":
 						DB.save();
-						post("Aye aye, Meister " + author + " :ok_hand:", 5000);// TODO:sollte nur kurz dasein (5000 ist gut), siehe futuremessageproblem?
+						post("Aye aye, Meister " + author.getName() + " :ok_hand:", 5000);
 						break;
 					case "logout":
 						DB.save();

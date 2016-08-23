@@ -1,5 +1,6 @@
 package dbot.comm;
 
+import dbot.Statics;
 import dbot.UserData;
 import dbot.DataBase;
 import static dbot.Poster.post;
@@ -13,7 +14,7 @@ final class Give {
 		Pattern pattern = Pattern.compile("^<@(\\d+)>\\s(\\d+)");
 		Matcher matcher = pattern.matcher(params);
 		if (!matcher.matches()) return;
-		IUser uGetter = DataBase.getGuild().getUserByID(matcher.group(1));
+		IUser uGetter = Statics.GUILD.getUserByID(matcher.group(1));
 		if (uGetter == null) return;//wird eigentlich schon in getData abgefangen
 		if (uGetter.getPresence().equals(Presences.OFFLINE)) {
 			System.out.println("User nicht online");

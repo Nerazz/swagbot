@@ -35,9 +35,9 @@ public class UserData extends DataBase {//implements comparable?
 		//return getGuild().getUserByID(id);
 	}
 
-	void setUser() {
+	void setUser() {//gettet user von guild TODO: läuft das so? oder guild als trans static?
 		try {
-			user = getGuild().getUserByID(id);
+			user = Statics.GUILD.getUserByID(id);
 		} catch(Exception e) {
 			System.out.println("User not found: " + name);
 		}

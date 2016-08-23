@@ -13,7 +13,7 @@ import java.util.regex.*;
 import java.util.concurrent.*;
 
 public class Flip {
-	private static List<FlipRoom> lRooms = new ArrayList<FlipRoom>();
+	private static List<FlipRoom> lRooms = new ArrayList<>();
 	private static IMessage roomPost;
 	private static String startString = "Offene Flip-Räume:";
 	private static String emptyRoomsString = "\n\t\t\t\t\tkeine :sob:";
@@ -56,7 +56,7 @@ public class Flip {
 					post(author.getName() + ", du hast zu wenig :gem:");
 					return;
 				} else if (bet < 1) {
-					post("nanana, wer macht denn da Scheisse?? :thinking:");
+					post("nanana, wer macht denn da Scheiße?? :thinking:");
 					return;
 				} else if (containsUser(author)) {
 					post(author.getName() + ", du hast schon einen Raum offen...");
