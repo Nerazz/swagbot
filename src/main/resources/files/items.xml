@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<items>
+    <xpot>
+        <tall>
+            <duration>70</duration>
+            <amp>1.5</amp>
+            <price>500</price>
+        </tall>
+        <grande>
+            <duration>65</duration>
+            <amp>2</amp>
+            <price>1000</price>
+        </grande>
+        <venti>
+            <duration>60</duration>
+            <amp>3</amp>
+            <price>2000</price>
+        </venti>
+        <giant>
+            <duration>120</duration>
+            <amp>5</amp>
+            <price>10000</price>
+        </giant>
+    </xpot>
+</items>
