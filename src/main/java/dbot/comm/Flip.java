@@ -126,7 +126,7 @@ public class Flip {
 		//remove room(author)//FEHLT
 	}
 	
-	void closeAll() {//für bot dc und logout benutzen
+	void closeAll() {//für bot dc und logout benutzen; TODO: gems werden nicht erstattet?
 		for (Iterator<FlipRoom> it = lRooms.iterator(); it.hasNext();) {
 			FlipRoom tmpFR = it.next();
 			tmpFR.getHostData().addGems(tmpFR.getPot());

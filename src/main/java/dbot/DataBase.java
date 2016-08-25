@@ -20,9 +20,9 @@ public class DataBase {//soll eigentlich static sein?
 	final static int[] rpgLevelThreshold = new int[100];
 	//private static final String FILE_PATH = "/home/database.json";
 	//private static final String FILE_PATH = "C:\\database.json";
-	private static final String FILE_PATH = separator + "database.json";
+	private static final String FILE_PATH = "database.json";
 	//template: "backup_25.08.16-19.40.json"
-	private static final String BACKUP_PATH = separator + "backups" + separator + "backup_";
+	private static final String BACKUP_PATH = "backups" + separator + "backup_";
 	
 	public DataBase() {
 		

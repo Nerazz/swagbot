@@ -8,6 +8,8 @@ import dbot.Statics;
 
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.RateLimitException;
 
 import java.util.regex.*;
 
@@ -109,9 +111,16 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 						post("Aye aye, Meister " + author.getName() + " :ok_hand:", 5000);
 						break;
 					case "logout":
-						DB.save(false);
 						flip.closeAll();
-
+						DB.save(false);
+						try {
+							Statics.BOT_CLIENT.logout();
+						} catch(DiscordException e) {
+							System.out.println("logout-ERROR: " + e);
+						} catch(RateLimitException e) {
+							System.out.println("RATELIMT BEI LOGOUT: " + e);
+						}
+						System.exit(0);
 						break;
 					default:
 						break;
