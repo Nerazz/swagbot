@@ -7,7 +7,6 @@ build.gradle
 gradlew
 gradlew.bat
 settings.gradle
-pom.xml
 
 /src/main/java/dbot/Statics.java
 /META-INF/
