@@ -1,8 +1,13 @@
 package dbot;
 
 import static dbot.Poster.post;
+import static java.io.File.separator;
+
 import java.io.*;
 import sx.blah.discord.handle.obj.IUser;
+
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.*;
 
@@ -13,14 +18,19 @@ public class DataBase {//soll eigentlich static sein?
 	private static List<UserData> lUDB;
 	private static ServerData SD;//lieber mit getter durchreichen?
 	final static int[] rpgLevelThreshold = new int[100];
-	private static final String FILE_PATH = "/home/database.json";
+	//private static final String FILE_PATH = "/home/database.json";
 	//private static final String FILE_PATH = "C:\\database.json";
+	private static final String FILE_PATH = separator + "database.json";
+	//template: "backup_25.08.16-19.40.json"
+	private static final String BACKUP_PATH = separator + "backups" + separator + "backup_";
 	
 	public DataBase() {
 		
 	}
 
 	static void init() { //TODO: rpgLevelkram nach statics verschieben, init entfernen
+		System.out.println("file_path: " + FILE_PATH);
+		System.out.println("backup_path: " + BACKUP_PATH);
 		for (int i = 0; i < 100; i++) {
 			rpgLevelThreshold[i] = i * 80 + 1000;
 			//System.out.print("Level " + (i + 1) + " = " + rpgLevelThreshold[i] + "\t|| ");
@@ -115,10 +125,17 @@ public class DataBase {//soll eigentlich static sein?
 		}
 	}
 	
-	public void save() {
+	public void save(boolean backup) {
 		System.out.println("saving Database...");
+		String filePath = FILE_PATH;
+		if (backup) {
+			System.out.println("creating backup...");
+			Format format = new SimpleDateFormat("dd.MM.YY-HH.mm");//backup_25.08.16-19.40.json
+			filePath = BACKUP_PATH + format.format(new Date()) + ".json";
+		}
+
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();//.serializeNulls?
-		try (FileWriter fw = new FileWriter(FILE_PATH)){
+		try (FileWriter fw = new FileWriter(filePath)){
 			DataBaseWrapper dbw = new DataBaseWrapper();
 			dbw.setServerData(SD);
 			dbw.setUserDataBase(lUDB);
@@ -134,32 +151,6 @@ public class DataBase {//soll eigentlich static sein?
 		return SD;
 	}
 
-	boolean containsUser(IUser user) {//lieber static?
-		if (getData(user) == null) return false;
-		return true;
-	}
-	
-	/*public UserData getData(IUser user) {
-		UserData tmpData = findUserData(user);
-		if (tmpData == null) {
-			System.out.println("NULLPOINTER IN DataBase.getData!");
-			return null;
-		}
-
-		if ((!this.containsUser(user)) || (user == null)) {//optimieren! bei kontrolle wird gesuchtes objekt bereits gefunden!
-			System.out.println("USER FAIL? CODE PRUEFEN!!");
-			return null;
-		}
-		Iterator<UserData> iterator = lUDB.iterator();
-		while (iterator.hasNext()) {
-			UserData foundData = iterator.next();
-			if (foundData.getID().equals(user.getID())) {
-				return foundData;
-			}
-		}
-		return null;
-	}*/
-
 	public UserData getData(IUser user) {//lieber static?
 		if (user == null) throw new IllegalArgumentException("User ist NULL in DataBase.findUserData!");
 		String id = user.getID();
@@ -167,6 +158,10 @@ public class DataBase {//soll eigentlich static sein?
 			if (userData.getID().equals(id)) return userData;
 		}
 		return null;
+	}
+
+	boolean containsUser(IUser user) {//lieber static?
+		return !(getData(user) == null);
 	}
 	
 	@Override

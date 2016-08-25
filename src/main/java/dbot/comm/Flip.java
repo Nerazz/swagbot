@@ -141,8 +141,8 @@ public class Flip {
 		System.out.println("postRooms.start");
 		String post = startString;
 		int count = 0;
-		for (int i = 0; i < lRooms.size(); i++) {
-			post += lRooms.get(i).toString();
+		for (FlipRoom tmpRoom : lRooms) {
+			post += tmpRoom.toString();
 			count++;
 		}
 		if (count != 0) {
@@ -151,33 +151,29 @@ public class Flip {
 			edit(roomPost, post + emptyRoomsString);
 		}
 	}
-	//TODO: fors mit foreachkram ersetzen
+
 	private boolean containsUser(IUser user) {
 		if (user == null) {
 			throw new IllegalArgumentException("User darf nicht null sein!");//braucht return?
 		}
-		for (int i = 0; i < lRooms.size(); i++) {
-				if (lRooms.get(i).getHostID().equals(user.getID())) {
-					return true;
-				}
-			}
+		for (FlipRoom tmpRoom : lRooms) {
+			if (tmpRoom.getHostID().equals(user.getID())) return true;
+		}
 		return false;
 	}
 	
-	private boolean containsRoom(int roomID) {
+	/*private boolean containsRoom(int roomID) {
 		for (int i = 0; i < lRooms.size(); i++) {
 			if (lRooms.get(i).getRoomID() == roomID) {
 				return true;
 			}
 		}
 		return false;
-	}
-	
+	}*/
+
 	private FlipRoom getRoomByID(int roomID) {
-		for (int i = 0; i < lRooms.size(); i++) {
-			if (lRooms.get(i).getRoomID() == roomID) {
-				return lRooms.get(i);
-			}
+		for (FlipRoom tmpRoom : lRooms) {
+			if (tmpRoom.getRoomID() == roomID) return tmpRoom;
 		}
 		return null;
 	}
@@ -190,4 +186,5 @@ public class Flip {
 		}
 		return -1;
 	}
+
 }

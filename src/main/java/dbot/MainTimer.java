@@ -21,7 +21,7 @@ punkte	was tun
 class MainTimer extends Events implements Runnable {
 	
 	private final Presences ONLINE = Presences.valueOf("ONLINE");
-	private final Presences IDLE = Presences.valueOf("IDLE");
+	//private final Presences IDLE = Presences.valueOf("IDLE");
 	private static final IDiscordClient botClient = Statics.BOT_CLIENT;
 	private static final IGuild guild = Statics.GUILD;
 	
@@ -55,6 +55,10 @@ class MainTimer extends Events implements Runnable {
 					if ((hourCount % 24) == 0) {
 						dayCount += 1;
 						hourCount = 0;
+						SD.addDay();
+						if ((SD.getDaysOnline() % 3) == 0) {
+							DB.save(true);
+						}
 					}
 				}
 
@@ -67,7 +71,7 @@ class MainTimer extends Events implements Runnable {
 				}
 
 				if (((hourCount % 5) == 0) && (minuteCount == 0)) {
-					DB.save();
+					DB.save(false);
 					System.out.println("DataBase durch MainTimer gesaved");
 				}
 			}

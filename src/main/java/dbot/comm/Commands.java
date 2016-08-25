@@ -105,11 +105,11 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 				//String params = "" + matcher.group(3);
 				switch (matcher.group(1)) {
 					case "save":
-						DB.save();
+						DB.save(false);
 						post("Aye aye, Meister " + author.getName() + " :ok_hand:", 5000);
 						break;
 					case "logout":
-						DB.save();
+						DB.save(false);
 						flip.closeAll();
 
 						break;

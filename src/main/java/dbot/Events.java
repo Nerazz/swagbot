@@ -15,12 +15,12 @@ import sx.blah.discord.api.IDiscordClient;
 
 class Events {
 	private static IGuild guild;
-	protected static int nBrag = 0;
+	//protected static int nBrag = 0;
 	static DataBase DB;
 	static ServerData SD;
 	private static boolean bInit = false;
 	
-	private String[] sBrags = new String[] {"RUHE HIER!!elf", "Git off mah lawn", "Ihr kleinen Kinners kriegt gleich ordentlich aufs Maul", "Wer reden kann, muss auch mal die Schnauze halten können!", "HALT STOPP, JETZT REDE ICH", "S T F U B O Y S", "Wengier labern, sonst gibts Vokabeltest!", "Psst ihr Ottos"};
+	//private String[] sBrags = new String[] {"RUHE HIER!!elf", "Git off mah lawn", "Ihr kleinen Kinners kriegt gleich ordentlich aufs Maul", "Wer reden kann, muss auch mal die Schnauze halten können!", "HALT STOPP, JETZT REDE ICH", "S T F U B O Y S", "Wengier labern, sonst gibts Vokabeltest!", "Psst ihr Ottos"};
 	
 	Events() {}
 

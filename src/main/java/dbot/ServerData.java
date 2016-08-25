@@ -6,6 +6,7 @@ class ServerData extends DataBase {
 	//flip-room id
 	private int flipRoomID = 1;
 	private String test = "test";
+	private int daysOnline = 0;
 
 	ServerData() {
 		
@@ -38,5 +39,12 @@ class ServerData extends DataBase {
 	public void setFlipRoomID(int flipRoomID) {
 		this.flipRoomID = flipRoomID;
 	}
-	
+
+	public int getDaysOnline() {
+		return daysOnline;
+	}
+
+	public void addDay() {
+		daysOnline += 1;
+	}
 }

@@ -50,11 +50,7 @@ public class UserData extends DataBase {//implements comparable?
 	public int getGems() {
 		return gems;
 	}
-	
-	public void setGems(int gems) {
-		this.gems = gems;
-	}
-	
+
 	public void addGems(int gems) {
 		this.gems += gems;
 	}
@@ -66,11 +62,7 @@ public class UserData extends DataBase {//implements comparable?
 	public int getExp() {
 		return rpgExp;
 	}
-	
-	protected void setExp(int rpgExp) {
-		this.rpgExp = rpgExp;
-	}
-	
+
 	void addExp(int rpgExp) {
 		this.rpgExp += rpgExp;
 		while (this.rpgExp >= rpgLevelThreshold[getLevel() - 1]) {
@@ -83,10 +75,6 @@ public class UserData extends DataBase {//implements comparable?
 	public int getLevel() {
 		return rpgLevel;
 	}
-	
-	protected void setLevel(int rpgLevel) {
-		this.rpgLevel = rpgLevel;
-	}
 
 	private void addLevel(int level) {
 		if ((rpgLevel < 100) && (level > 0)) {
@@ -95,11 +83,7 @@ public class UserData extends DataBase {//implements comparable?
 			System.out.println("Level von " + name + " konnte nicht erhöht werden");
 		}
 	}
-	
-	public void resetLevel() {
-		rpgLevel = 1;
-	}
-	
+
 	public String getrpgClass() {
 		return rpgClass;
 	}
@@ -117,14 +101,10 @@ public class UserData extends DataBase {//implements comparable?
 	int getPresLevel() {
 		return rpgPresLevel;
 	}
-	
-	protected void setPresLevel(int rpgPresLevel) {
-		this.rpgPresLevel = rpgPresLevel;
-	}
-	
+
 	public void addPresLevel() {
 		rpgPresLevel += 1;
-	}
+	}//TODO: reset mit swaglvl++, weniger setter und addlvl
 	
 	public double getExpRate() {
 		return rpgExpRate;
