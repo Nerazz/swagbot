@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.*;
 
 /*
-event fÃ¼r tick?
+event für tick?
 
 punkte	was tun
 1		idle
@@ -18,81 +18,71 @@ punkte	was tun
 
 */
 
-class MainTimer extends Events implements Runnable {
+class MainTimer extends TimerTask {//TODO: name ändern
 	
 	private final Presences ONLINE = Presences.valueOf("ONLINE");
 	//private final Presences IDLE = Presences.valueOf("IDLE");
 	private static final IDiscordClient botClient = Statics.BOT_CLIENT;
 	private static final IGuild guild = Statics.GUILD;
+	private static final DataBase DB = Events.getDB();
+	private static final ServerData SD = Events.getSD();
 	
 	private static int minuteCount	= 0;
 	private static int hourCount	= 0;
 	private static int dayCount		= 0;
-	
-	private List<IUser> lUser = new ArrayList<>();
-	
+
 	MainTimer() {
-		Thread tMainTimer = new Thread(this, "MainTimer Thread");
-		System.out.println("created: " + tMainTimer);
 		botClient.changeStatus(Status.game("frisch online"));
-		tMainTimer.start();
 	}
 
 
 	public void run() {
-		while (true) {
-			try {
-				Thread.sleep(6000);//60000 gute zeit
-			} catch(InterruptedException e) {
-				System.out.println("MainTimer Interrupted!!" + e);
-			}
-			minuteCount += 1;
-			if ((minuteCount % 5) == 0) {
-				if ((minuteCount % 60) == 0) {
-					hourCount += 1;
-					minuteCount = 0;
+		System.out.println("tick");
+		minuteCount += 1;
+		if ((minuteCount % 5) == 0) {
+			if ((minuteCount % 60) == 0) {
+				hourCount += 1;
+				minuteCount = 0;
 
-					if ((hourCount % 24) == 0) {
-						dayCount += 1;
-						hourCount = 0;
-						SD.addDay();
-						if ((SD.getDaysOnline() % 3) == 0) {
-							DB.save(true);
-						}
+				if ((hourCount % 24) == 0) {
+					dayCount += 1;
+					hourCount = 0;
+					SD.addDay();
+					if ((SD.getDaysOnline() % 3) == 0) {
+						DB.save(true);
 					}
-				}
-
-				if (dayCount != 0) {
-					botClient.changeStatus(Status.game("seit " + dayCount + "d " + hourCount + "h online"));
-				} else if (hourCount != 0) {
-					botClient.changeStatus(Status.game("seit " + hourCount + "h " + minuteCount + "m online"));
-				} else {
-					botClient.changeStatus(Status.game("seit " + minuteCount + "m online"));
-				}
-
-				if (((hourCount % 5) == 0) && (minuteCount == 0)) {
-					DB.save(false);
-					System.out.println("DataBase durch MainTimer gesaved");
 				}
 			}
 
-			lUser = guild.getUsers();
-			for(IUser user: lUser) {
-				if (!user.getID().equals(Statics.ID_BOT)) {
-					if (user.getPresence() == ONLINE) {
-						update(user, 3);
-					} /*else if (user.getPresence() == IDLE) {
-						update(user, 0);
-					}*/
-					if (DB.containsUser(user)) {
-						DB.getData(user).reducePotDuration();
-					}
-				}
+			if (dayCount != 0) {
+				botClient.changeStatus(Status.game("seit " + dayCount + "d " + hourCount + "h online"));
+			} else if (hourCount != 0) {
+				botClient.changeStatus(Status.game("seit " + hourCount + "h " + minuteCount + "m online"));
+			} else {
+				botClient.changeStatus(Status.game("seit " + minuteCount + "m online"));
+			}
 
+			if (((hourCount % 5) == 0) && (minuteCount == 0)) {
+				DB.save(false);
+				System.out.println("DataBase durch MainTimer gesaved");
 			}
 		}
-	}
 
+		List<IUser> userList = guild.getUsers();
+		for(IUser user: userList) {
+			if (!user.getID().equals(Statics.ID_BOT)) {
+				if (user.getPresence() == ONLINE) {
+					update(user, 3);
+				} /*else if (user.getPresence() == IDLE) {
+					update(user, 0);
+				}*/
+				if (DB.containsUser(user)) {
+					DB.getData(user).reducePotDuration();
+				}
+			}
+
+		}
+	}
 
 	private void update(IUser user, int p) {//TODO: bei playerjoin event wird liste aktualisiert, nicht bei jedem update
 		

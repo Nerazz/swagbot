@@ -1,6 +1,5 @@
 package dbot;
 
-import static dbot.Poster.post;
 import static java.io.File.separator;
 
 import java.io.*;
@@ -17,7 +16,7 @@ public class DataBase {//soll eigentlich static sein?
 
 	private static List<UserData> lUDB;
 	private static ServerData SD;//lieber mit getter durchreichen?
-	final static int[] rpgLevelThreshold = new int[100];
+	static final int[] rpgLevelThreshold = new int[100];
 	//private static final String FILE_PATH = "/home/database.json";
 	//private static final String FILE_PATH = "C:\\database.json";
 	private static final String FILE_PATH = "database.json";
@@ -47,63 +46,39 @@ public class DataBase {//soll eigentlich static sein?
 			System.out.println(user.getName() + " ist in DB schon vorhanden!");
 		}
 	}
-	
-	public void add(UserData uData) {
-		lUDB.add(uData);
-	}
-	
+
 	public static int getLevelThreshold(int level) {
 		return rpgLevelThreshold[level - 1];
 	}
-	
-	public void getTop(IUser author) {//TODO: in commands verschieben
+
+
+	public UserScores sortByScore() {//TODO: vielleicht <String, Double> und nur Namen speichern?
+		IUser[] users = new IUser[lUDB.size()];
+		double[] scores = new double[lUDB.size()];
 		int i = 0;
-		String s;
-		IUser u;
-		double d;
-		IUser[] aUser = new IUser[lUDB.size()];
-		double[] aScore = new double[lUDB.size()];
-		boolean top = false;
 		for (UserData userData : lUDB) {
-			aUser[i] = userData.getUser();
-			aScore[i] = Math.floor(((userData.getExp() / (double)rpgLevelThreshold[userData.getLevel() - 1]) + userData.getLevel()) * 100) / 100; //*100/100 für Nachkommastellenrundung
-			//System.out.println(aScore[i]);
+			users[i] = userData.getUser();
+			scores[i] = Math.floor(((userData.getExp() / (double)rpgLevelThreshold[userData.getLevel() - 1]) + userData.getLevel()) * 100) / 100; //*100/100 für Nachkommastellenrundung
 			i++;
 		}
-
 		for (; i > 1; i--) {//bubblesort
 			for (int j = 0; j < (i - 1); j++) {
-				if (aScore[j] < aScore[j + 1]) {
-					u = aUser[j];
-					d = aScore[j];
-					aUser[j] = aUser[j + 1];
-					aScore[j] = aScore[j + 1];
-					aUser[j + 1] = u;
-					aScore[j + 1] = d;
+				if (scores[j] < scores[j + 1]) {
+					System.out.println("sort");//TODO: vielleicht tmpvariablen außerhalb?
+					IUser tmpUser = users[j];
+					double tmpScore = scores[j];
+					users[j] = users[j + 1];
+					scores[j] = scores[j + 1];
+					users[j + 1] = tmpUser;
+					scores[j + 1] = tmpScore;
 				}
 			}
 		}
-		s = "TOP 5:\n";
-		
-		if (lUDB.size() > 5) {
-			for (i = 0; i < 5; i++) {
-				if (aUser[i].getID().equals(author.getID())) {
-					s += (i + 1) + ". " + author + " - " + aScore[i] + "\n";
-					top = true;
-				} else {
-					s += (i + 1) + ". " + aUser[i].getName() + " - " + aScore[i] + "\n";
-				}
-			}
-			
-			if (!top) {
-				while ((!aUser[i].getID().equals(author.getID())) && (i < lUDB.size())) {
-					i++;
-				}
-				s += (author + ", du bist Rang " + (i + 1) + " mit " + aScore[i] + " Punkten.");
-			}
+		UserScores userScores = new UserScores(users.length);
+		for (i = 0; i < users.length; i++) {
+			userScores.add(users[i], scores[i]);
 		}
-		post(s);
-		
+		return userScores;
 	}
 	
 	void load() {//filenotfound, ... exceptions

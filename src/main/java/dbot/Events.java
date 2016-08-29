@@ -13,11 +13,13 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.IDiscordClient;
 
+import java.util.Timer;
+
 class Events {
 	private static IGuild guild;
 	//protected static int nBrag = 0;
-	static DataBase DB;
-	static ServerData SD;
+	private static DataBase DB;
+	private static ServerData SD;
 	private static boolean bInit = false;
 	
 	//private String[] sBrags = new String[] {"RUHE HIER!!elf", "Git off mah lawn", "Ihr kleinen Kinners kriegt gleich ordentlich aufs Maul", "Wer reden kann, muss auch mal die Schnauze halten können!", "HALT STOPP, JETZT REDE ICH", "S T F U B O Y S", "Wengier labern, sonst gibts Vokabeltest!", "Psst ihr Ottos"};
@@ -44,7 +46,9 @@ class Events {
 			Flip.init(SD.getFlipRoomID());
 			Flip flip = new Flip();
 			Commands.init(DB, flip);
-			new MainTimer();
+			Timer timer = new Timer();
+			MainTimer mainTimer = new MainTimer();
+			timer.schedule(mainTimer, 5000, 6000);
 			bInit = true;
 			System.out.println("Everything initialized");
 		}
@@ -61,48 +65,24 @@ class Events {
 	
 	@EventSubscriber
 	public synchronized void onMessageEvent(MessageReceivedEvent event) {//synchronized richtig hier?
-		
 		IMessage message = event.getMessage();
-		if (message.getChannel() == guild.getChannelByID(Statics.ID_BOTSPAM)) {//1
-			if (DB.containsUser(message.getAuthor())) {
-				Commands.trigger(message);
-			} else {
-				System.out.println("Schreibenden User nicht gefunden.");
-			}
+		if (DB.containsUser(message.getAuthor())) {
+			Commands.trigger(message);
+		} else {
+			System.out.println("Typing user not in Database!");
 		}
-		
-		//System.out.println(bClient.getGuilds().get(1).getRegion());
-		/*try {
-			IRegion tRegion = bClient.getRegions().get(1);
-			System.out.println(tRegion);
-			System.out.println(bClient.getGuilds().get(1));
-			bClient.getGuilds().get(1).changeRegion(tRegion);
-		} catch(DiscordException e) {
-			e.printStackTrace();
-		} catch(HTTP429Exception e) {
-			e.printStackTrace();
-		} catch(MissingPermissionsException e) {
-			e.printStackTrace();
-		}*/
-		
-		
-		/*else if (((channel == guild.getChannelByID(idLink)) && (ml.isIn(content, "http://") || ml.isIn(content, "https://"))) && false) {
-			System.out.println("linkboys");
-			int ID = 23;
-			int x = 100;
-			int y = 17;
-			pos.post("Nicer Post, " + author + " mal sehen, wie gut der ankommt:\n\t\t\tID: "+ ID + "\t" + x + " :+1:\t" + y + ":-1:");
-			try {
-				Thread.sleep(3000);
-				//tmpM.edit("test");
-			} catch(Exception e) {
-				
-			}
-		}*/
+	}
+
+	static DataBase getDB() {
+		return DB;
+	}
+
+	static ServerData getSD() {
+		return SD;
 	}
 	
 	/*@EventSubscriber
-	public void onUserAdded(UserJoinEvent event) {
+	public void onUserAdded(UserJoinEvent event) {//TODO: addrole (vielleicht bei jedem timertick gucken, wer keine rolle hat und die +newrole? (wegen cached role))
 		event.getUser().addRole("97105817550999552", );
 	}*/
 	

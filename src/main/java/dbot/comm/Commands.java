@@ -56,7 +56,11 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 					break;
 				
 				case "top":
-					DB.getTop(author);
+					Ranking.topTen(DB.sortByScore(), author);
+					break;
+
+				case "rank":
+					Ranking.rank(DB.sortByScore(), author);
 					break;
 				
 				case "buy":
