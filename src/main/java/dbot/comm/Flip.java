@@ -3,42 +3,37 @@ package dbot.comm;
 import static dbot.Poster.post;
 import static dbot.Poster.edit;
 
+import dbot.UserData;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IMessage;
 import java.util.List;
 import java.util.*;
-import dbot.UserData;
-
 import java.util.regex.*;
 import java.util.concurrent.*;
 
-public class Flip {
-	private static List<FlipRoom> lRooms = new ArrayList<>();
-	private static IMessage roomPost;
-	private static String startString = "Offene Flip-Räume:";
-	private static String emptyRoomsString = "\n\t\t\t\t\tkeine :sob:";
+class Flip {
+	private static final List<FlipRoom> lRooms = new ArrayList<>();
+	private static IMessage roomPost = null;
+	private static final String startString = "Offene Flip-Räume:";
+	private static final String emptyRoomsString = "\n\t\t\t\t\tkeine :sob:";
+	private static boolean init = false;
 	
-	public Flip() {}
-
-	public static void init(int nextID) {
-		FlipRoom.setNextID(nextID);
-		Future<IMessage> fMessage = post(startString + emptyRoomsString, -1);
-		try {
-			roomPost = fMessage.get();
-		} catch(InterruptedException|ExecutionException e) {
-			System.out.println(e);
+	Flip() {}//TODO: heile machen
+	
+	static void m(UserData uData, String params) {//TODO: static
+		if (!init) {
+			Future<IMessage> fMessage = post(startString + emptyRoomsString, -1);
+			try {
+				roomPost = fMessage.get();
+			} catch(InterruptedException|ExecutionException e) {
+				System.out.println(e);
+			}
+			init = true;
 		}
-		System.out.println("Flip initialized");
-	}
-	
-	void m(UserData uData, String params) {
 		IUser author = uData.getUser();
-		
 		Pattern pattern = Pattern.compile("(\\d+|allin|join|close)(\\s(top|kek|\\d+))?");
 		Matcher matcher = pattern.matcher(params);
-		
 		if (!matcher.matches()) return;
-
 		int bet;
 		switch (matcher.group(1)) {
 			case "join":
@@ -64,7 +59,6 @@ public class Flip {
 				}
 				break;
 		}
-		
 		uData.subGems(bet);
 		String seite;
 		if (matcher.group(3) == null) {
@@ -80,7 +74,7 @@ public class Flip {
 		open(author, bet, seite.toUpperCase(), uData);//TODO:besser machen
 	}
 	
-	private void join(UserData uData, String params) {
+	private static void join(UserData uData, String params) {
 		System.out.println(params);
 		Pattern pattern = Pattern.compile(".+\\s(\\d+)$");
 		Matcher matcher = pattern.matcher(params);
@@ -106,14 +100,14 @@ public class Flip {
 		postRooms();
 	}
 	
-	private void open(IUser author, int bet, String seite, UserData uData) {
+	private static void open(IUser author, int bet, String seite, UserData uData) {
 		FlipRoom fRoom = new FlipRoom(author, bet, seite, uData);
 		post(author.getName() + " hat neuen Raum um " + fRoom.getPot() + ":gem: geöffnet mit ID: " + fRoom.getRoomID() + " (" + seite + ")");
 		lRooms.add(fRoom);
 		postRooms();
 	}
 	
-	private void close(IUser author, UserData uData) {
+	private static void close(IUser author, UserData uData) {
 		for (int i = 0; i < lRooms.size(); i++) {
 			if (lRooms.get(i).getHostID().equals(author.getID())) {
 				System.out.println(lRooms.get(i).getPot());
@@ -126,7 +120,7 @@ public class Flip {
 		//remove room(author)//FEHLT
 	}
 	
-	void closeAll() {//für bot dc und logout benutzen; TODO: gems werden nicht erstattet?
+	static void closeAll() {//für bot dc und logout benutzen; TODO: gems werden nicht erstattet?
 		for (Iterator<FlipRoom> it = lRooms.iterator(); it.hasNext();) {
 			FlipRoom tmpFR = it.next();
 			tmpFR.getHostData().addGems(tmpFR.getPot());
@@ -137,7 +131,7 @@ public class Flip {
 		System.out.println("closed all Fliprooms");
 	}
 	
-	private void postRooms() {
+	private static void postRooms() {
 		System.out.println("postRooms.start");
 		String post = startString;
 		int count = 0;
@@ -152,7 +146,7 @@ public class Flip {
 		}
 	}
 
-	private boolean containsUser(IUser user) {
+	private static boolean containsUser(IUser user) {
 		if (user == null) {
 			throw new IllegalArgumentException("User darf nicht null sein!");//braucht return?
 		}
@@ -171,14 +165,14 @@ public class Flip {
 		return false;
 	}*/
 
-	private FlipRoom getRoomByID(int roomID) {
+	private static FlipRoom getRoomByID(int roomID) {
 		for (FlipRoom tmpRoom : lRooms) {
 			if (tmpRoom.getRoomID() == roomID) return tmpRoom;
 		}
 		return null;
 	}
 	
-	private int getRoomIndexByID(int roomID) {
+	private static int getRoomIndexByID(int roomID) {
 		for (int i = 0; i < lRooms.size(); i++) {
 			if (lRooms.get(i).getRoomID() == roomID) {
 				return i;

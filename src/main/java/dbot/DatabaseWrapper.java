@@ -5,24 +5,25 @@ import java.util.List;
 /**
  * Created by Niklas on 10.08.2016.
  */
-class DataBaseWrapper {
-	private List<UserData> userData;
+class DatabaseWrapper {
 	private ServerData serverData;
-	DataBaseWrapper() {}
+	private List<UserData> userData;
+	DatabaseWrapper() {}
+
+	ServerData getServerData() {
+		return serverData;
+	}
 
 	List<UserData> getUserDataBase() {
 		return userData;
 	}
 
-	ServerData getServerData() {
-		return serverData;
+	void setServerData(ServerData serverData) {
+		this.serverData = serverData;
 	}
 
 	void setUserDataBase(List<UserData> userData) {
 		this.userData = userData;
 	}
 
-	void setServerData(ServerData serverData) {
-		this.serverData = serverData;
-	}
 }

@@ -1,11 +1,12 @@
 package dbot.comm;
-import dbot.UserData;
+
 import static dbot.Poster.post;
 
+import dbot.Database;
+import dbot.UserData;
 import sx.blah.discord.handle.obj.IUser;
 
-
-class FlipRoom extends Flip {//flip extenden?
+public class FlipRoom extends Flip {
 	private IUser uHost;
 	private IUser uClient;
 	private UserData dHost;
@@ -13,7 +14,7 @@ class FlipRoom extends Flip {//flip extenden?
 	private int pot;
 	private int roomID;
 	private String seite;
-	private static int nextID;
+	private static int currentID = Database.getInstance().getServerData().getFlipRoomID();
 	
 	FlipRoom(IUser uHost, int bet, String seite, UserData dHost) {
 		this.uHost = uHost;
@@ -47,8 +48,8 @@ class FlipRoom extends Flip {//flip extenden?
 	}
 	
 	private int updateID() {
-		return nextID++;
-	}//sollte dann ++nextID (nach serverData load-implementation)
+		return currentID++;
+	}//sollte dann ++currentID (nach serverData load-implementation)
 	
 	int getRoomID() {
 		return roomID;
@@ -70,9 +71,9 @@ class FlipRoom extends Flip {//flip extenden?
 		return uHost.getID();
 	}
 
-	static void setNextID(int nextID) {
-		FlipRoom.nextID = nextID;
-	}//TODO: muss noch in serverdata gesetzt werden im richtigen moment
+	public static int getFlipRoomID() {
+		return currentID;
+	}
 	
 	@Override
 	public String toString() {

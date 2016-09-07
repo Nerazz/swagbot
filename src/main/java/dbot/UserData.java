@@ -1,29 +1,27 @@
 package dbot;
+
+import static dbot.Poster.post;
+
 import sx.blah.discord.handle.obj.IUser;
 
-public class UserData extends DataBase {//implements comparable?
+public class UserData extends Database {//implements comparable?
 	private String id = null;
 	private transient IUser user = null;
 	private String name = null;
-	private int gems = -1;
+	private int gems = 0;
 	
-	private String rpgClass = null;
-	private int rpgExp = -1;
-	private int rpgLevel = -1;
-	private int rpgPresLevel = -1;
-	private double rpgExpRate = 1;
-	
-	private int rpgPotDuration = 0;
+	private String rpgClass = "peasant";
+	private int exp = 0;
+	private int level = 1;
+	private int swagLevel = 0;
+	private double expRate = 1;
+	private int potDuration = 0;
+	private int swagPoints = 0;
 	
 	UserData(IUser user) {
 		this.user = user;
 		id = user.getID();
 		name = user.getName();
-		gems = 0;
-		rpgClass = "peasant";
-		rpgExp = 0;
-		rpgLevel = 1;
-		rpgPresLevel = 0;
 	}
 	
 	String getID() {
@@ -32,10 +30,9 @@ public class UserData extends DataBase {//implements comparable?
 	
 	public IUser getUser() {
 		return user;
-		//return getGuild().getUserByID(id);
 	}
 
-	void setUser() {//gettet user von guild TODO: läuft das so? oder guild als trans static?
+	void setUser() {
 		try {
 			user = Statics.GUILD.getUserByID(id);
 		} catch(Exception e) {
@@ -60,25 +57,25 @@ public class UserData extends DataBase {//implements comparable?
 	}
 	
 	public int getExp() {
-		return rpgExp;
+		return exp;
 	}
 
-	void addExp(int rpgExp) {
-		this.rpgExp += rpgExp;
-		while (this.rpgExp >= rpgLevelThreshold[getLevel() - 1]) {
-			addLevel(1);
-			this.rpgExp -= rpgLevelThreshold[getLevel() - 2];
-			new Poster().post(":tada: DING! " + user + " ist Level " + getLevel() + "! :tada:");
+	void addExp(int rpgExp) {//TODO: nicht aus liste, sondern hier berechnen?
+		this.exp += rpgExp;
+		while (this.exp >= getLevelThreshold(level)) {
+			this.exp -= getLevelThreshold(level);
+			addLevel();
+			post(":tada: DING! " + user + " ist Level " + level + "! :tada:");
 		}
 	}
 	
 	public int getLevel() {
-		return rpgLevel;
+		return level;
 	}
 
-	private void addLevel(int level) {
-		if ((rpgLevel < 100) && (level > 0)) {
-			rpgLevel += level;
+	private void addLevel() {
+		if (level < 100) {
+			level++;
 		} else {
 			System.out.println("Level von " + name + " konnte nicht erhöht werden");
 		}
@@ -98,24 +95,32 @@ public class UserData extends DataBase {//implements comparable?
 		System.out.println("klasse nicht geupdated");
 	}
 	
-	int getPresLevel() {
-		return rpgPresLevel;
+	int getSwagLevel() {
+		return swagLevel;
 	}
 
-	public void addPresLevel() {
-		rpgPresLevel += 1;
-	}//TODO: reset mit swaglvl++, weniger setter und addlvl
-	
-	public double getExpRate() {
-		return rpgExpRate;
+	public void prestige() {
+		if ((level < 100) && (gems >= 100000)) {
+			System.out.println(name + " ist noch nicht Level 100 oder hat nicht genug Gems!");
+			return;
+		}
+		gems -= 100000;
+		level = 1;
+
+		swagPoints += 5;
+		swagLevel++;
 	}
 	
-	public void setExpRate(double rpgExpRate) {
-		this.rpgExpRate = rpgExpRate;
+	public double getExpRate() {
+		return expRate;
+	}
+	
+	public void setExpRate(double expRate) {
+		this.expRate = expRate;
 	}
 	
 	public int getPotDuration() {
-		return rpgPotDuration;
+		return potDuration;
 	}
 	
 	public void setPotDuration(int rpgPotDuration) {
@@ -123,16 +128,28 @@ public class UserData extends DataBase {//implements comparable?
 			System.out.println("ERROR: PotDuration darf nicht < 0 sein!");
 			return;
 		}
-		this.rpgPotDuration = rpgPotDuration;
+		this.potDuration = rpgPotDuration;
 	}
 	
 	void reducePotDuration() {
-		if (rpgPotDuration > 0) {
-			rpgPotDuration -= 1;
-			if (rpgPotDuration < 1) {
+		if (potDuration > 0) {
+			potDuration -= 1;
+			if (potDuration < 1) {
 				setExpRate(1);
 				System.out.println("xpot von " + name + " durch");
 			}
+		}
+	}
+
+	public static int getLevelThreshold(int level) {
+		level--;
+		if (level < 0) {
+			System.out.println("level darf nicht < 0 sein!");
+			return 99999999;//TODO: besser machen, vielleicht throw exception?
+		} else if (level < 100) {
+			return level * 80 + 1000;
+		} else {
+			return level * level * 2;
 		}
 	}
 
@@ -153,7 +170,7 @@ public class UserData extends DataBase {//implements comparable?
 	
 	@Override
 	public int hashCode() {
-		return 1;
+		return ID;
 	}*/
 	
 }

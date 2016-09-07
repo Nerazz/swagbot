@@ -1,13 +1,17 @@
 package dbot.comm;
 
+import static dbot.Poster.post;
+
 import dbot.UserScores;
 import sx.blah.discord.handle.obj.IUser;
-import static dbot.Poster.post;
 
 /**
  * Created by Niklas on 26.08.2016.
  */
 final class Ranking {
+
+	private Ranking() {}
+
 	static void topTen(UserScores userScores, IUser author) {
 		String message = "TOP 5:\n";
 		boolean top = false;

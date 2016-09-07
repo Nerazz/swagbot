@@ -1,6 +1,7 @@
 package dbot.comm.items;
 
 import static dbot.Poster.post;
+
 import dbot.UserData;
 
 /**
@@ -32,11 +33,11 @@ public class Xpot {//Buy extenden oder ähnliches?
 			post(userData.getName() + ", du hast zu wenig :gem:");
 		}
 		else if (userData.getExpRate() > 1.0) {
-			post(userData.getName() + ", Boost ist noch für " + userData.getPotDuration() + " aktiv du Noob");
+			post(userData.getName() + ", Boost ist noch für " + userData.getPotDuration() + " min aktiv du Noob");
 		}
 		else {
 			userData.subGems(price);
-			post(userData.getName() + ", hier ist dein xpot tall!");
+			post(userData.getName() + ", hier ist dein xpot!");
 			System.out.println(userData.getName() + " -> xpot für " + price + "(x" + amp +")");
 			userData.setExpRate(amp);
 			userData.setPotDuration(duration);

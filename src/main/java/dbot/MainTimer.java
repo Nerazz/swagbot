@@ -8,31 +8,21 @@ import sx.blah.discord.handle.obj.Status;
 import java.util.List;
 import java.util.*;
 
-/*
-event für tick?
-
-punkte	was tun
-1		idle
-2		online
-3		online + voice
-
-*/
-
-class MainTimer extends TimerTask {//TODO: name ändern
+class MainTimer extends TimerTask {//TODO: namen ändern
 	
 	private final Presences ONLINE = Presences.valueOf("ONLINE");
 	//private final Presences IDLE = Presences.valueOf("IDLE");
-	private static final IDiscordClient botClient = Statics.BOT_CLIENT;
-	private static final IGuild guild = Statics.GUILD;
-	private static final DataBase DB = Events.getDB();
-	private static final ServerData SD = Events.getSD();
+	private static final IDiscordClient BOT_CLIENT = Statics.BOT_CLIENT;
+	private static final IGuild GUILD = Statics.GUILD;
+	private static final Database DATABASE = Database.getInstance();
+	private static final ServerData SERVER_DATA = DATABASE.getServerData();
 	
 	private static int minuteCount	= 0;
 	private static int hourCount	= 0;
 	private static int dayCount		= 0;
 
 	MainTimer() {
-		botClient.changeStatus(Status.game("frisch online"));
+		BOT_CLIENT.changeStatus(Status.game("frisch online"));
 	}
 
 
@@ -47,28 +37,28 @@ class MainTimer extends TimerTask {//TODO: name ändern
 				if ((hourCount % 24) == 0) {
 					dayCount += 1;
 					hourCount = 0;
-					SD.addDay();
-					if ((SD.getDaysOnline() % 3) == 0) {
-						DB.save(true);
+					SERVER_DATA.addDay();
+					if ((SERVER_DATA.getDaysOnline() % 3) == 0) {
+						DATABASE.save(true);
 					}
 				}
 			}
 
 			if (dayCount != 0) {
-				botClient.changeStatus(Status.game("seit " + dayCount + "d " + hourCount + "h online"));
+				BOT_CLIENT.changeStatus(Status.game("seit " + dayCount + "d " + hourCount + "h online"));
 			} else if (hourCount != 0) {
-				botClient.changeStatus(Status.game("seit " + hourCount + "h " + minuteCount + "m online"));
+				BOT_CLIENT.changeStatus(Status.game("seit " + hourCount + "h " + minuteCount + "m online"));
 			} else {
-				botClient.changeStatus(Status.game("seit " + minuteCount + "m online"));
+				BOT_CLIENT.changeStatus(Status.game("seit " + minuteCount + "m online"));
 			}
 
 			if (((hourCount % 5) == 0) && (minuteCount == 0)) {
-				DB.save(false);
-				System.out.println("DataBase durch MainTimer gesaved");
+				DATABASE.save(false);
+				System.out.println("Database durch MainTimer gesaved");
 			}
 		}
 
-		List<IUser> userList = guild.getUsers();
+		List<IUser> userList = GUILD.getUsers();
 		for(IUser user: userList) {
 			if (!user.getID().equals(Statics.ID_BOT)) {
 				if (user.getPresence() == ONLINE) {
@@ -76,8 +66,8 @@ class MainTimer extends TimerTask {//TODO: name ändern
 				} /*else if (user.getPresence() == IDLE) {
 					update(user, 0);
 				}*/
-				if (DB.containsUser(user)) {
-					DB.getData(user).reducePotDuration();
+				if (DATABASE.containsUser(user)) {
+					DATABASE.getData(user).reducePotDuration();
 				}
 			}
 
@@ -86,16 +76,16 @@ class MainTimer extends TimerTask {//TODO: name ändern
 
 	private void update(IUser user, int p) {//TODO: bei playerjoin event wird liste aktualisiert, nicht bei jedem update
 		
-		if (!DB.containsUser(user)) {//OPTIMIEREN (DOUBLE-CHECK!!)
-			DB.add(user);
+		if (!DATABASE.containsUser(user)) {//OPTIMIEREN (DOUBLE-CHECK!!)
+			DATABASE.add(user);
 			System.out.println("----------------------------------");
-			System.out.println(user.getName() + " added to DB!");
+			System.out.println(user.getName() + " added to DATABASE!");
 			System.out.println("----------------------------------");
 		}
 		if (p > 0) {
-			//DB.getData(u).addExp((p + DB.getData(u).getPresLevel() * 2) + (int)(Math.random() * 10));//aendern, dass idle groessere auswirkungen hat
-			DB.getData(user).addExp((int) (((p * (Math.random() * 3.0)) / 2.0 + (p + 1.0 + DB.getData(user).getPresLevel())) * DB.getData(user).getExpRate()));
-			DB.getData(user).addGems(p * (DB.getData(user).getPresLevel() + 1));//nochmal fixen!!!
+			//DATABASE.getData(u).addExp((p + DATABASE.getData(u).getSwagLevel() * 2) + (int)(Math.random() * 10));//aendern, dass idle groessere auswirkungen hat
+			DATABASE.getData(user).addExp((int) (((p * (Math.random() * 3.0)) / 2.0 + (p + 1.0 + DATABASE.getData(user).getSwagLevel())) * DATABASE.getData(user).getExpRate()));
+			DATABASE.getData(user).addGems(p * (DATABASE.getData(user).getSwagLevel() + 1));//nochmal fixen!!!
 		}
 	}
 	

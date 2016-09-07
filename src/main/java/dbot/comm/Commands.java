@@ -1,7 +1,8 @@
 package dbot.comm;
 
+import dbot.Database;
 import dbot.UserData;
-import dbot.DataBase;
+
 import static dbot.Poster.post;
 import static dbot.Poster.del;
 import dbot.Statics;
@@ -13,15 +14,9 @@ import sx.blah.discord.util.RateLimitException;
 
 import java.util.regex.*;
 
-public class Commands {//noch paar static attribute initialisieren am anfang!!
-	private static DataBase DB;
-	private static Flip flip;
+public class Commands {
 
-	public static void init(DataBase DB, Flip flip) {
-		Commands.DB = DB;
-		Commands.flip = flip;
-		System.out.println("Commands initialized");
-	}
+	private static final Database database = Database.getInstance();
 
 	public static void trigger(IMessage message) {
 		IUser author = message.getAuthor();
@@ -31,7 +26,7 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 		Pattern pattern = Pattern.compile("^!([a-z]+)(\\s(.+))?");
 		Matcher matcher = pattern.matcher(message.getContent().toLowerCase());
 		if (matcher.matches()) {
-			UserData dAuthor = DB.getData(author);
+			UserData dAuthor = database.getData(author);
 			String params = "" + matcher.group(3);
 			
 			switch (matcher.group(1)) {
@@ -39,8 +34,8 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 					Roll.m(author, params);
 					break;
 				
-				case "stats":
-					post(author + " ist Level " + dAuthor.getLevel() + " " + dAuthor.getrpgClass() + " mit " + dAuthor.getExp() + "/" + DataBase.getLevelThreshold(dAuthor.getLevel()) + " Exp.");
+				case "stats"://TODO: eigene klasse?
+					post(author + " ist Level " + dAuthor.getLevel() + " " + dAuthor.getrpgClass() + " mit " + dAuthor.getExp() + "/" + UserData.getLevelThreshold(dAuthor.getLevel()) + " Exp.");
 					break;
 				
 				case "gems":
@@ -56,11 +51,11 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 					break;
 				
 				case "top":
-					Ranking.topTen(DB.sortByScore(), author);
+					Ranking.topTen(database.sortByScore(), author);
 					break;
 
 				case "rank":
-					Ranking.rank(DB.sortByScore(), author);
+					Ranking.rank(database.sortByScore(), author);
 					break;
 				
 				case "buy":
@@ -72,38 +67,22 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 					break;
 				
 				case "flip":
-					flip.m(dAuthor, params);
+					Flip.m(dAuthor, params);
 					break;
 
 				case "give":
 					Give.m(dAuthor, params);
 					break;
 
-				/*case "give":
-				try {
-					//System.out.println("give start");
-					String test = param2.substring(param2.indexOf('<') + 2, param2.indexOf('>'));
-					System.out.println(test);
-					IUser ugetter = guild.getUserByID(test);
-					if (ugetter.getPresence() == Presences.valueOf("ONLINE")) {
-						UserData getter = DB.getData(ugetter);
-						Give.m(DB.getData(author), param1, getter);
-						pos.post("hat geklappt");
-						System.out.println("gave gems");
-				}
-					else {
-						System.out.println("error");
-					}
-				} catch(Exception e) {
-					System.out.println("give error");
-				}
-				break;*/
-
+				case "prestige":
+					dAuthor.prestige();
+					break;
 
 				default:
 					System.out.println("Command '" + message.getContent() +  "' nicht gefunden.");
 					break;
 			}
+			del(message, 3000);
 		} else if (author.getID().equals(Statics.ID_NERAZ)) {
 			pattern = Pattern.compile("^§([a-z]+)(\\s(.+))?");
 			matcher = pattern.matcher(message.getContent().toLowerCase());
@@ -111,53 +90,32 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 				//String params = "" + matcher.group(3);
 				switch (matcher.group(1)) {
 					case "save":
-						DB.save(false);
+						Database.getInstance().save(false);
 						post("Aye aye, Meister " + author.getName() + " :ok_hand:", 5000);
 						break;
 					case "logout":
-						flip.closeAll();
-						DB.save(false);
+						Flip.closeAll();
+						database.save(false);
 						try {
 							Statics.BOT_CLIENT.logout();
+							System.exit(0);
 						} catch(DiscordException e) {
 							System.out.println("logout-ERROR: " + e);
 						} catch(RateLimitException e) {
 							System.out.println("RATELIMT BEI LOGOUT: " + e);
 						}
-						System.exit(0);
 						break;
 					default:
 						break;
 				}
 			}
+			del(message, 3000);
+		} else {//kein Befehl
+			del(message, 30000);
 		}
-		del(message, 10000);
-		
 	}
-
 }
-			/*case "give":
-				try {
-					//System.out.println("give start");
-					String test = param2.substring(param2.indexOf('<') + 2, param2.indexOf('>'));
-					System.out.println(test);
-					IUser ugetter = guild.getUserByID(test);
-					if (ugetter.getPresence() == Presences.valueOf("ONLINE")) {
-						UserData getter = DB.getData(ugetter);
-						Give.m(DB.getData(author), param1, getter);
-						pos.post("hat geklappt");
-						System.out.println("gave gems");
-				}
-					else {
-						System.out.println("error");
-					}
-				} catch(Exception e) {
-					System.out.println("give error");
-				}
-				break;*/
-			/*case "version":
-				pos.post("läuft auf Version " + bVersion);
-				break;*/
+
 			/*case "prestige":
 				UserData d2Author = DB.getData(author);
 				if (d2Author.getLevel() == 100) {
@@ -170,14 +128,6 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 					pos.post("Lowlevelnoobs dürfen das nicht benutzen...");
 				}
 				break;
-			case "flip":
-				flip.m(DB.getData(author), parser.getParams());
-				break;
-			case "join":
-				flip.join(author, param1, DB.getData(author));
-				break;
-			case "test":
-				System.out.println(DB.SD.getGems());
 			/*case "joinme":
 				vChannel = author.getVoiceChannel().get();
 				vChannel.join();
@@ -211,46 +161,6 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 				}
 				
 				break;*/
-			
-		/*	else if ((channel == guild.getChannelByID(idGeneral)) && (nBrag > 0)) {
-				nBrag -= 1;
-				System.out.println("bragboys");
-				ml.bMes(bClient, channel, sBrags[(int)(Math.random() * sBrags.length)]);
-			}
-			else {
-				//ml.cpr("in falschem Channel");
-			}
-		}//2z
-	}//1z
-		/*
-		else if (ml.isIn(content, "!cs ") && false) {
-			String server = content.substring(4);
-			IRegion region = guild.getRegion();
-			switch (server) {
-				case "ams":
-				case "amsterdam":
-				
-					break;
-				case "lon":
-				case "london":
-				
-					break;
-				case "us":
-				case "us east":
-					
-					break;
-				case "frank":
-				case "frankfurt":
-				
-					break;
-				default:
-					System.out.println("def");
-					break;
-			}
-			
-		}
-		
-		
 		/*case "!roulette":
 					if (rt == null) {
 						rt = new RouleTimer(author);
@@ -270,21 +180,4 @@ public class Commands {//noch paar static attribute initialisieren am anfang!!
 					else {
 						ml.bMes(bClient, channel, author + ", du bist schon eingetragen!");
 					}
-					break;
-				/*case "§logout":
-				
-					if (author.getID().equals(idNeraz)) {
-						while(bClient.isReady()) {
-							try {
-								bClient.logout();
-								Thread.sleep(5000);
-							} catch(HTTP429Exception|DiscordException|InterruptedException e) {
-								e.printStackTrace();
-							} 
-						}
-						System.exit(0);
-					}
-					break;
-				default:
-					break;
-			}*/
+					break;*/

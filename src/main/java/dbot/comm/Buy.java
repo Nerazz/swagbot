@@ -1,10 +1,12 @@
 package dbot.comm;
 
 import dbot.UserData;
-import java.util.regex.*;
 import dbot.comm.items.Xpot;
+import java.util.regex.*;
 
 final class Buy {
+
+	private Buy() {}
 	
 	static void m(UserData dBuyer, String params) {
 		Pattern pattern = Pattern.compile("([a-z]+)(\\s(.+))?");

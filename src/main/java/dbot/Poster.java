@@ -8,16 +8,15 @@ import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageBuilder;
 import sx.blah.discord.util.RequestBuffer;
-import java.util.concurrent.*;
+import java.util.concurrent.Future;
 
 public class Poster {
 	private static final IDiscordClient bClient = Statics.BOT_CLIENT;
 	private static final IChannel channel = Statics.GUILD.getChannelByID(Statics.ID_BOTSPAM);
 	
-	Poster() {//abfrage if bClient, guild == null??
-	}
+	private Poster() {}
 	
-	public static Future<IMessage> post(String s, int duration) {// static machen?
+	public static Future<IMessage> post(String s, int duration) {
 		return RequestBuffer.request(() -> {
 			try {
 				IMessage message = new MessageBuilder(bClient).withChannel(channel).withContent(s).build();

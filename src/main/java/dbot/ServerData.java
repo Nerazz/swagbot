@@ -1,6 +1,6 @@
 package dbot;
 
-class ServerData extends DataBase {
+public class ServerData extends Database {
 	private int gems = 100;
 	//längste online-zeit
 	//flip-room id
@@ -8,9 +8,7 @@ class ServerData extends DataBase {
 	private String test = "test";
 	private int daysOnline = 0;
 
-	ServerData() {
-		
-	}
+	ServerData() {}
 	
 	public void addGems(int aGems) {
 		gems += aGems;

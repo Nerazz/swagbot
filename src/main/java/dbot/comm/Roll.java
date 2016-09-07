@@ -1,10 +1,14 @@
 package dbot.comm;
 
 import static dbot.Poster.post;
+
 import sx.blah.discord.handle.obj.IUser;
 import java.util.regex.*;
 
 final class Roll {
+
+	private Roll() {}
+
 	static void m(IUser author, String params) {
 		Pattern pattern = Pattern.compile("(\\d+)(\\s(\\d+))?");
 		Matcher matcher = pattern.matcher(params);
