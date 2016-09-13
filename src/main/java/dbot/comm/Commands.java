@@ -33,29 +33,17 @@ public class Commands {
 				case "roll":
 					Roll.m(author, params);
 					break;
-				
-				case "stats"://TODO: eigene klasse?
-					post(author + " ist Level " + dAuthor.getLevel() + " " + dAuthor.getrpgClass() + " mit " + dAuthor.getExp() + "/" + UserData.getLevelThreshold(dAuthor.getLevel()) + " Exp.");
-					break;
-				
-				case "gems":
-					post(author + ", du hast im Moment " + dAuthor.getGems() + ":gem:.");
-					break;
-					
-				case "timeleft":
-					if (dAuthor.getPotDuration() > 0) {
-						post(author + ", dein xpot geht noch " + dAuthor.getPotDuration() + "min (x" + dAuthor.getExpRate() + ").");
-					} else {
-						post(author + ", du hast keinen aktiven Boost.");
-					}
+
+				case "stats":
+					Posts.stats(dAuthor);
 					break;
 				
 				case "top":
-					Ranking.topTen(database.sortByScore(), author);
+					Posts.top(database.sortByScore());
 					break;
 
 				case "rank":
-					Ranking.rank(database.sortByScore(), author);
+					Posts.rank(database.sortByScore(), author);
 					break;
 				
 				case "buy":
@@ -74,7 +62,7 @@ public class Commands {
 					Give.m(dAuthor, params);
 					break;
 
-				case "prestige":
+				case "prestige"://TODO: Nachfrage
 					dAuthor.prestige();
 					break;
 
@@ -96,6 +84,8 @@ public class Commands {
 					case "logout":
 						Flip.closeAll();
 						database.save(false);
+						del(message);//TODO: pool an messages, die es noch gibt, die dann gelöscht werden?
+						del(Flip.getRoomPost());
 						try {
 							Statics.BOT_CLIENT.logout();
 							System.exit(0);

@@ -6,8 +6,6 @@ import java.util.regex.*;
 
 final class Buy {
 
-	private Buy() {}
-	
 	static void m(UserData dBuyer, String params) {
 		Pattern pattern = Pattern.compile("([a-z]+)(\\s(.+))?");
 		Matcher matcher = pattern.matcher(params);

@@ -18,9 +18,7 @@ class Flip {
 	private static final String emptyRoomsString = "\n\t\t\t\t\tkeine :sob:";
 	private static boolean init = false;
 	
-	Flip() {}//TODO: heile machen
-	
-	static void m(UserData uData, String params) {//TODO: static
+	static void m(UserData uData, String params) {//TODO: static; message durchreichen und wo anders initialisieeren
 		if (!init) {
 			Future<IMessage> fMessage = post(startString + emptyRoomsString, -1);
 			try {
@@ -119,8 +117,12 @@ class Flip {
 		}
 		//remove room(author)//FEHLT
 	}
+
+	static IMessage getRoomPost() {
+		return roomPost;
+	}
 	
-	static void closeAll() {//für bot dc und logout benutzen; TODO: gems werden nicht erstattet?
+	static void closeAll() {
 		for (Iterator<FlipRoom> it = lRooms.iterator(); it.hasNext();) {
 			FlipRoom tmpFR = it.next();
 			tmpFR.getHostData().addGems(tmpFR.getPot());

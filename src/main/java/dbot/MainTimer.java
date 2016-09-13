@@ -74,9 +74,9 @@ class MainTimer extends TimerTask {//TODO: namen ändern
 		}
 	}
 
-	private void update(IUser user, int p) {//TODO: bei playerjoin event wird liste aktualisiert, nicht bei jedem update
+	private void update(IUser user, int p) {
 		
-		if (!DATABASE.containsUser(user)) {//OPTIMIEREN (DOUBLE-CHECK!!)
+		if (!DATABASE.containsUser(user)) {//TODO: OPTIMIEREN (DOUBLE-CHECK!!), vielleicht alle user, egal ob online oder nicht, in db laden?
 			DATABASE.add(user);
 			System.out.println("----------------------------------");
 			System.out.println(user.getName() + " added to DATABASE!");

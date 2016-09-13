@@ -9,8 +9,7 @@ public class UserData extends Database {//implements comparable?
 	private transient IUser user = null;
 	private String name = null;
 	private int gems = 0;
-	
-	private String rpgClass = "peasant";
+
 	private int exp = 0;
 	private int level = 1;
 	private int swagLevel = 0;
@@ -60,11 +59,11 @@ public class UserData extends Database {//implements comparable?
 		return exp;
 	}
 
-	void addExp(int rpgExp) {//TODO: nicht aus liste, sondern hier berechnen?
+	void addExp(int rpgExp) {
 		this.exp += rpgExp;
 		while (this.exp >= getLevelThreshold(level)) {
 			this.exp -= getLevelThreshold(level);
-			addLevel();
+			level++;
 			post(":tada: DING! " + user + " ist Level " + level + "! :tada:");
 		}
 	}
@@ -72,35 +71,13 @@ public class UserData extends Database {//implements comparable?
 	public int getLevel() {
 		return level;
 	}
-
-	private void addLevel() {
-		if (level < 100) {
-			level++;
-		} else {
-			System.out.println("Level von " + name + " konnte nicht erhöht werden");
-		}
-	}
-
-	public String getrpgClass() {
-		return rpgClass;
-	}
 	
-	public void setrpgClass(String rpgClass) {
-		System.out.println("\"" + rpgClass + "\"");
-		if ((rpgClass.equals("krieger")) || (rpgClass.equals("mage")) || (rpgClass.equals("hunter"))) {
-			this.rpgClass = rpgClass;
-			System.out.println("new class: " + this.rpgClass);
-			return;
-		}
-		System.out.println("klasse nicht geupdated");
-	}
-	
-	int getSwagLevel() {
+	public int getSwagLevel() {
 		return swagLevel;
 	}
 
 	public void prestige() {
-		if ((level < 100) && (gems >= 100000)) {
+		if ((level < 100) || (gems < 100000)) {
 			System.out.println(name + " ist noch nicht Level 100 oder hat nicht genug Gems!");
 			return;
 		}
@@ -125,8 +102,7 @@ public class UserData extends Database {//implements comparable?
 	
 	public void setPotDuration(int rpgPotDuration) {
 		if (rpgPotDuration < 0) {
-			System.out.println("ERROR: PotDuration darf nicht < 0 sein!");
-			return;
+			throw new IllegalArgumentException("PotDuration darf nicht < 0 sein!");
 		}
 		this.potDuration = rpgPotDuration;
 	}
@@ -144,8 +120,7 @@ public class UserData extends Database {//implements comparable?
 	public static int getLevelThreshold(int level) {
 		level--;
 		if (level < 0) {
-			System.out.println("level darf nicht < 0 sein!");
-			return 99999999;//TODO: besser machen, vielleicht throw exception?
+			throw new IllegalArgumentException("Level darf nicht < 0 sein!");
 		} else if (level < 100) {
 			return level * 80 + 1000;
 		} else {

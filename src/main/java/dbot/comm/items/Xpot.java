@@ -31,11 +31,9 @@ public class Xpot {//Buy extenden oder ähnliches?
 	private void use(UserData userData, int duration, double amp, int price) {
 		if (userData.getGems() < price) {//TODO: get price von json, float statt double?
 			post(userData.getName() + ", du hast zu wenig :gem:");
-		}
-		else if (userData.getExpRate() > 1.0) {
+		} else if (userData.getExpRate() > 1.0) {
 			post(userData.getName() + ", Boost ist noch für " + userData.getPotDuration() + " min aktiv du Noob");
-		}
-		else {
+		} else {
 			userData.subGems(price);
 			post(userData.getName() + ", hier ist dein xpot!");
 			System.out.println(userData.getName() + " -> xpot für " + price + "(x" + amp +")");

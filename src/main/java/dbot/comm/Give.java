@@ -11,8 +11,6 @@ import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Presences;
 
 final class Give {
-
-	private Give() {}
 	
 	static void m(UserData dGiver, String params) {
 		Pattern pattern = Pattern.compile("^<@(\\d+)>\\s(\\d+)");

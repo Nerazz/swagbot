@@ -49,7 +49,7 @@ public class Database {
 		int i = 0;
 		for (UserData userData : userDataList) {
 			users[i] = userData.getUser();
-			scores[i] = Math.floor(((userData.getExp() / (double)UserData.getLevelThreshold(userData.getLevel())) + userData.getLevel()) * 100) / 100; //*100/100 für Nachkommastellenrundung TODO: passt userData.getLevel() - 1 mit level -1 in Statics.getLevel...
+			scores[i] = Math.floor(((userData.getExp() / (double)UserData.getLevelThreshold(userData.getLevel())) + userData.getLevel()) * 100) / 100; //*100/100 für Nachkommastellenrundung
 			i++;
 		}
 		for (; i > 1; i--) {//bubblesort
@@ -83,11 +83,13 @@ public class Database {
 				userData.setUser();
 			}
 			System.out.println("loaded " + userDataList.size() + " Users and Serverdata from Database");
-		} catch(Exception e) {
-			System.out.println("loadError: " + e);
+		} catch(FileNotFoundException e) {
+			System.out.println("FileNotFound in Database.load() " + e);
 			userDataList = new ArrayList<>();
 			serverData = new ServerData();
 			System.out.println("New Databases for Users and Server created");
+		} catch(IOException e) {
+			System.out.println("IOException in Database.load() " + e);
 		}
 	}
 	

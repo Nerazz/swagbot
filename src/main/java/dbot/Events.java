@@ -2,29 +2,31 @@ package dbot;
 
 import dbot.comm.Commands;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.GuildCreateEvent;
+import sx.blah.discord.handle.impl.events.UserJoinEvent;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.MissingPermissionsException;
+import sx.blah.discord.util.RateLimitException;
+
 import java.util.Timer;
 
 class Events {
 	private static boolean bInit = false;
+	private static IGuild guild = null;
 
 	Events() {}
-
-	@EventSubscriber
-	public void onReadyEvent() {
-		System.out.println("~BotReadyEvent~");
-	}
 	
 	@EventSubscriber
-	public void onGuildCreateEvent() {
+	public void onGuildCreateEvent(GuildCreateEvent event) {
 		System.out.println("~GuildCreateEvent~");
 		if (!bInit) {
 			IDiscordClient botClient = Statics.BOT_CLIENT;
 			Statics.GUILD = botClient.getGuildByID(Statics.ID_GUILD);
-			IGuild guild = Statics.GUILD;
+			guild = Statics.GUILD;
 			System.out.println("Bot joined guild: " + guild.getName());
 			Database.getInstance().load();
 			Timer timer = new Timer();
@@ -35,14 +37,12 @@ class Events {
 		}
 		System.out.println("~BOT~READY~");
 	}
-	
-	
-	
-	@EventSubscriber
+
+	/*@EventSubscriber
 	public void onDiscordDisconnectedEvent() {
 		System.out.println("DISCONNECTED!!");
 		//DB.save();??
-	}
+	}*/
 	
 	@EventSubscriber
 	public synchronized void onMessageEvent(MessageReceivedEvent event) {//synchronized richtig hier?
@@ -54,10 +54,17 @@ class Events {
 		}
 	}
 	
-	/*@EventSubscriber
-	public void onUserAdded(UserJoinEvent event) {//TODO: editrole(ist bei IGuild) (vielleicht bei jedem timertick gucken, wer keine rolle hat und die +newrole? (wegen cached role))
-		event.getUser().addRole("97105817550999552", );
-	}*/
+	@EventSubscriber
+	public void onUserAdded(UserJoinEvent event) {
+		try {
+			event.getUser().addRole(guild.getRolesByName("Newfags").get(0));
+			System.out.println("added Role to " + event.getUser().getName());
+		} catch(MissingPermissionsException e) {
+			e.printStackTrace();
+		} catch(DiscordException | RateLimitException e) {//TODO: Exceptions fixen
+			e.printStackTrace();
+		}
+	}
 	
 /*	@EventSubscriber
 	public void onUserVoiceChannelJoinEvent(UserVoiceChannelJoinEvent e) {
