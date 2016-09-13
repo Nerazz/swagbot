@@ -14,6 +14,6 @@ class Bot {
 		IDiscordClient botClient = new ClientBuilder().withToken(Statics.BOT_TOKEN).setMaxReconnectAttempts(10).login();
 		Statics.BOT_CLIENT = botClient;
 		botClient.getDispatcher().registerListener(new Events());
-		System.out.println("~Main~fertig~");//test
+		System.out.println("~Main~fertig~");
 	}
 }
