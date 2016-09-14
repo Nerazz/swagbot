@@ -6,15 +6,14 @@ import sx.blah.discord.handle.obj.IUser;
 
 public class UserData extends Database {//implements comparable?
 	private String id = null;
-	private transient IUser user = null;
 	private String name = null;
+	private transient IUser user = null;
 	private int gems = 0;
-
-	private int exp = 0;
 	private int level = 1;
-	private int swagLevel = 0;
+	private int exp = 0;
 	private double expRate = 1;
 	private int potDuration = 0;
+	private int swagLevel = 0;
 	private int swagPoints = 0;
 	
 	UserData(IUser user) {

@@ -50,10 +50,6 @@ public class Commands {
 					Buy.m(dAuthor, params);
 					break;
 				
-				case "version":
-					post("v" + Statics.VERSION + "; D4J v" + Statics.DFJ_VERSION);
-					break;
-				
 				case "flip":
 					Flip.m(dAuthor, params);
 					break;
@@ -64,6 +60,18 @@ public class Commands {
 
 				case "prestige"://TODO: Nachfrage
 					dAuthor.prestige();
+					break;
+
+				case "info":
+					Posts.info();
+					break;
+
+				case "shop":
+					Posts.shop();
+					break;
+
+				case "commands":
+					Posts.commands();
 					break;
 
 				default:

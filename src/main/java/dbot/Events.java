@@ -1,6 +1,7 @@
 package dbot;
 
 import dbot.comm.Commands;
+import dbot.comm.Flip;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.GuildCreateEvent;
 import sx.blah.discord.handle.impl.events.UserJoinEvent;
@@ -16,7 +17,8 @@ import java.util.Timer;
 
 class Events {
 	private static boolean bInit = false;
-	private static IGuild guild = null;
+	private static IGuild guild;
+	private static Database database;
 
 	Events() {}
 	
@@ -28,10 +30,10 @@ class Events {
 			Statics.GUILD = botClient.getGuildByID(Statics.ID_GUILD);
 			guild = Statics.GUILD;
 			System.out.println("Bot joined guild: " + guild.getName());
-			Database.getInstance().load();
-			Timer timer = new Timer();
-			MainTimer mainTimer = new MainTimer();
-			timer.schedule(mainTimer, 5000, 6000);
+			Flip.init();
+			database = Database.getInstance();
+			database.load();
+			new Timer().schedule(new MainTimer(), 5000, 6000);
 			bInit = true;
 			System.out.println("Everything initialized");
 		}
@@ -47,7 +49,7 @@ class Events {
 	@EventSubscriber
 	public synchronized void onMessageEvent(MessageReceivedEvent event) {//synchronized richtig hier?
 		IMessage message = event.getMessage();
-		if (Database.getInstance().containsUser(message.getAuthor())) {
+		if (database.containsUser(message.getAuthor())) {
 			Commands.trigger(message);
 		} else {
 			System.out.println("Typing user not in Database!");

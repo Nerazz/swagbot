@@ -77,7 +77,7 @@ public class FlipRoom extends Flip {
 	
 	@Override
 	public String toString() {
-		return "\nID: " + roomID + " Einsatz: " + pot + " Seite: " + seite + " von: " + uHost.getName();
+		return "\nID»'" + roomID + "' Einsatz»'" + pot + "' Seite»'" + seite + "' Host»'" + uHost.getName() + "'";
 	}
 	
 }

@@ -11,23 +11,12 @@ import java.util.*;
 import java.util.regex.*;
 import java.util.concurrent.*;
 
-class Flip {
+public class Flip {
 	private static final List<FlipRoom> lRooms = new ArrayList<>();
 	private static IMessage roomPost = null;
-	private static final String startString = "Offene Flip-Räume:";
-	private static final String emptyRoomsString = "\n\t\t\t\t\tkeine :sob:";
-	private static boolean init = false;
-	
+	private static final String startString = "Offene Flip-Räume:```xl\n";
+
 	static void m(UserData uData, String params) {//TODO: static; message durchreichen und wo anders initialisieeren
-		if (!init) {
-			Future<IMessage> fMessage = post(startString + emptyRoomsString, -1);
-			try {
-				roomPost = fMessage.get();
-			} catch(InterruptedException|ExecutionException e) {
-				System.out.println(e);
-			}
-			init = true;
-		}
 		IUser author = uData.getUser();
 		Pattern pattern = Pattern.compile("(\\d+|allin|join|close)(\\s(top|kek|\\d+))?");
 		Matcher matcher = pattern.matcher(params);
@@ -105,7 +94,7 @@ class Flip {
 		postRooms();
 	}
 	
-	private static void close(IUser author, UserData uData) {
+	private static void close(IUser author, UserData uData) {//TODO: effizienter machen
 		for (int i = 0; i < lRooms.size(); i++) {
 			if (lRooms.get(i).getHostID().equals(author.getID())) {
 				System.out.println(lRooms.get(i).getPot());
@@ -113,6 +102,7 @@ class Flip {
 				post("closing room " + lRooms.get(i).getRoomID());
 				lRooms.remove(i);
 				postRooms();
+				break;
 			}
 		}
 		//remove room(author)//FEHLT
@@ -142,10 +132,11 @@ class Flip {
 			count++;
 		}
 		if (count != 0) {
-			edit(roomPost, post);
+			edit(roomPost, post + "```");
 		} else {
-			edit(roomPost, post + emptyRoomsString);
+			edit(roomPost, post + "keine```");
 		}
+
 	}
 
 	private static boolean containsUser(IUser user) {
@@ -181,6 +172,15 @@ class Flip {
 			}
 		}
 		return -1;
+	}
+
+	public static void init() {
+		Future<IMessage> fMessage = post(startString + "keine```", -1);
+		try {
+			roomPost = fMessage.get();
+		} catch(InterruptedException|ExecutionException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
