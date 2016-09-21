@@ -8,6 +8,7 @@ import static dbot.Poster.del;
 import dbot.Statics;
 
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.RateLimitException;
@@ -72,6 +73,15 @@ public class Commands {
 
 				case "commands":
 					Posts.commands();
+					break;
+
+				case "test":
+					try {
+						IPrivateChannel privateChannel = author.getOrCreatePMChannel();
+						post("test", privateChannel);
+					} catch(Exception e) {
+						e.printStackTrace();
+					}
 					break;
 
 				default:

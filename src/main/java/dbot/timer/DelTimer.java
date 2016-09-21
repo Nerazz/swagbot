@@ -11,12 +11,6 @@ public class DelTimer implements Runnable {
 	private IMessage message = null;
 	private int duration = 60000;
 	
-	public DelTimer(IMessage message) {
-		this.message = message;
-		Thread tDelTimer = new Thread(this, "DelTimer Thread");
-		tDelTimer.start();
-	}
-	
 	public DelTimer(IMessage message, int duration) {
 		this.message = message;
 		this.duration = duration;

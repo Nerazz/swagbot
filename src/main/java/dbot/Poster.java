@@ -4,6 +4,7 @@ import dbot.timer.DelTimer;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageBuilder;
@@ -32,13 +33,15 @@ public class Poster {
 			return null;
 		});
 	}
-	
-	public static Future<IMessage> post(String s) {
-		//Future<IMessage> message;
+
+	public static Future<IMessage> post(String s) { //TODO: läuft so oder futuremessage zwischenspeichern?; könnte besser gemacht werden?
+		return post(s, 60000);
+	}
+
+	public static Future<IMessage> post(String s, IPrivateChannel privateChannel) {
 		return RequestBuffer.request(() -> {
 			try {
-				IMessage message = new MessageBuilder(bClient).withChannel(channel).withContent(s).build();
-				new DelTimer(message);
+				IMessage message = new MessageBuilder(bClient).withChannel(privateChannel).withContent(s).build();
 				return message;
 			} catch(MissingPermissionsException e) {
 				System.out.println("MissingPermEX: Poster.post");
