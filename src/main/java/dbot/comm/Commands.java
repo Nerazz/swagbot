@@ -107,25 +107,12 @@ public class Commands {
 						break;
 				}
 			}
-			del(message, 3000);
+			del(message, 30000);
 		} else {//kein Befehl
 			del(message, 30000);
 		}
 	}
 }
-
-			/*case "prestige":
-				UserData d2Author = DB.getData(author);
-				if (d2Author.getLevel() == 100) {
-					System.out.println("level gut");
-					d2Author.addPresLevel();
-					pos.post(author + " ist nun Prestigelvl " + d2Author.getPresLevel());
-					d2Author.resetLevel();
-				}
-				else {
-					pos.post("Lowlevelnoobs dürfen das nicht benutzen...");
-				}
-				break;
 			/*case "joinme":
 				vChannel = author.getVoiceChannel().get();
 				vChannel.join();

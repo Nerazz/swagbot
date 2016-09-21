@@ -11,7 +11,6 @@ import java.util.*;
 class MainTimer extends TimerTask {//TODO: namen ändern
 	
 	private final Presences ONLINE = Presences.valueOf("ONLINE");
-	//private final Presences IDLE = Presences.valueOf("IDLE");
 	private static final IDiscordClient BOT_CLIENT = Statics.BOT_CLIENT;
 	private static final IGuild GUILD = Statics.GUILD;
 	private static final Database DATABASE = Database.getInstance();
@@ -24,7 +23,6 @@ class MainTimer extends TimerTask {//TODO: namen ändern
 	MainTimer() {
 		BOT_CLIENT.changeStatus(Status.game("frisch online"));
 	}
-
 
 	public void run() {
 		System.out.println("tick");
@@ -61,20 +59,15 @@ class MainTimer extends TimerTask {//TODO: namen ändern
 		List<IUser> userList = GUILD.getUsers();
 		for(IUser user: userList) {
 			if (!user.getID().equals(Statics.ID_BOT)) {
-				if (user.getPresence() == ONLINE) {
-					update(user, 3);
-				} /*else if (user.getPresence() == IDLE) {
-					update(user, 0);
-				}*/
+				if (user.getPresence() == ONLINE) update(user);
 				if (DATABASE.containsUser(user)) {
 					DATABASE.getData(user).reducePotDuration();
 				}
 			}
-
 		}
 	}
 
-	private void update(IUser user, int p) {
+	private void update(IUser user) {
 		
 		if (!DATABASE.containsUser(user)) {//TODO: OPTIMIEREN (DOUBLE-CHECK!!), vielleicht alle user, egal ob online oder nicht, in db laden?
 			DATABASE.add(user);
@@ -82,28 +75,13 @@ class MainTimer extends TimerTask {//TODO: namen ändern
 			System.out.println(user.getName() + " added to DATABASE!");
 			System.out.println("----------------------------------");
 		}
-		if (p > 0) {
-			//DATABASE.getData(u).addExp((p + DATABASE.getData(u).getSwagLevel() * 2) + (int)(Math.random() * 10));//aendern, dass idle groessere auswirkungen hat
-			DATABASE.getData(user).addExp((int) (((p * (Math.random() * 3.0)) / 2.0 + (p + 1.0 + DATABASE.getData(user).getSwagLevel())) * DATABASE.getData(user).getExpRate()));
-			DATABASE.getData(user).addGems(p * (DATABASE.getData(user).getSwagLevel() + 1));//nochmal fixen!!!
+		UserData userData = DATABASE.getData(user);
+		userData.addExp((int)Math.round(Math.random() * 3.0) + 4 + userData.getSwagLevel());
+		if (userData.getSwagLevel() > 0) {
+			double tmpPoints = (double)userData.getSwagPoints();
+			userData.addGems((int)Math.round(3.0 + tmpPoints / 5.0 * (tmpPoints / (tmpPoints + 5.0) + 1.0)));
+		} else {
+			userData.addGems(3);
 		}
 	}
-	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -84,10 +84,10 @@ class Posts {
 
 	static void commands() {
 		post(	"```xl\n" +
-				"!commands               |postet diese Liste\n" +
-				"!info                   |postet allgemeine Infos zum Swagbot\n" +
-				"!shop                   |postet den nicen Laden\n" +
-				"!stats                  |postet Infos des Schreibenden\n" +
+				"!commands               |diese Liste\n" +
+				"!info                   |allgemeine Infos zum Swagbot\n" +
+				"!shop                   |nicer Laden\n" +
+				"!stats                  |Infos des Schreibenden\n" +
 				"!buy 'x'                |kauft Item 'x'\n" +
 				"!top                    |Rangliste der Top5\n" +
 				"!rank                   |postet umgebende Range des Schreibenden\n" +

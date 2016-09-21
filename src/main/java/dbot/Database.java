@@ -43,7 +43,7 @@ public class Database {
 		}
 	}
 
-	public UserScores sortByScore() {//TODO: vielleicht <String, Double> und nur Namen speichern?
+	public UserScores sortByScore() {//TODO: vielleicht <String, Double> und nur Namen speichern?; Swaglevel mit einrechnen
 		IUser[] users = new IUser[userDataList.size()];
 		double[] scores = new double[userDataList.size()];
 		int i = 0;
@@ -72,7 +72,7 @@ public class Database {
 		return userScores;
 	}
 	
-	void load() {//filenotfound, ... exceptions
+	void load() {
 		System.out.println("loading Databases...");
 		try (FileReader fr = new FileReader(FILE_PATH)){
 			Gson gson = new Gson();

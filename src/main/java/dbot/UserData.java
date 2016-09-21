@@ -76,15 +76,17 @@ public class UserData extends Database {//implements comparable?
 	}
 
 	public void prestige() {
-		if ((level < 100) || (gems < 100000)) {
-			System.out.println(name + " ist noch nicht Level 100 oder hat nicht genug Gems!");
+		if (level < 100) {
+			System.out.println(name + " ist noch nicht Level 100!");
 			return;
 		}
-		gems -= 100000;
+		swagPoints += (int)Math.ceil(Math.sqrt((double)gems / 10000.0) * ((double)swagLevel + 2.0) / ((double)swagPoints + 2.0)) + level - 100;//TODO: bei stats o.Ä. theoretische SP anzeigen + gems zum nächesten
 		level = 1;
-
-		swagPoints += 5;
 		swagLevel++;
+	}
+
+	int getSwagPoints() {
+		return swagPoints;
 	}
 	
 	public double getExpRate() {
@@ -123,7 +125,7 @@ public class UserData extends Database {//implements comparable?
 		} else if (level < 100) {
 			return level * 80 + 1000;
 		} else {
-			return level * level * 2;
+			return 10000 + 7500 * (int)Math.round(Math.pow(level - 100, 1.5));
 		}
 	}
 

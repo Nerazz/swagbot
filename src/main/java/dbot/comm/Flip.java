@@ -16,7 +16,7 @@ public class Flip {
 	private static IMessage roomPost = null;
 	private static final String startString = "Offene Flip-Räume:```xl\n";
 
-	static void m(UserData uData, String params) {//TODO: static; message durchreichen und wo anders initialisieeren
+	static void m(UserData uData, String params) {//TODO: static?
 		IUser author = uData.getUser();
 		Pattern pattern = Pattern.compile("(\\d+|allin|join|close)(\\s(top|kek|\\d+))?");
 		Matcher matcher = pattern.matcher(params);
@@ -105,7 +105,7 @@ public class Flip {
 				break;
 			}
 		}
-		//remove room(author)//FEHLT
+		//remove room(author)//TODO: FEHLT?
 	}
 
 	static IMessage getRoomPost() {
@@ -141,7 +141,7 @@ public class Flip {
 
 	private static boolean containsUser(IUser user) {
 		if (user == null) {
-			throw new IllegalArgumentException("User darf nicht null sein!");//braucht return?
+			throw new IllegalArgumentException("User darf nicht null sein!");
 		}
 		for (FlipRoom tmpRoom : lRooms) {
 			if (tmpRoom.getHostID().equals(user.getID())) return true;

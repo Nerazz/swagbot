@@ -4,6 +4,7 @@ import java.util.List;
 
 /**
  * Created by Niklas on 10.08.2016.
+ * Wrapper-Objekt für ServerData und UserData
  */
 class DatabaseWrapper {
 	private ServerData serverData;

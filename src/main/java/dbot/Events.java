@@ -33,7 +33,7 @@ class Events {
 			Flip.init();
 			database = Database.getInstance();
 			database.load();
-			new Timer().schedule(new MainTimer(), 5000, 6000);
+			new Timer().schedule(new MainTimer(), 5000, 60000);
 			bInit = true;
 			System.out.println("Everything initialized");
 		}
