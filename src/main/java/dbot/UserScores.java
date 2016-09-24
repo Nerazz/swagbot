@@ -1,11 +1,14 @@
 package dbot;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IUser;
 
 /**
  * Created by Niklas on 26.08.2016.
  */
 public class UserScores {
+	private static final Logger logger = LoggerFactory.getLogger("dbot.UserScores");
 	private IUser[] users;
 	private double[] scores;
 	private int size;
@@ -35,7 +38,7 @@ public class UserScores {
 			scores[used] = score;
 			used++;
 		} else {
-			System.out.println("UserScores.addPair ERROR");
+			logger.error("more ScoreData then space");
 		}
 	}
 }

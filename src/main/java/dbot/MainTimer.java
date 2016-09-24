@@ -1,5 +1,7 @@
 package dbot;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
@@ -9,7 +11,7 @@ import java.util.List;
 import java.util.*;
 
 class MainTimer extends TimerTask {//TODO: namen ändern
-	
+	private static final Logger logger = LoggerFactory.getLogger("dbot.MainTimer");
 	private final Presences ONLINE = Presences.valueOf("ONLINE");
 	private static final IDiscordClient BOT_CLIENT = Statics.BOT_CLIENT;
 	private static final IGuild GUILD = Statics.GUILD;
@@ -52,7 +54,7 @@ class MainTimer extends TimerTask {//TODO: namen ändern
 
 			if (((hourCount % 5) == 0) && (minuteCount == 0)) {
 				DATABASE.save(false);
-				System.out.println("Database durch MainTimer gesaved");
+				logger.info("Database saved from MainTimer");
 			}
 		}
 
@@ -71,12 +73,10 @@ class MainTimer extends TimerTask {//TODO: namen ändern
 		
 		if (!DATABASE.containsUser(user)) {//TODO: OPTIMIEREN (DOUBLE-CHECK!!), vielleicht alle user, egal ob online oder nicht, in db laden?
 			DATABASE.add(user);
-			System.out.println("----------------------------------");
-			System.out.println(user.getName() + " added to DATABASE!");
-			System.out.println("----------------------------------");
+			logger.info("{} added to Database!", user.getName());
 		}
 		UserData userData = DATABASE.getData(user);
-		userData.addExp((int)Math.round(Math.random() * 3.0) + 4 + userData.getSwagLevel());
+		userData.addExp((int)((Math.round(Math.random() * 3.0) + 4.0 + userData.getSwagLevel()) * userData.getExpRate()));
 		if (userData.getSwagLevel() > 0) {
 			double tmpPoints = (double)userData.getSwagPoints();
 			userData.addGems((int)Math.round(3.0 + tmpPoints / 5.0 * (tmpPoints / (tmpPoints + 5.0) + 1.0)));

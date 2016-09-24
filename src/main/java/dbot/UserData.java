@@ -2,9 +2,12 @@ package dbot;
 
 import static dbot.Poster.post;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IUser;
 
 public class UserData extends Database {//implements comparable?
+	private static final Logger logger = LoggerFactory.getLogger("dbot.UserData");
 	private String id = null;
 	private String name = null;
 	private transient IUser user = null;
@@ -15,7 +18,8 @@ public class UserData extends Database {//implements comparable?
 	private int potDuration = 0;
 	private int swagLevel = 0;
 	private int swagPoints = 0;
-	
+	private int reminder = 0;
+
 	UserData(IUser user) {
 		this.user = user;
 		id = user.getID();
@@ -30,11 +34,12 @@ public class UserData extends Database {//implements comparable?
 		return user;
 	}
 
-	void setUser() {
+	void initUser() {
 		try {
 			user = Statics.GUILD.getUserByID(id);
 		} catch(Exception e) {
 			System.out.println("User not found: " + name);
+			System.out.println(e);
 		}
 	}
 	
@@ -64,6 +69,7 @@ public class UserData extends Database {//implements comparable?
 			this.exp -= getLevelThreshold(level);
 			level++;
 			post(":tada: DING! " + user + " ist Level " + level + "! :tada:");
+			logger.info("{} leveled to Level {}", name, level);
 		}
 	}
 	
@@ -77,12 +83,14 @@ public class UserData extends Database {//implements comparable?
 
 	public void prestige() {
 		if (level < 100) {
-			System.out.println(name + " ist noch nicht Level 100!");
+			logger.info("{} Level ist nicht hoch genug zum prestigen", name);
+			post(name + ", du musst mindestens Level 100 sein.");
 			return;
 		}
 		swagPoints += (int)Math.ceil(Math.sqrt((double)gems / 10000.0) * ((double)swagLevel + 2.0) / ((double)swagPoints + 2.0)) + level - 100;//TODO: bei stats o.Ä. theoretische SP anzeigen + gems zum nächesten
 		level = 1;
 		swagLevel++;
+		logger.info("{} now is swagLevel {} with {} swagPoints", name, swagLevel, swagPoints);
 	}
 
 	int getSwagPoints() {
@@ -101,11 +109,12 @@ public class UserData extends Database {//implements comparable?
 		return potDuration;
 	}
 	
-	public void setPotDuration(int rpgPotDuration) {
-		if (rpgPotDuration < 0) {
+	public void setPotDuration(int potDuration) {
+		if (potDuration < 0) {
+			logger.error("{} potDuration ist < 0", name);
 			throw new IllegalArgumentException("PotDuration darf nicht < 0 sein!");
 		}
-		this.potDuration = rpgPotDuration;
+		this.potDuration = potDuration;
 	}
 	
 	void reducePotDuration() {
@@ -113,14 +122,36 @@ public class UserData extends Database {//implements comparable?
 			potDuration -= 1;
 			if (potDuration < 1) {
 				setExpRate(1);
-				System.out.println("xpot von " + name + " durch");
+				logger.info("{} XPot empty", name);
+				if (reminder > 0) {
+					post("Hey, dein XPot zeigt keine Wirkung mehr...", user);//TODO: kauf und staffelung prüfen
+					logger.info("{} got reminded", name);
+					reminder--;
+				}
 			}
 		}
+	}
+
+	public int getReminder() {
+		return reminder;
+	}
+
+	public void addReminder(int anzahl) {
+		if (reminder < 0) {
+			reminder -= anzahl;
+		} else {
+			reminder += anzahl;
+		}
+	}
+
+	public void negateReminder() {
+		reminder = -reminder;
 	}
 
 	public static int getLevelThreshold(int level) {
 		level--;
 		if (level < 0) {
+			logger.warn("level is < 0");
 			throw new IllegalArgumentException("Level darf nicht < 0 sein!");
 		} else if (level < 100) {
 			return level * 80 + 1000;

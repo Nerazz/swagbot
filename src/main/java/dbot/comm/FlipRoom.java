@@ -4,9 +4,12 @@ import static dbot.Poster.post;
 
 import dbot.Database;
 import dbot.UserData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IUser;
 
 public class FlipRoom extends Flip {
+	private static final Logger logger = LoggerFactory.getLogger("dbot.comm.FlipRoom");
 	private IUser uHost;
 	private IUser uClient;
 	private UserData dHost;
@@ -31,25 +34,31 @@ public class FlipRoom extends Flip {
 		roll();
 	}
 	
-	private void roll() {//schlauer machen
+	private void roll() {
 		String flipSeite;
 		if (Math.random() < 0.5) {
 			flipSeite = "TOP";
 		} else {
 			flipSeite = "KEK";
 		}
-		if (seite.equals(flipSeite)) {
-			post(uHost + " hat mit " + seite + " gegen " + uClient + " gewonnen und bekommt " + (pot * 2) + ":gem:!!");
+		if (seite.equals(flipSeite)) {//TODO: noch verbesserbar mit extamethode?
 			dHost.addGems(pot * 2);
+			logger.info("{} won {} Gems vs {}", dHost.getName(), pot * 2, dClient.getName());
+			post(uHost + " hat mit " + seite + " gegen " + uClient + " gewonnen und bekommt " + (pot * 2) + ":gem:!!");
+			post("gz, du hast " + (pot * 2) + ":gem: gegen " + uClient.getName() + " gewonnen!", uHost);
+			post(":cry: du hast deine " + pot + ":gem: gegen " + uHost.getName() + " verloren...", uClient);
 		} else {
-			post(uClient + " hat mit " + flipSeite + " gegen " + uHost + " gewonnen und bekommt " + (pot * 2) + ":gem:!!");
 			dClient.addGems(pot * 2);
+			logger.info("{} won {} Gems vs {}", dClient.getName(), pot * 2, dHost.getName());
+			post(uClient + " hat mit " + flipSeite + " gegen " + uHost + " gewonnen und bekommt " + (pot * 2) + ":gem:!!");
+			post("gz, du hast " + (pot * 2) + ":gem: gegen " + uHost.getName() + " gewonnen!", uClient);
+			post(":cry: du hast deine " + pot + ":gem: gegen " + uClient.getName() + " verloren...", uHost);
 		}
 	}
 	
 	private int updateID() {
 		return currentID++;
-	}//sollte dann ++currentID (nach serverData load-implementation)
+	}//TODO: (noch nötig?) sollte dann ++currentID (nach serverData load-implementation)
 	
 	int getRoomID() {
 		return roomID;

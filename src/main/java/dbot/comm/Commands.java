@@ -7,6 +7,8 @@ import static dbot.Poster.post;
 import static dbot.Poster.del;
 import dbot.Statics;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IUser;
@@ -18,12 +20,11 @@ import java.util.regex.*;
 public class Commands {
 
 	private static final Database database = Database.getInstance();
+	private static final Logger logger = LoggerFactory.getLogger("dbot.comm.Commands");
 
 	public static void trigger(IMessage message) {
 		IUser author = message.getAuthor();
-
-		System.out.println("messagetrigger durch '" + message.getContent() + "' von " + author.getName());
-
+		logger.debug("Message({}): {}", author.getName(), message.getContent());
 		Pattern pattern = Pattern.compile("^!([a-z]+)(\\s(.+))?");
 		Matcher matcher = pattern.matcher(message.getContent().toLowerCase());
 		if (matcher.matches()) {
@@ -37,6 +38,10 @@ public class Commands {
 
 				case "stats":
 					Posts.stats(dAuthor);
+					break;
+
+				case "gems":
+					post(author.getName() + ", du hast " + dAuthor.getGems() + ":gem:.");
 					break;
 				
 				case "top":
@@ -59,7 +64,21 @@ public class Commands {
 					Give.m(dAuthor, params);
 					break;
 
+				case "remind":
+					dAuthor.negateReminder();
+					post("Reminder getogglet");
+					break;
+
+				case "changelog":
+					Posts.changelog();
+					break;
+
+				case "prestigeinfo":
 				case "prestige"://TODO: Nachfrage
+					Posts.prestigeInfo();
+					break;
+
+				case "ichwilljetztwirklichresettenundkennedieregelnzuswagpointsundcomindestenseinigermassen":
 					dAuthor.prestige();
 					break;
 
@@ -76,16 +95,11 @@ public class Commands {
 					break;
 
 				case "test":
-					try {
-						IPrivateChannel privateChannel = author.getOrCreatePMChannel();
-						post("test", privateChannel);
-					} catch(Exception e) {
-						e.printStackTrace();
-					}
+					post("test", author);
 					break;
 
 				default:
-					System.out.println("Command '" + message.getContent() +  "' nicht gefunden.");
+					logger.info("Command '{}' not found", message.getContent());
 					break;
 			}
 			del(message, 3000);
@@ -107,10 +121,8 @@ public class Commands {
 						try {
 							Statics.BOT_CLIENT.logout();
 							System.exit(0);
-						} catch(DiscordException e) {
-							System.out.println("logout-ERROR: " + e);
-						} catch(RateLimitException e) {
-							System.out.println("RATELIMT BEI LOGOUT: " + e);
+						} catch(DiscordException | RateLimitException e) {
+							logger.error("Error while logging out", e);
 						}
 						break;
 					default:

@@ -5,6 +5,8 @@ import static java.io.File.separator;
 import java.io.*;
 
 import dbot.comm.FlipRoom;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IUser;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -14,7 +16,7 @@ import java.util.*;
 import com.google.gson.*;
 
 public class Database {
-
+	private static Logger logger = LoggerFactory.getLogger("dbot.Database");
 	private static Database instance = null;
 	private static ServerData serverData;
 	private static List<UserData> userDataList;
@@ -52,12 +54,13 @@ public class Database {
 			scores[i] = Math.floor(((userData.getExp() / (double)UserData.getLevelThreshold(userData.getLevel())) + userData.getLevel()) * 100) / 100; //*100/100 für Nachkommastellenrundung
 			i++;
 		}
+		IUser tmpUser;
+		double tmpScore;
 		for (; i > 1; i--) {//bubblesort
 			for (int j = 0; j < (i - 1); j++) {
 				if (scores[j] < scores[j + 1]) {
-					System.out.println("sort");//TODO: vielleicht tmpvariablen außerhalb?
-					IUser tmpUser = users[j];
-					double tmpScore = scores[j];
+					tmpUser = users[j];
+					tmpScore = scores[j];
 					users[j] = users[j + 1];
 					scores[j] = scores[j + 1];
 					users[j + 1] = tmpUser;
@@ -73,32 +76,32 @@ public class Database {
 	}
 	
 	void load() {
-		System.out.println("loading Databases...");
+		logger.info("loading Databases...");
 		try (FileReader fr = new FileReader(FILE_PATH)){
 			Gson gson = new Gson();
 			DatabaseWrapper dbw = gson.fromJson(fr, DatabaseWrapper.class);
 			serverData = dbw.getServerData();
 			userDataList = dbw.getUserDataBase();
 			for (UserData userData : userDataList) {
-				userData.setUser();
+				userData.initUser();
 			}
-			System.out.println("loaded " + userDataList.size() + " Users and Serverdata from Database");
+			logger.info("loaded {} Users and Serverdata from Database", userDataList.size());
 		} catch(FileNotFoundException e) {
-			System.out.println("FileNotFound in Database.load() " + e);
+			logger.warn("Database not found, creating a new one...");
 			userDataList = new ArrayList<>();
 			serverData = new ServerData();
-			System.out.println("New Databases for Users and Server created");
+			logger.info("New Databases for Users and Server created");
 		} catch(IOException e) {
-			System.out.println("IOException in Database.load() " + e);
+			logger.error("IOException while loading Database", e);
 		}
 	}
 	
 	public void save(boolean backup) {
-		System.out.println("saving Database...");
+		logger.info("saving Database...");
 		String filePath = FILE_PATH;
 		serverData.setFlipRoomID(FlipRoom.getFlipRoomID());
 		if (backup) {
-			System.out.println("creating backup...");
+			logger.info("creating backup...");
 			Format format = new SimpleDateFormat("dd.MM.YY-HH.mm");//backup_25.08.16-19.40.json
 			filePath = BACKUP_PATH + format.format(new Date()) + ".json";
 		}
@@ -109,9 +112,9 @@ public class Database {
 			dbw.setServerData(serverData);
 			dbw.setUserDataBase(userDataList);
 			gson.toJson(dbw, fw);
-			System.out.println("saved Database");
+			logger.info("saved Database");
 		} catch (IOException e) {
-			System.out.println("IO-Exception, save interrupted: " + e);
+			logger.error("IOException while saving Database", e);
 		}
 
 	}
@@ -121,7 +124,10 @@ public class Database {
 	}
 
 	public UserData getData(IUser user) {//lieber static?
-		if (user == null) throw new IllegalArgumentException("User ist NULL in Database.findUserData!");
+		if (user == null) {
+			logger.warn("User is null while getting its data");
+			throw new IllegalArgumentException("User is null in Database.findUserData!");
+		}
 		String id = user.getID();
 		for (UserData userData : userDataList) {
 			if (userData.getID().equals(id)) return userData;

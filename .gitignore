@@ -8,7 +8,10 @@
 
 # private
 /src/main/java/dbot/Statics.java
-/database.json
+/backups
+/logs
+*.json
+*.log
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/

@@ -7,33 +7,35 @@ import dbot.Statics;
 import dbot.UserData;
 
 import java.util.regex.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.Presences;
 
-final class Give {
-	
+final class Give {//TODO: genauer angucken, scheint schlecht
+	private static final Logger logger = LoggerFactory.getLogger("dbot.comm.Give");
+
 	static void m(UserData dGiver, String params) {
 		Pattern pattern = Pattern.compile("^<@(\\d+)>\\s(\\d+)");
 		Matcher matcher = pattern.matcher(params);
 		if (!matcher.matches()) return;
 		IUser uGetter = Statics.GUILD.getUserByID(matcher.group(1));
-		if (uGetter == null) return;//wird eigentlich schon in getData abgefangen
+		if (uGetter == null) return;//TODO: wird eigentlich schon in getData abgefangen?
 		if (uGetter.getPresence().equals(Presences.OFFLINE)) {
-			System.out.println("User nicht online");
+			logger.warn("User not online");
 			return;
 		}
 		UserData dGetter = Database.getInstance().getData(uGetter);
 		if (dGetter == null) return;
 		int gems = Integer.parseInt(matcher.group(2));
 		if ((dGiver.getGems() < gems) || (gems < 1)) {
-			System.out.println("fail");
+			logger.warn("{} tried giving {} Gems", dGiver.getName(), gems);
 			return;
 		}
 		dGiver.subGems(gems);
 		dGetter.addGems(gems);
 		post(uGetter + " bekommt " + gems + " :gem: von " + dGiver.getUser());
-		System.out.println(dGiver.getName() + " gave " + uGetter.getName() + gems + " gems");
-
+		logger.info("{} gave {} {} Gems", dGiver.getName(), uGetter.getName(), gems);
 	}
-	
 }

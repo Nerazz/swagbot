@@ -1,13 +1,15 @@
 package dbot.timer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IMessage;
 
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.RateLimitException;
 
-public class DelTimer implements Runnable {
-	
+public class DelTimer implements Runnable {//TODO: vielleicht statt neuen Threads messages in list und über MainTimer löschen
+	private static final Logger logger = LoggerFactory.getLogger("dbot.timer.DelTimer");
 	private IMessage message = null;
 	private int duration = 60000;
 	
@@ -24,16 +26,10 @@ public class DelTimer implements Runnable {
 				Thread.sleep(duration);
 				message.delete();
 			} else {
-				System.out.println("DelTimer.Message == null");
+				logger.warn("tried to delete null-message");
 			}
-		} catch(MissingPermissionsException e) {
-			System.out.println("MissingEX: DelTimer.run");
-		} catch(RateLimitException e) {
-			System.out.println("RateLimitEX: DelTimer.run");
-		} catch(DiscordException e) {
-			System.out.println("DiscordEX: DelTimer.run");
-		} catch(InterruptedException e) {
-			System.out.println("InterruptedEX: DelTimer.run");
+		} catch(MissingPermissionsException | RateLimitException | InterruptedException | DiscordException e) {
+			logger.error("Error while deleting message", e);
 		}
 	}
 }

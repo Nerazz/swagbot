@@ -2,6 +2,9 @@ package dbot;
 
 import dbot.comm.Commands;
 import dbot.comm.Flip;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sx.blah.discord.handle.impl.events.DiscordDisconnectedEvent;
 import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
 import sx.blah.discord.handle.impl.events.GuildCreateEvent;
 import sx.blah.discord.handle.impl.events.UserJoinEvent;
@@ -16,6 +19,7 @@ import sx.blah.discord.util.RateLimitException;
 import java.util.Timer;
 
 class Events {
+	private final static Logger logger = LoggerFactory.getLogger("dbot.Events");
 	private static boolean bInit = false;
 	private static IGuild guild;
 	private static Database database;
@@ -24,35 +28,34 @@ class Events {
 	
 	@EventSubscriber
 	public void onGuildCreateEvent(GuildCreateEvent event) {
-		System.out.println("~GuildCreateEvent~");
+		logger.debug("GuildCreateEvent");
 		if (!bInit) {
 			IDiscordClient botClient = Statics.BOT_CLIENT;
 			Statics.GUILD = botClient.getGuildByID(Statics.ID_GUILD);
 			guild = Statics.GUILD;
-			System.out.println("Bot joined guild: " + guild.getName());
+			logger.debug("Bot joined guild: {}", guild.getName());
 			Flip.init();
 			database = Database.getInstance();
 			database.load();
 			new Timer().schedule(new MainTimer(), 5000, 60000);
 			bInit = true;
-			System.out.println("Everything initialized");
+			logger.debug("Initialization done");
 		}
-		System.out.println("~BOT~READY~");
+		logger.debug("Bot ready");
 	}
 
-	/*@EventSubscriber
-	public void onDiscordDisconnectedEvent() {
-		System.out.println("DISCONNECTED!!");
-		//DB.save();??
-	}*/
+	@EventSubscriber
+	public void onDiscordDisconnectedEvent(DiscordDisconnectedEvent event) {//TODO: sollte gesaved werden?
+		logger.warn("Bot disconnected");
+	}
 	
 	@EventSubscriber
-	public synchronized void onMessageEvent(MessageReceivedEvent event) {//synchronized richtig hier?
+	public synchronized void onMessageEvent(MessageReceivedEvent event) {
 		IMessage message = event.getMessage();
 		if (database.containsUser(message.getAuthor())) {
 			Commands.trigger(message);
 		} else {
-			System.out.println("Typing user not in Database!");
+			logger.warn("Typing user wasn't found in Database");
 		}
 	}
 	
@@ -60,11 +63,9 @@ class Events {
 	public void onUserAdded(UserJoinEvent event) {
 		try {
 			event.getUser().addRole(guild.getRolesByName("Newfags").get(0));
-			System.out.println("added Role to " + event.getUser().getName());
-		} catch(MissingPermissionsException e) {
-			e.printStackTrace();
-		} catch(DiscordException | RateLimitException e) {//TODO: Exceptions fixen
-			e.printStackTrace();
+			logger.info("added role(Newfags) to {}", event.getUser().getName());
+		} catch(MissingPermissionsException | DiscordException | RateLimitException e) {
+			logger.error("Error while adding role to {}", event.getUser().getName(), e);
 		}
 	}
 	
@@ -89,8 +90,6 @@ class Events {
 			System.out.println("nenene");
 		}
 	}*/
-
-	
 	
 	/*private void playFile(AudioChannel vChannel, String path) throws Exception {
 		//channel = guild.getVoiceChannelByID("97105817584553984");
@@ -99,7 +98,4 @@ class Events {
 		channel.queueFile(testFile);
 		
 	}*/
-	
-	
-	
 }

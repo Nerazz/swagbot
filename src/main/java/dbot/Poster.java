@@ -1,10 +1,13 @@
 package dbot;
 
 import dbot.timer.DelTimer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IPrivateChannel;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageBuilder;
@@ -14,6 +17,7 @@ import java.util.concurrent.Future;
 public class Poster {
 	private static final IDiscordClient bClient = Statics.BOT_CLIENT;
 	private static final IChannel channel = Statics.GUILD.getChannelByID(Statics.ID_BOTSPAM);
+	private static final Logger logger = LoggerFactory.getLogger("dbot.Poster");
 	
 	private Poster() {}
 	
@@ -25,10 +29,8 @@ public class Poster {
 					new DelTimer(message, duration);
 				}
 				return message;
-			} catch(MissingPermissionsException e) {
-				System.out.println("MissingPermEX: Poster.post+dur");
-			} catch(DiscordException e) {
-				System.out.println("DiscordEX: Poster.post+dur");
+			} catch(MissingPermissionsException | DiscordException e) {
+				logger.error("failed posting(with duration): {}", s, e);
 			}
 			return null;
 		});
@@ -38,15 +40,13 @@ public class Poster {
 		return post(s, 60000);
 	}
 
-	public static Future<IMessage> post(String s, IPrivateChannel privateChannel) {
+	public static Future<IMessage> post(String s, IUser user) {
 		return RequestBuffer.request(() -> {
 			try {
-				IMessage message = new MessageBuilder(bClient).withChannel(privateChannel).withContent(s).build();
-				return message;
-			} catch(MissingPermissionsException e) {
-				System.out.println("MissingPermEX: Poster.post");
-			} catch(DiscordException e) {
-				System.out.println("DiscordEX: Poster.post");
+				IPrivateChannel privateChannel = user.getOrCreatePMChannel();
+				return new MessageBuilder(bClient).withChannel(privateChannel).withContent(s).build();
+			} catch(MissingPermissionsException | DiscordException e) {
+				logger.error("failed posting private(to {}): {}", user.getName(), s, e);
 			}
 			return null;
 		});
@@ -56,10 +56,8 @@ public class Poster {
 		RequestBuffer.request(() -> {
 			try {
 				message.delete();
-			} catch(MissingPermissionsException e) {
-				System.out.println("MissingPermEX: Poster.del");
-			}  catch(DiscordException e) {
-				System.out.println("DiscordEX: Poster.del");
+			} catch(MissingPermissionsException | DiscordException e) {
+				logger.error("failed deleting message", e);
 			}
 		});
 	}
@@ -73,10 +71,8 @@ public class Poster {
 			try {
 				message.edit(s);
 				return message;
-			} catch(MissingPermissionsException e) {
-				System.out.println("MissingPermEX: Poster.edit");
-			} catch(DiscordException e) {
-				System.out.println("DiscordEX: Poster.edit");
+			} catch(MissingPermissionsException | DiscordException e) {
+				logger.error("failed editing message", e);
 			}
 			return null;
 		});

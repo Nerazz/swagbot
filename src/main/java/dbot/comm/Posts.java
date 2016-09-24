@@ -18,13 +18,18 @@ class Posts {
 		String message = dAuthor.getName();
 		if (dAuthor.getSwagLevel() > 0) message += " :trident:" + numberGen(dAuthor.getSwagLevel());
 		message += "\nLevel " + dAuthor.getLevel() + " mit " + dAuthor.getExp() + "/" + UserData.getLevelThreshold(dAuthor.getLevel()) + " Exp";
-		message += "\n" + dAuthor.getGems() + ":gem:";
+		//message += "\n" + dAuthor.getGems() + ":gem:";
+
 		if (dAuthor.getPotDuration() > 0) {
 			message += "\nBoost(x" + dAuthor.getExpRate() + ") ist noch " + dAuthor.getPotDuration() + " min aktiv";
 		} else {
 			message += "\nKein aktiver Boost";
 		}
-
+		if (dAuthor.getReminder() > 0) {
+			message += "\n" + dAuthor.getReminder() + " Reminder(on)";
+		} else if(dAuthor.getReminder() < 0) {
+			message += "\n" + -dAuthor.getReminder() + " Reminder(off)";
+		}
 		post(message);
 	}
 
@@ -69,15 +74,27 @@ class Posts {
 		);
 	}
 
+	static void changelog() {
+		post(	"neuer Shit:\n" +
+				"!remind\n" +
+				"!prestigeinfo\n" +
+				"Reminder ohne Anzahl fix\n" +
+				"Logger (#SWAAAAAAG)\n"
+
+		);
+	}
+
 	static void shop() {
 		post(
 				"der nice Laden hat folgendes im Angebot:\n" +
 				"```xl\n" +
-				"» xpot\n" +
-				" $ » tall    (500G)  - 70  Minuten 1.5x Exp (+50%) $ BEST OFFER $\n" +
-				"   » grande  (1000G) - 65  Minuten 2x   Exp (+100%)\n" +
-				"   » venti   (2000G) - 60  Minuten 3x   Exp (+200%)\n" +
-				"   » giant   (9999G) - 120 Minuten 5x   Exp (+400%)" +
+				"» XPot\n" +
+				" $ » tall     (500G)  - 70  Minuten 1.5x Exp (+50%) $ BEST OFFER $\n" +
+				"   » grande   (1000G) - 65  Minuten 2x   Exp (+100%)\n" +
+				"   » venti    (2000G) - 60  Minuten 3x   Exp (+200%)\n" +
+				"   » giant    (9999G) - 120 Minuten 5x   Exp (+400%)\n" +
+				"   » unstable (10000G)- 10  Minuten ??x  Exp (+???%)\n" +
+				"» Reminder    (100G)  - Erinnert, wenn XPot nicht mehr wirkt, mit Anzahl moglich\n" +
 				"```"
 		);
 	}
@@ -85,23 +102,36 @@ class Posts {
 	static void commands() {
 		post(	"```xl\n" +
 				"!commands               |diese Liste\n" +
+				"!changelog              |letzte Anderungen\n" +
 				"!info                   |allgemeine Infos zum Swagbot\n" +
 				"!shop                   |nicer Laden\n" +
 				"!stats                  |Infos des Schreibenden\n" +
+				"!gems                   |Eingebers Gems\n" +
 				"!buy 'x'                |kauft Item 'x'\n" +
 				"!top                    |Rangliste der Top5\n" +
 				"!rank                   |postet umgebende Range des Schreibenden\n" +
-				"!give 'gems' '@person'  |gibt Person Gems\n" +
+				"!give '@person' 'gems'  |gibt Person Gems\n" +
 				"!flip 'gems' ('top/kek')|offnet Coinflip-Raum (statt 'gems' ist auch 'allin' moglich)\n" +
 				"!flip join 'ID'         |flippt gegen den Raumersteller\n" +
 				"!flip close             |schliesst eigenen Flipraum (Gems werden erstattet)\n" +
-				"!prestige               |Swag (ab lvl 100)\n" +
+				"!remind                 |togglet Reminder\n" +
+				"!prestigeinfo           |Infos zum Prestigen\n" +
 				"!roll                   |Roll zwischen 1 und 100\n" +
 				"!roll 'x'               |Roll zwischen 1 und 'x'\n" +
 				"!roll 'x' 'y'           |Roll zwischen 'x' und 'y'" +
 				"```"
 		);
+	}
 
-
+	static void prestigeInfo() {
+		post(	"Infos zum Prestigen:\n" +
+				"- Level wird wieder auf 1 gesetzt und alle :gem: gehen verloren, dafür wird das Swaglevel um 1 erhöht\n" +
+				"- jedes Level über 100 gewährt einen Swagpoint\n" +
+				"- je mehr :gem: verloren gehen, desto mehr Swagpoints werden erlangt\n" +
+				"- je höher das Swaglevel, desto mehr Exp pro Minute\n" +
+				"- je mehr Swagpoints, desto mehr :gem: pro Minute\n" +
+				"- wenn du sicher bist, dass du prestigen willst, gönn dir mit:\n" +
+				"!ichwilljetztwirklichresettenundkennedieregelnzuswagpointsundcomindestenseinigermassen"
+		);
 	}
 }
