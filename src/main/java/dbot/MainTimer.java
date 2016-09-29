@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.*;
 
 class MainTimer extends TimerTask {//TODO: namen ändern
-	private static final Logger logger = LoggerFactory.getLogger("dbot.MainTimer");
-	private final Presences ONLINE = Presences.valueOf("ONLINE");
+	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.MainTimer");
+	private static final Presences ONLINE = Presences.valueOf("ONLINE");
 	private static final IDiscordClient BOT_CLIENT = Statics.BOT_CLIENT;
 	private static final IGuild GUILD = Statics.GUILD;
 	private static final Database DATABASE = Database.getInstance();
@@ -54,7 +54,7 @@ class MainTimer extends TimerTask {//TODO: namen ändern
 
 			if (((hourCount % 5) == 0) && (minuteCount == 0)) {
 				DATABASE.save(false);
-				logger.info("Database saved from MainTimer");
+				LOGGER.info("Database saved from MainTimer");
 			}
 		}
 
@@ -73,7 +73,7 @@ class MainTimer extends TimerTask {//TODO: namen ändern
 		
 		if (!DATABASE.containsUser(user)) {//TODO: OPTIMIEREN (DOUBLE-CHECK!!), vielleicht alle user, egal ob online oder nicht, in db laden?
 			DATABASE.add(user);
-			logger.info("{} added to Database!", user.getName());
+			LOGGER.info("{} added to Database!", user.getName());
 		}
 		UserData userData = DATABASE.getData(user);
 		userData.addExp((int)((Math.round(Math.random() * 3.0) + 4.0 + userData.getSwagLevel()) * userData.getExpRate()));

@@ -6,26 +6,37 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.util.DiscordException;
 
 /**
  * Bot - Mainclass
  * @author	Niklas Zd
  */
-class Bot {
-	
-	public static void main(String[] args) {//TODO: auf maingilde rollen anpassen(bot sieht nur botspam)
+public class Bot {
+	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.Bot");//TODO: alle final logger capslock
+	private static final Events EVENTS = new Events();
+	private static IDiscordClient botClient = null;
+
+	public static void main(String[] args) {
 		Statics.init();
-		Logger logger = LoggerFactory.getLogger("dbot.Bot");
 		LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 		StatusPrinter.print(lc);
+		updateBot();
+	}
+
+	public static void updateBot() {
+		if (botClient != null) {
+			if (botClient.isReady()) return;
+			botClient.getDispatcher().unregisterListener(EVENTS);
+		}
 		try {
-			IDiscordClient botClient = new ClientBuilder().withToken(Statics.BOT_TOKEN).setMaxReconnectAttempts(10).login();
+			botClient = new ClientBuilder().withToken(Statics.BOT_TOKEN).setMaxReconnectAttempts(5).login();//0.25 * pow(2,x), 0 < x < 5[min] -> 5 sind ca 16min gesamt
 			Statics.BOT_CLIENT = botClient;
-			botClient.getDispatcher().registerListener(new Events());
-			logger.debug("logged in");
+			botClient.getDispatcher().registerListener(EVENTS);
+			LOGGER.debug("created new Bot");
 		} catch(DiscordException e) {
-			logger.error("Error while logging in", e);
+			LOGGER.error("Error while creating new Bot", e);
 		}
 	}
 }
