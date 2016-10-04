@@ -19,7 +19,8 @@ public class DelTimer implements Runnable {//TODO: vielleicht statt neuen Thread
 		Thread tDelTimer = new Thread(this, "DelTimer Thread");
 		tDelTimer.start();
 	}
-	
+
+	@Override
 	public void run() {
 		try {
 			if (message != null) {

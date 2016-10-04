@@ -26,6 +26,7 @@ class MainTimer extends TimerTask {//TODO: namen ändern
 		BOT_CLIENT.changeStatus(Status.game("frisch online"));
 	}
 
+	@Override
 	public void run() {
 		System.out.println("tick");
 		minuteCount += 1;

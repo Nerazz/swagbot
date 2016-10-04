@@ -21,6 +21,7 @@ public class RelogTimer implements Runnable {//TODO: name: RelogTimer
 		}
 	}
 
+	@Override
 	public void run() {
 		LOGGER.info("started new RelogTimer");
 		try {

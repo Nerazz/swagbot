@@ -7,6 +7,8 @@ import static dbot.Poster.post;
 import static dbot.Poster.del;
 import dbot.Statics;
 
+import dbot.timer.LottoTimer;
+import dbot.timer.RaffleTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IMessage;
@@ -60,6 +62,14 @@ public class Commands {
 					Flip.m(dAuthor, params);
 					break;
 
+				case "raffle":
+					RaffleTimer.m(dAuthor, params);
+					break;
+
+				case "lotto":
+					new LottoTimer(dAuthor, params);
+					break;
+
 				case "give":
 					Give.m(dAuthor, params);
 					break;
@@ -92,10 +102,6 @@ public class Commands {
 
 				case "commands":
 					Posts.commands();
-					break;
-
-				case "test":
-					post("test", author);
 					break;
 
 				default:

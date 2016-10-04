@@ -7,7 +7,7 @@ import sx.blah.discord.handle.obj.IUser;
 /**
  * Created by Niklas on 26.08.2016.
  */
-public class UserScores {
+public class UserScores {//TODO: eigene andere klasse benutzen; oder besser: hashmap
 	private static final Logger logger = LoggerFactory.getLogger("dbot.UserScores");
 	private IUser[] users;
 	private double[] scores;
