@@ -4,18 +4,18 @@ import static dbot.Poster.post;
 
 import dbot.Statics;
 import dbot.UserData;
-import dbot.UserScores;
+import dbot.DataMap;
 import sx.blah.discord.handle.obj.IUser;
 
 /**
  * Created by Niklas on 13.09.2016.
  */
 class Posts {
-	private final static String numbers[] = {":zero:", ":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:", ":nine:"};
-	private final static String medals[] = {":first_place:", ":second_place:", ":third_place:", ":military_medal:"};
+	private static final String numbers[] = {":zero:", ":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:", ":nine:"};
+	private static final String medals[] = {":first_place:", ":second_place:", ":third_place:", ":military_medal:"};
 
 	static void stats(UserData dAuthor) {
-		String message = dAuthor.getName();
+		String message = "";
 		if (dAuthor.getSwagLevel() > 0) message += " :trident:" + numberGen(dAuthor.getSwagLevel());
 		message += "\nLevel " + dAuthor.getLevel() + " mit " + dAuthor.getExp() + "/" + UserData.getLevelThreshold(dAuthor.getLevel()) + " Exp";
 		//message += "\n" + dAuthor.getGems() + ":gem:";
@@ -30,7 +30,7 @@ class Posts {
 		} else if(dAuthor.getReminder() < 0) {
 			message += "\n" + -dAuthor.getReminder() + " Reminder(off)";
 		}
-		post(message);
+		post(dAuthor.getUser() + message);
 	}
 
 	private static String numberGen(int i) {
@@ -49,21 +49,21 @@ class Posts {
 		}
 	}
 
-	static void top(UserScores userScores) {
+	static void top(DataMap<IUser, Double> dataMap) {
 		String message = "TOP 5:";
-		for (int i = 0; (i < userScores.getSize()) && (i < 5); i++) {
-			message += "\n" + medalGen(i) + userScores.getUser(i).getName() + " - " + userScores.getScore(i);
+		for (int i = 0; (i < dataMap.size()) && (i < 5); i++) {
+			message += "\n" + medalGen(i) + dataMap.getKey(i).getName() + " - " + dataMap.getValue(i);
 		}
 		post(message);
 	}
 
-	static void rank(UserScores userScores, IUser author) {
+	static void rank(DataMap<IUser, Double> dataMap, IUser author) {
 		int i = 0;
-		while ((i < userScores.getSize()) && !userScores.getUser(i).getID().equals(author.getID())) i++;
+		while ((i < dataMap.size()) && !dataMap.getKey(i).getID().equals(author.getID())) i++;
 		String message = "Umgebende Ränge:";
-		if (i != 0) message += "\n" + medalGen(i - 1) + userScores.getUser(i - 1).getName() + " - " + userScores.getScore(i - 1);
-		message += "\n" + medalGen(i) + userScores.getUser(i) + " - " + userScores.getScore(i);
-		if (i != userScores.getSize()) message += "\n" + medalGen(i + 1) + userScores.getUser(i + 1).getName() + " - " + userScores.getScore(i + 1);
+		if (i != 0) message += "\n" + medalGen(i - 1) + dataMap.getKey(i - 1).getName() + " - " + dataMap.getValue(i - 1);
+		message += "\n" + medalGen(i) + dataMap.getKey(i) + " - " + dataMap.getValue(i);
+		if (i != dataMap.size()) message += "\n" + medalGen(i + 1) + dataMap.getKey(i + 1).getName() + " - " + dataMap.getValue(i + 1);
 		post(message);
 	}
 
@@ -76,11 +76,8 @@ class Posts {
 
 	static void changelog() {
 		post(	"neuer Shit:\n" +
-				"!remind\n" +
-				"!prestigeinfo\n" +
-				"Reminder ohne Anzahl fix\n" +
-				"Logger (#SWAAAAAAG)\n"
-
+				"!lotto\n" +
+				"Design (Posts)"
 		);
 	}
 

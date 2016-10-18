@@ -9,7 +9,7 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.RateLimitException;
 
 public class DelTimer implements Runnable {//TODO: vielleicht statt neuen Threads messages in list und über MainTimer löschen
-	private static final Logger logger = LoggerFactory.getLogger("dbot.timer.DelTimer");
+	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.timer.DelTimer");
 	private IMessage message = null;
 	private int duration = 60000;
 	
@@ -27,10 +27,10 @@ public class DelTimer implements Runnable {//TODO: vielleicht statt neuen Thread
 				Thread.sleep(duration);
 				message.delete();
 			} else {
-				logger.warn("tried to delete null-message");
+				LOGGER.warn("tried to delete null-message");
 			}
 		} catch(MissingPermissionsException | RateLimitException | InterruptedException | DiscordException e) {
-			logger.error("Error while deleting message", e);
+			LOGGER.error("Error while deleting message", e);
 		}
 	}
 }

@@ -16,7 +16,7 @@ import java.util.*;
 import com.google.gson.*;
 
 public class Database {
-	private static Logger logger = LoggerFactory.getLogger("dbot.Database");
+	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.Database");
 	private static Database instance = null;
 	private static ServerData serverData;
 	private static List<UserData> userDataList;
@@ -45,7 +45,7 @@ public class Database {
 		}
 	}
 
-	public UserScores sortByScore() {//TODO: vielleicht <String, Double> und nur Namen speichern?; Swaglevel mit einrechnen
+	public DataMap<IUser, Double> sortByScore() {//TODO: vielleicht <String, Double> und nur Namen speichern?; Swaglevel mit einrechnen
 		IUser[] users = new IUser[userDataList.size()];
 		double[] scores = new double[userDataList.size()];
 		int i = 0;
@@ -68,15 +68,18 @@ public class Database {
 				}
 			}
 		}
-		UserScores userScores = new UserScores(users.length);
+		DataMap<IUser, Double> dataMap = new DataMap<>();
 		for (i = 0; i < users.length; i++) {
-			userScores.add(users[i], scores[i]);
+			dataMap.put(users[i], scores[i]);
+			System.out.println(dataMap.getKey(i).toString());
+			System.out.println(dataMap.getValue(i).toString());
+
 		}
-		return userScores;
+		return dataMap;
 	}
 	
 	void load() {
-		logger.info("loading Databases...");
+		LOGGER.info("loading Databases...");
 		try (FileReader fr = new FileReader(FILE_PATH)){
 			Gson gson = new Gson();
 			DatabaseWrapper dbw = gson.fromJson(fr, DatabaseWrapper.class);
@@ -85,23 +88,23 @@ public class Database {
 			for (UserData userData : userDataList) {
 				userData.initUser();
 			}
-			logger.info("loaded {} Users and Serverdata from Database", userDataList.size());
+			LOGGER.info("loaded {} Users and Serverdata from Database", userDataList.size());
 		} catch(FileNotFoundException e) {
-			logger.warn("Database not found, creating a new one...");
+			LOGGER.warn("Database not found, creating a new one...");
 			userDataList = new ArrayList<>();
 			serverData = new ServerData();
-			logger.info("New Databases for Users and Server created");
+			LOGGER.info("New Databases for Users and Server created");
 		} catch(IOException e) {
-			logger.error("IOException while loading Database", e);
+			LOGGER.error("IOException while loading Database", e);
 		}
 	}
 	
 	public void save(boolean backup) {
-		logger.info("saving Database...");
+		LOGGER.info("saving Database...");
 		String filePath = FILE_PATH;
 		serverData.setFlipRoomID(FlipRoom.getFlipRoomID());
 		if (backup) {
-			logger.info("creating backup...");
+			LOGGER.info("creating backup...");
 			Format format = new SimpleDateFormat("dd.MM.YY-HH.mm");//backup_25.08.16-19.40.json
 			filePath = BACKUP_PATH + format.format(new Date()) + ".json";
 		}
@@ -112,9 +115,9 @@ public class Database {
 			dbw.setServerData(serverData);
 			dbw.setUserDataBase(userDataList);
 			gson.toJson(dbw, fw);
-			logger.info("saved Database");
+			LOGGER.info("saved Database");
 		} catch (IOException e) {
-			logger.error("IOException while saving Database", e);
+			LOGGER.error("IOException while saving Database", e);
 		}
 
 	}
@@ -125,8 +128,8 @@ public class Database {
 
 	public UserData getData(IUser user) {//lieber static?
 		if (user == null) {
-			logger.warn("User is null while getting its data");
-			throw new IllegalArgumentException("User is null in Database.findUserData!");
+			LOGGER.warn("User is null while getting its data");
+			throw new IllegalArgumentException("User is null in Database.getData!");
 		}
 		String id = user.getID();
 		for (UserData userData : userDataList) {
@@ -141,10 +144,10 @@ public class Database {
 	
 	@Override
 	public String toString() {
-		String items = "DB: [";
+		String items = "[";
 		for (UserData userdata : userDataList) {
-			items += userdata + "; ";
+			items += userdata + ", ";
 		}
-		return items + "]";
+		return items + "](" + userDataList.size() + ")";
 	}
 }

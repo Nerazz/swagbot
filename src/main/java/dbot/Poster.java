@@ -17,7 +17,7 @@ import java.util.concurrent.Future;
 public class Poster {
 	private static final IDiscordClient bClient = Statics.BOT_CLIENT;
 	private static final IChannel channel = Statics.GUILD.getChannelByID(Statics.ID_BOTSPAM);
-	private static final Logger logger = LoggerFactory.getLogger("dbot.Poster");
+	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.Poster");
 	
 	private Poster() {}
 	
@@ -30,7 +30,7 @@ public class Poster {
 				}
 				return message;
 			} catch(MissingPermissionsException | DiscordException e) {
-				logger.error("failed posting(with duration): {}", s, e);
+				LOGGER.error("failed posting(with duration): {}", s, e);
 			}
 			return null;
 		});
@@ -46,7 +46,7 @@ public class Poster {
 				IPrivateChannel privateChannel = user.getOrCreatePMChannel();
 				return new MessageBuilder(bClient).withChannel(privateChannel).withContent(s).build();
 			} catch(MissingPermissionsException | DiscordException e) {
-				logger.error("failed posting private(to {}): {}", user.getName(), s, e);
+				LOGGER.error("failed posting private(to {}): {}", user.getName(), s, e);
 			}
 			return null;
 		});
@@ -57,7 +57,7 @@ public class Poster {
 			try {
 				message.delete();
 			} catch(MissingPermissionsException | DiscordException e) {
-				logger.error("failed deleting message", e);
+				LOGGER.error("failed deleting message", e);
 			}
 		});
 	}
@@ -72,7 +72,7 @@ public class Poster {
 				message.edit(s);
 				return message;
 			} catch(MissingPermissionsException | DiscordException e) {
-				logger.error("failed editing message", e);
+				LOGGER.error("failed editing message", e);
 			}
 			return null;
 		});

@@ -7,12 +7,9 @@ import static dbot.Poster.post;
 import static dbot.Poster.del;
 import dbot.Statics;
 
-import dbot.timer.LottoTimer;
-import dbot.timer.RaffleTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.RateLimitException;
@@ -22,11 +19,11 @@ import java.util.regex.*;
 public class Commands {
 
 	private static final Database database = Database.getInstance();
-	private static final Logger logger = LoggerFactory.getLogger("dbot.comm.Commands");
+	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Commands");
 
 	public static void trigger(IMessage message) {
 		IUser author = message.getAuthor();
-		logger.debug("Message({}): {}", author.getName(), message.getContent());
+		LOGGER.debug("Message({}): {}", author.getName(), message.getContent());
 		Pattern pattern = Pattern.compile("^!([a-z]+)(\\s(.+))?");
 		Matcher matcher = pattern.matcher(message.getContent().toLowerCase());
 		if (matcher.matches()) {
@@ -43,7 +40,7 @@ public class Commands {
 					break;
 
 				case "gems":
-					post(author.getName() + ", du hast " + dAuthor.getGems() + ":gem:.");
+					post(author + ", du hast " + dAuthor.getGems() + ":gem:.");
 					break;
 				
 				case "top":
@@ -62,13 +59,13 @@ public class Commands {
 					Flip.m(dAuthor, params);
 					break;
 
-				case "raffle":
+				/*case "raffle":
 					RaffleTimer.m(dAuthor, params);
-					break;
+					break;*/
 
-				case "lotto":
+				/*case "lotto":
 					new LottoTimer(dAuthor, params);
-					break;
+					break;*/
 
 				case "give":
 					Give.m(dAuthor, params);
@@ -105,10 +102,10 @@ public class Commands {
 					break;
 
 				default:
-					logger.info("Command '{}' not found", message.getContent());
+					LOGGER.info("Command '{}' not found", message.getContent());
 					break;
 			}
-			del(message, 3000);
+			del(message);
 		} else if (author.getID().equals(Statics.ID_NERAZ)) {
 			pattern = Pattern.compile("^§([a-z]+)(\\s(.+))?");
 			matcher = pattern.matcher(message.getContent().toLowerCase());
@@ -128,14 +125,14 @@ public class Commands {
 							Statics.BOT_CLIENT.logout();
 							System.exit(0);
 						} catch(DiscordException | RateLimitException e) {
-							logger.error("Error while logging out", e);
+							LOGGER.error("Error while logging out", e);
 						}
 						break;
 					default:
 						break;
 				}
 			}
-			del(message, 30000);
+			del(message, 5000);
 		} else {//kein Befehl
 			del(message, 30000);
 		}

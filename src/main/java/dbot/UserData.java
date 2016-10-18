@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IUser;
 
 public class UserData extends Database {//implements comparable?
-	private static final Logger logger = LoggerFactory.getLogger("dbot.UserData");
+	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.UserData");
 	private String id = null;
 	private String name = null;
 	private transient IUser user = null;
@@ -38,7 +38,7 @@ public class UserData extends Database {//implements comparable?
 		try {
 			user = Statics.GUILD.getUserByID(id);
 		} catch(Exception e) {
-			System.out.println("User not found: " + name);
+			System.out.println("User not found: " + name);//TODO: LOGGER
 			System.out.println(e);
 		}
 	}
@@ -68,8 +68,8 @@ public class UserData extends Database {//implements comparable?
 		while (this.exp >= getLevelThreshold(level)) {
 			this.exp -= getLevelThreshold(level);
 			level++;
-			post(":tada: DING! " + user + " ist Level " + level + "! :tada:");
-			logger.info("{} leveled to Level {}", name, level);
+			post(":tada: DING! " + name + " ist Level " + level + "! :tada:");
+			LOGGER.info("{} leveled to Level {}", name, level);
 		}
 	}
 	
@@ -83,14 +83,18 @@ public class UserData extends Database {//implements comparable?
 
 	public void prestige() {
 		if (level < 100) {
-			logger.info("{} Level ist nicht hoch genug zum prestigen", name);
+			LOGGER.info("{} Level ist nicht hoch genug zum prestigen", name);
 			post(name + ", du musst mindestens Level 100 sein.");
 			return;
 		}
-		swagPoints += (int)Math.ceil(Math.sqrt((double)gems / 10000.0) * ((double)swagLevel + 2.0) / ((double)swagPoints + 2.0)) + level - 100;//TODO: bei stats o.Ä. theoretische SP anzeigen + gems zum nächesten
+		int swagPointGain = (int)Math.ceil(Math.sqrt((double)gems / 10000.0) * ((double)swagLevel + 2.0) / ((double)swagPoints + 2.0)) + level - 100;
+		swagPoints += swagPointGain;//TODO: bei stats o.Ä. theoretische SP anzeigen + gems zum nächesten
+		LOGGER.info("{} gained {} swagPoints by abandoning {} G", name, swagPointGain, gems);
+		gems = 0;
+		//TODO: ordentliches gem-abziehen, nicer post
 		level = 1;
 		swagLevel++;
-		logger.info("{} now is swagLevel {} with {} swagPoints", name, swagLevel, swagPoints);
+		LOGGER.info("{} now is swagLevel {} with {} swagPoints", name, swagLevel, swagPoints);
 	}
 
 	int getSwagPoints() {
@@ -111,7 +115,7 @@ public class UserData extends Database {//implements comparable?
 	
 	public void setPotDuration(int potDuration) {
 		if (potDuration < 0) {
-			logger.error("{} potDuration ist < 0", name);
+			LOGGER.error("{} potDuration ist < 0", name);
 			throw new IllegalArgumentException("PotDuration darf nicht < 0 sein!");
 		}
 		this.potDuration = potDuration;
@@ -122,10 +126,10 @@ public class UserData extends Database {//implements comparable?
 			potDuration -= 1;
 			if (potDuration < 1) {
 				setExpRate(1);
-				logger.info("{} XPot empty", name);
+				LOGGER.info("{} XPot empty", name);
 				if (reminder > 0) {
 					post("Hey, dein XPot zeigt keine Wirkung mehr...", user);//TODO: kauf und staffelung prüfen
-					logger.info("{} got reminded", name);
+					LOGGER.info("{} got reminded", name);
 					reminder--;
 				}
 			}
@@ -151,7 +155,7 @@ public class UserData extends Database {//implements comparable?
 	public static int getLevelThreshold(int level) {
 		level--;
 		if (level < 0) {
-			logger.warn("level is < 0");
+			LOGGER.warn("level is < 0");
 			throw new IllegalArgumentException("Level darf nicht < 0 sein!");
 		} else if (level < 100) {
 			return level * 80 + 1000;
@@ -162,22 +166,20 @@ public class UserData extends Database {//implements comparable?
 
 	@Override
 	public String toString() {
-		return "User: " + name;
+		return name + "<Data>(" + id + ")";
 	}
 
-	/*@Override
-	public boolean equals(Object o) {
-		Data data = new Data((IUser)o);
-		data = (Data)o;
-		if (data.getID() == this.getID()) {
-			return true;
-		}
-		return false;
+	@Override
+	public boolean equals(Object that) {
+		if (that == null) return false;
+		if (this == that) return true;
+		if (!that.getClass().equals(getClass())) return false;
+		return this.id.equals(((UserData)that).id);//ACHTUNG: ES WIRD NUR ID GEPRÜFT!!
 	}
-	
+
 	@Override
 	public int hashCode() {
-		return ID;
-	}*/
+		return Integer.parseInt(id);
+	}
 	
 }

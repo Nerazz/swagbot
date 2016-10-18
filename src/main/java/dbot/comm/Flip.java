@@ -14,10 +14,19 @@ import java.util.regex.*;
 import java.util.concurrent.*;
 
 public class Flip {
-	private static final Logger logger = LoggerFactory.getLogger("dbot.comm.Flip");
+	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Flip");
 	private static final List<FlipRoom> lRooms = new ArrayList<>();
 	private static IMessage roomPost = null;
 	private static final String startString = "Offene Flip-Räume:```xl\n";
+
+	static {
+		Future<IMessage> fMessage = post(startString + "keine```", -1);
+		try {
+			roomPost = fMessage.get();
+		} catch(InterruptedException|ExecutionException e) {
+			LOGGER.error("Error bei init", e);
+		}
+	}
 
 	static void m(UserData uData, String params) {//TODO: static?
 		IUser author = uData.getUser();
@@ -40,11 +49,11 @@ public class Flip {
 				if (uData.getGems() < bet) {
 					post(author.getName() + ", du hast zu wenig :gem:");
 					return;
-				} else if (bet < 1) {
-					post("nanana, wer macht denn da Scheiße?? :thinking:");
+				} else if (bet < 500) {//min-Wert
+					post("min. 500");
 					return;
-				} else if (containsUser(author)) {
-					post(author.getName() + ", du hast schon einen Raum offen...");
+				} else if (containsUser(author)) {//TODO: 3 oder 5 räume pro person, datamap<user, fliproom(id?)>
+					post(author.getName() + ", du hast schon genug Räume offen...");
 					return;
 				}
 				break;
@@ -88,7 +97,7 @@ public class Flip {
 	
 	private static void open(IUser author, int bet, String seite, UserData uData) {
 		FlipRoom fRoom = new FlipRoom(author, bet, seite, uData);
-		logger.info("{} opened FlipRoom, ID: {}, Pot: {}, Seite: {}", author.getName(), fRoom.getPot(), fRoom.getRoomID(), seite);
+		LOGGER.info("{} opened FlipRoom, ID: {}, Pot: {}, Seite: {}", author.getName(), fRoom.getPot(), fRoom.getRoomID(), seite);
 		post(author.getName() + " hat neuen Raum um " + fRoom.getPot() + ":gem: geöffnet mit ID: " + fRoom.getRoomID() + " (" + seite + ")");
 		lRooms.add(fRoom);
 		postRooms();
@@ -97,7 +106,7 @@ public class Flip {
 	private static void close(IUser author, UserData uData) {//TODO: effizienter machen
 		for (int i = 0; i < lRooms.size(); i++) {
 			if (lRooms.get(i).getHostID().equals(author.getID())) {
-				logger.info("{} closed his FlipRoom, ID: {}", author.getName(), lRooms.get(i).getRoomID());
+				LOGGER.info("{} closed his FlipRoom, ID: {}", author.getName(), lRooms.get(i).getRoomID());
 				uData.addGems(lRooms.get(i).getPot());
 				post("closing room " + lRooms.get(i).getRoomID());
 				lRooms.remove(i);
@@ -116,11 +125,11 @@ public class Flip {
 		for (Iterator<FlipRoom> it = lRooms.iterator(); it.hasNext();) {//TODO: besser mit foreach?
 			FlipRoom tmpFR = it.next();
 			tmpFR.getHostData().addGems(tmpFR.getPot());
-			logger.info("closing FlipRoom {}", tmpFR.getRoomID());
+			LOGGER.info("closing FlipRoom {}", tmpFR.getRoomID());
 			it.remove();
 		}
 		postRooms();
-		logger.info("closed all FlipRooms");
+		LOGGER.info("closed all FlipRooms");
 	}
 	
 	private static void postRooms() {
@@ -140,7 +149,7 @@ public class Flip {
 
 	private static boolean containsUser(IUser user) {
 		if (user == null) {
-			logger.warn("User ist null");
+			LOGGER.warn("User ist null");
 			throw new IllegalArgumentException("User darf nicht null sein!");
 		}
 		for (FlipRoom tmpRoom : lRooms) {
@@ -172,15 +181,6 @@ public class Flip {
 			}
 		}
 		return -1;
-	}
-
-	public static void init() {
-		Future<IMessage> fMessage = post(startString + "keine```", -1);
-		try {
-			roomPost = fMessage.get();
-		} catch(InterruptedException|ExecutionException e) {
-			logger.error("Error bei init", e);
-		}
 	}
 
 }

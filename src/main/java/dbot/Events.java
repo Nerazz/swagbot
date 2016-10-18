@@ -30,11 +30,10 @@ public class Events {
 	public void onGuildCreateEvent(GuildCreateEvent event) {
 		LOGGER.debug("GuildCreateEvent");
 		if (!bInit) {
-			DATABASE.load();
 			Statics.GUILD = Statics.BOT_CLIENT.getGuildByID(Statics.ID_GUILD);
 			guild = Statics.GUILD;
 			LOGGER.debug("Bot joined guild: {}", guild.getName());
-			Flip.init();
+			DATABASE.load();
 			new Timer().schedule(new MainTimer(), 5000, 60000);
 			bInit = true;
 			LOGGER.debug("Initialization done");
@@ -64,8 +63,12 @@ public class Events {
 		try {
 			event.getUser().addRole(guild.getRolesByName("Newfags").get(0));
 			LOGGER.info("added role(Newfags) to {}", event.getUser().getName());
+			Poster.post(	"Willkommen auf dem nicesten Discord-Server ever :)" +
+							"\nWenn du Lust hast, schau doch mal im #botspam vorbei, hier kann man ne nice Runde gamblen und co :)" +
+							"\nZusätzlich solltest du #botspam auf @mention stellen (oder muten)" +
+							"\nBei Fragen am Besten an @DPD oder @Stammboys wenden.", event.getUser());
 		} catch(MissingPermissionsException | DiscordException | RateLimitException e) {
-			LOGGER.error("Error while adding role to {}", event.getUser().getName(), e);
+			LOGGER.error("Error while adding role to {} (or couldn't send message)", event.getUser().getName(), e);
 		}
 	}
 

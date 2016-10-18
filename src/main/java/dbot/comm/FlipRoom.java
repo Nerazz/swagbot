@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IUser;
 
 public class FlipRoom extends Flip {
-	private static final Logger logger = LoggerFactory.getLogger("dbot.comm.FlipRoom");
+	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.FlipRoom");
 	private IUser uHost;
 	private IUser uClient;
 	private UserData dHost;
@@ -42,18 +42,18 @@ public class FlipRoom extends Flip {
 			flipSeite = "KEK";
 		}
 		if (seite.equals(flipSeite)) {//TODO: noch verbesserbar mit extamethode?
-			dHost.addGems(pot * 2);
-			logger.info("{} won {} Gems vs {}", dHost.getName(), pot * 2, dClient.getName());
-			post(uHost + " hat mit " + seite + " gegen " + uClient + " gewonnen und bekommt " + (pot * 2) + ":gem:!!");
-			post("gz, du hast " + (pot * 2) + ":gem: gegen " + uClient.getName() + " gewonnen!", uHost);
-			post(":cry: du hast deine " + pot + ":gem: gegen " + uHost.getName() + " verloren...", uClient);
+			afterFlip(dHost, dClient);//TODO: mit elvis-operator machen
 		} else {
-			dClient.addGems(pot * 2);
-			logger.info("{} won {} Gems vs {}", dClient.getName(), pot * 2, dHost.getName());
-			post(uClient + " hat mit " + flipSeite + " gegen " + uHost + " gewonnen und bekommt " + (pot * 2) + ":gem:!!");
-			post("gz, du hast " + (pot * 2) + ":gem: gegen " + uHost.getName() + " gewonnen!", uClient);
-			post(":cry: du hast deine " + pot + ":gem: gegen " + uClient.getName() + " verloren...", uHost);
+			afterFlip(dClient, dHost);
 		}
+	}
+
+	private void afterFlip(UserData winner, UserData looser) {
+		winner.addGems(pot * 2);//TODO: pot * 2 bei join zu pot machen
+		LOGGER.info("{} won {} Gems vs {}", winner.getName(), pot * 2, looser.getName());
+		post(winner + " hat mit " + seite + " gegen " + looser + " gewonnen und bekommt " + (pot * 2) + ":gem:!!");
+		post("gz, du hast " + (pot * 2) + ":gem: gegen " + looser.getName() + " gewonnen!", winner.getUser());
+		post(":cry: du hast deine " + pot + ":gem: gegen " + winner.getName() + " verloren...", looser.getUser());
 	}
 	
 	private int updateID() {
@@ -88,5 +88,5 @@ public class FlipRoom extends Flip {
 	public String toString() {
 		return "\nID»'" + roomID + "' Einsatz»'" + pot + "' Seite»'" + seite + "' Host»'" + uHost.getName() + "'";
 	}
-	
+	//TODO: equals + hashCode
 }

@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.regex.*;
 
 final class Buy {
-	private static final Logger logger = LoggerFactory.getLogger("dbot.comm.Buy");
+	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Buy");
 
 	static void m(UserData dBuyer, String params) {
 		Pattern pattern = Pattern.compile("([a-z]+)(\\s(.+))?");
@@ -37,7 +37,7 @@ final class Buy {
 				} else {
 					dBuyer.subGems(price * anzahl);
 					dBuyer.addReminder(anzahl);
-					logger.info("{} bought {} Reminder", dBuyer.getName(), anzahl);
+					LOGGER.info("{} bought {} Reminder", dBuyer.getName(), anzahl);
 					if (anzahl > 1) {
 						post(dBuyer.getName() + ", hier sind deine " + anzahl + " Reminder.");
 					} else {

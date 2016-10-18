@@ -19,7 +19,6 @@ public class Bot {
 	private static IDiscordClient botClient = null;
 
 	public static void main(String[] args) {
-		Statics.init();
 		LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 		StatusPrinter.print(lc);
 		updateBot();
