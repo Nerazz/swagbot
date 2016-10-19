@@ -7,6 +7,8 @@ public class ServerData extends Database {
 	private int flipRoomID = 1;
 	private String test = "test";
 	private int daysOnline = 0;
+	private int lottoPot = 420000;
+	private int lastLottoDay = 1;
 
 	ServerData() {}
 	
@@ -34,8 +36,26 @@ public class ServerData extends Database {
 		return flipRoomID;
 	}
 
-	public void setFlipRoomID(int flipRoomID) {
+	void setFlipRoomID(int flipRoomID) {
 		this.flipRoomID = flipRoomID;
+	}
+
+	public int getLottoPot() {
+		return lottoPot;
+	}
+
+	public void setLottoPot(int lottoPot) {
+		System.out.println("setting lottopot");
+		this.lottoPot = lottoPot;
+	}
+
+	public int getLastLottoDay() {
+		return lastLottoDay;
+	}
+
+	public void setLastLottoDay(int lastLottoDay) {
+		System.out.println("setting lottoDay");
+		this.lastLottoDay = lastLottoDay;
 	}
 
 	public int getDaysOnline() {

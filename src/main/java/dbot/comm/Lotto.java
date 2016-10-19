@@ -1,6 +1,8 @@
 package dbot.comm;
 
 import dbot.DataMap;
+import dbot.Database;
+import dbot.ServerData;
 import dbot.UserData;
 import dbot.timer.LottoTimer;
 import org.slf4j.Logger;
@@ -25,10 +27,11 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  */
 public class Lotto {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.timer.LottoTimer");
-	private static int lastDay = 0;
+	protected static int lastDay = Database.getInstance().getServerData().getLastLottoDay();//1 = Monday, 7 = Sunday
+	protected static final int POT_MAX = 420000;
 	private static final int PRICE = 250;
 	protected static final DataMap<UserData, ArrayList<Integer>> TICKET_MAP = new DataMap<>();
-	protected static int pot = 200000;//TODO: in serverdata abspeichern und laden
+	protected static int pot = Database.getInstance().getServerData().getLottoPot();
 	protected static final ArrayList<Integer> LAST_WINS = new ArrayList<>();
 	protected static boolean closed = false;
 
@@ -123,12 +126,26 @@ public class Lotto {
 
 	private static LocalDateTime getNextDrawing() {
 		//return LocalDateTime.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.THURSDAY)).withHour(20).withMinute(0).withSecond(0);//jeden donnerstag 20:00:00
-		return LocalDateTime.now().withDayOfMonth(LocalDateTime.now().getDayOfMonth() + 5).withHour(20).withMinute(0).withSecond(0);//alle 5 tage 20:00:00
+		return LocalDateTime.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.of(rotateDay(false)))).withHour(20).withMinute(0).withSecond(0);//jeden donnerstag 20:00:00
+		/*LocalDateTime test = LocalDateTime.of(2016, 10, 27, 21, 10, 5);
+		System.out.println(DayOfWeek.of(lastDay));
+		return test.with(TemporalAdjusters.nextOrSame(DayOfWeek.of(softRotate()))).withHour(20).withMinute(0).withSecond(0);//jeden donnerstag 20:00:00*/
+		//return LocalDateTime.now().withDayOfMonth(LocalDateTime.now().getDayOfMonth() + 5).withHour(20).withMinute(0).withSecond(0);//alle 5 tage 20:00:00
 		//return LocalDateTime.now().withSecond(LocalDateTime.now().getSecond() + 15);//in 15 sekunden
 	}
 
-	private static void rotateDay() {
-		lastDay += 5;
+	protected static int rotateDay(boolean hardChange) {
+		int tmpDay = lastDay + 5;
+		if (tmpDay > 7) tmpDay -= 7;
+		if (hardChange) lastDay = tmpDay;
+		return tmpDay;
 	}
 
+	public static int getPot() {
+		return pot;
+	}
+
+	public static int getLastDay() {
+		return lastDay;
+	}
 }

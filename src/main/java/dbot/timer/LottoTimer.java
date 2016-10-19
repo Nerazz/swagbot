@@ -5,6 +5,7 @@ import static dbot.Poster.edit;
 import static dbot.Poster.buildNum;
 
 import dbot.DataMap;
+import dbot.Database;
 import dbot.UserData;
 import dbot.comm.Lotto;
 import org.slf4j.Logger;
@@ -58,6 +59,8 @@ public class LottoTimer extends Lotto implements Runnable {
 		winPost += "\nGewinne wurden verteilt.";
 		delayEdit(winMessage, winPost);
 		TICKET_MAP.clear();
+		rotateDay(true);
+		Database.getInstance().getServerData().setLastLottoDay(lastDay);
 		closed = false;
 	}
 
@@ -131,7 +134,10 @@ public class LottoTimer extends Lotto implements Runnable {
 		}
 		post(winMsg);
 		pot -= raus;
-
+		int toAdd = POT_MAX / 4;
+		post("Ich pack mal " + toAdd + ":gem: in den Pot :wink::ok_hand:");
+		pot += toAdd;
+		Database.getInstance().getServerData().setLottoPot(pot);
 	}
 
 	private static void delayEdit(IMessage message, String s) {

@@ -5,6 +5,7 @@ import static java.io.File.separator;
 import java.io.*;
 
 import dbot.comm.FlipRoom;
+import dbot.comm.Lotto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IUser;
@@ -78,7 +79,7 @@ public class Database {
 		return dataMap;
 	}
 	
-	void load() {
+	void load() {//TODO: load & save lotto tickets
 		LOGGER.info("loading Databases...");
 		try (FileReader fr = new FileReader(FILE_PATH)){
 			Gson gson = new Gson();
@@ -103,6 +104,8 @@ public class Database {
 		LOGGER.info("saving Database...");
 		String filePath = FILE_PATH;
 		serverData.setFlipRoomID(FlipRoom.getFlipRoomID());
+		serverData.setLottoPot(Lotto.getPot());
+		serverData.setLastLottoDay(Lotto.getLastDay());
 		if (backup) {
 			LOGGER.info("creating backup...");
 			Format format = new SimpleDateFormat("dd.MM.YY-HH.mm");//backup_25.08.16-19.40.json
