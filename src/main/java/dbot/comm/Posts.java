@@ -1,5 +1,6 @@
 package dbot.comm;
 
+import static dbot.Poster.buildNum;
 import static dbot.Poster.post;
 
 import dbot.Statics;
@@ -11,12 +12,11 @@ import sx.blah.discord.handle.obj.IUser;
  * Created by Niklas on 13.09.2016.
  */
 class Posts {
-	private static final String numbers[] = {":zero:", ":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:", ":nine:"};
 	private static final String medals[] = {":first_place:", ":second_place:", ":third_place:", ":military_medal:"};
 
 	static void stats(UserData dAuthor) {
 		String message = "";
-		if (dAuthor.getSwagLevel() > 0) message += " :trident:" + numberGen(dAuthor.getSwagLevel());
+		if (dAuthor.getSwagLevel() > 0) message += " :trident:" + buildNum(dAuthor.getSwagLevel());
 		message += "\nLevel " + dAuthor.getLevel() + " mit " + dAuthor.getExp() + "/" + UserData.getLevelThreshold(dAuthor.getLevel()) + " Exp";
 		//message += "\n" + dAuthor.getGems() + ":gem:";
 
@@ -31,14 +31,6 @@ class Posts {
 			message += "\n" + -dAuthor.getReminder() + " Reminder(off)";
 		}
 		post(dAuthor.getUser() + message);
-	}
-
-	private static String numberGen(int i) {
-		if (i < 10) {
-			return numbers[i];
-		} else {
-			return ">10, rip";//TODO: um >10 kümmern
-		}
 	}
 
 	private static String medalGen(int i) {

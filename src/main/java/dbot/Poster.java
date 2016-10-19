@@ -13,12 +13,15 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MessageBuilder;
 import sx.blah.discord.util.RequestBuffer;
 import java.util.concurrent.Future;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Poster {
 	private static final IDiscordClient bClient = Statics.BOT_CLIENT;
 	private static final IChannel channel = Statics.GUILD.getChannelByID(Statics.ID_BOTSPAM);
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.Poster");
-	
+	private static final String NUMBER_STRINGS[] = {":zero:", ":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:", ":nine:"};
+
 	private Poster() {}
 	
 	public static Future<IMessage> post(String s, int duration) {
@@ -76,6 +79,19 @@ public class Poster {
 			}
 			return null;
 		});
+	}
+
+	public static String buildNum(int i) {
+		Matcher matcher = Pattern.compile("(\\d)(\\d)?(\\d)?").matcher(String.valueOf(i));
+		if (!matcher.matches()) System.out.println("wtf");//TODO: nötig, aber nicht mit wtf...
+		String s = NUMBER_STRINGS[Integer.parseInt(matcher.group(1))];
+		if (matcher.group(2) != null) {
+			s += NUMBER_STRINGS[Integer.parseInt(matcher.group(2))];
+			if (matcher.group(3) != null) {
+				s += NUMBER_STRINGS[Integer.parseInt(matcher.group(3))];
+			}
+		}
+		return s;
 	}
 	
 }

@@ -7,6 +7,8 @@ import static dbot.Poster.post;
 import static dbot.Poster.del;
 import dbot.Statics;
 
+import dbot.timer.LottoTimer;
+import dbot.timer.RaffleTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IMessage;
@@ -59,13 +61,13 @@ public class Commands {
 					Flip.m(dAuthor, params);
 					break;
 
-				/*case "raffle":
+				case "raffle":
 					RaffleTimer.m(dAuthor, params);
-					break;*/
+					break;
 
-				/*case "lotto":
-					new LottoTimer(dAuthor, params);
-					break;*/
+				case "lotto":
+					Lotto.addTicket(dAuthor, params);
+					break;
 
 				case "give":
 					Give.m(dAuthor, params);
@@ -105,7 +107,7 @@ public class Commands {
 					LOGGER.info("Command '{}' not found", message.getContent());
 					break;
 			}
-			del(message);
+			del(message, 10000);
 		} else if (author.getID().equals(Statics.ID_NERAZ)) {
 			pattern = Pattern.compile("^§([a-z]+)(\\s(.+))?");
 			matcher = pattern.matcher(message.getContent().toLowerCase());

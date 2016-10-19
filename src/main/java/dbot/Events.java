@@ -16,7 +16,10 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 
-import java.util.Timer;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class Events {
 	private final static Logger LOGGER = LoggerFactory.getLogger("dbot.Events");
@@ -34,7 +37,9 @@ public class Events {
 			guild = Statics.GUILD;
 			LOGGER.debug("Bot joined guild: {}", guild.getName());
 			DATABASE.load();
-			new Timer().schedule(new MainTimer(), 5000, 60000);
+			final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+			final MainTimer mainTimer = new MainTimer();
+			scheduler.scheduleAtFixedRate(mainTimer, 5, 60, SECONDS);
 			bInit = true;
 			LOGGER.debug("Initialization done");
 		}
