@@ -1,6 +1,7 @@
 package dbot.comm;
 
 import dbot.Database;
+import dbot.SQLPool;
 import dbot.UserData;
 
 import static dbot.Poster.post;
@@ -16,6 +17,8 @@ import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.RateLimitException;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.regex.*;
 
 public class Commands {
@@ -29,7 +32,7 @@ public class Commands {
 		Pattern pattern = Pattern.compile("^!([a-z]+)(\\s(.+))?");
 		Matcher matcher = pattern.matcher(message.getContent().toLowerCase());
 		if (matcher.matches()) {
-			UserData dAuthor = database.getData(author);
+			//UserData dAuthor = database.getData(author);
 			String params = "" + matcher.group(3);
 			
 			switch (matcher.group(1)) {
@@ -38,45 +41,59 @@ public class Commands {
 					break;
 
 				case "stats":
-					Posts.stats(dAuthor);
+					//Posts.stats(dAuthor);
+					Posts.stats(author.getID());
 					break;
 
 				case "gems":
-					post(author + ", du hast " + dAuthor.getGems() + ":gem:.");
+					//post(author + ", du hast " + dAuthor.getGems() + ":gem:.");
+					//SQLPool.getInstance().getData("test", "gems");
+					//SQLPool.getData(author.getID(), "gems");
+					post(author + ", du hast " + SQLPool.getData(author.getID(), "gems") + ":gem:.");
 					break;
+
+				/*case "conn":
+					Connection con = SQLPool.getInstance().getConnection();
+					System.out.println("connected");
+					try {
+						con.close();
+					} catch(SQLException e) {
+						System.out.println("error: " + e);
+					}*/
 				
 				case "top":
-					Posts.top(database.sortByScore());
+					Posts.top();
 					break;
 
 				case "rank":
-					Posts.rank(database.sortByScore(), author);
+					//Posts.rank(database.sortByScore(), author);
+					post("coming soon(TM)");
 					break;
 				
-				case "buy":
-					Buy.m(dAuthor, params);
-					break;
+				/*case "buy":
+					Buy.m(author, params);
+					break;*/
 				
-				case "flip":
+				/*case "flip":
 					Flip.m(dAuthor, params);
-					break;
+					break;*/
 
-				case "raffle":
+				/*case "raffle":
 					RaffleTimer.m(dAuthor, params);
-					break;
+					break;*/
 
-				case "lotto":
+				/*case "lotto":
 					Lotto.addTicket(dAuthor, params);
-					break;
+					break;*/
 
-				case "give":
+				/*case "give":
 					Give.m(dAuthor, params);
-					break;
+					break;*/
 
-				case "remind":
+				/*case "remind":
 					dAuthor.negateReminder();
 					post("Reminder getogglet");
-					break;
+					break;*/
 
 				case "changelog":
 					Posts.changelog();
@@ -87,9 +104,9 @@ public class Commands {
 					Posts.prestigeInfo();
 					break;
 
-				case "ichwilljetztwirklichresettenundkennedieregelnzuswagpointsundcomindestenseinigermassen":
+				/*case "ichwilljetztwirklichresettenundkennedieregelnzuswagpointsundcomindestenseinigermassen":
 					dAuthor.prestige();
-					break;
+					break;*/
 
 				case "info":
 					Posts.info();
@@ -103,11 +120,15 @@ public class Commands {
 					Posts.commands();
 					break;
 
+				/*case "close":
+					SQLPool.getInstance().close();
+					break;*/
+
 				default:
 					LOGGER.info("Command '{}' not found", message.getContent());
 					break;
 			}
-			del(message, 10000);
+			del(message);
 		} else if (author.getID().equals(Statics.ID_NERAZ)) {
 			pattern = Pattern.compile("^§([a-z]+)(\\s(.+))?");
 			matcher = pattern.matcher(message.getContent().toLowerCase());
@@ -136,7 +157,7 @@ public class Commands {
 			}
 			del(message, 5000);
 		} else {//kein Befehl
-			del(message, 30000);
+			del(message, 60000);
 		}
 	}
 }

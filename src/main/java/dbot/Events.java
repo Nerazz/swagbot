@@ -25,7 +25,7 @@ public class Events {
 	private final static Logger LOGGER = LoggerFactory.getLogger("dbot.Events");
 	private static boolean bInit = false;
 	private static IGuild guild;
-	private static final Database DATABASE = Database.getInstance();
+	//private static final Database DATABASE = Database.getInstance();
 
 	Events() {}
 	
@@ -36,7 +36,7 @@ public class Events {
 			Statics.GUILD = Statics.BOT_CLIENT.getGuildByID(Statics.ID_GUILD);
 			guild = Statics.GUILD;
 			LOGGER.debug("Bot joined guild: {}", guild.getName());
-			DATABASE.load();
+			//DATABASE.load();
 			final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 			final MainTimer mainTimer = new MainTimer();
 			scheduler.scheduleAtFixedRate(mainTimer, 5, 60, SECONDS);
@@ -56,11 +56,12 @@ public class Events {
 	@EventSubscriber
 	public synchronized void onMessageEvent(MessageReceivedEvent event) {
 		IMessage message = event.getMessage();
-		if (DATABASE.containsUser(message.getAuthor())) {
+		Commands.trigger(message);
+		/*if (DATABASE.containsUser(message.getAuthor())) {TODO: fix mit db
 			Commands.trigger(message);
 		} else {
 			LOGGER.warn("Typing user wasn't found in Database");
-		}
+		}*/
 	}
 	
 	@EventSubscriber

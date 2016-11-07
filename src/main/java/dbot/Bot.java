@@ -2,12 +2,15 @@ package dbot;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
+import dbot.comm.Posts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.util.DiscordException;
+
+import java.util.ArrayList;
 
 /**
  * Bot - Mainclass
@@ -22,6 +25,11 @@ public class Bot {
 		LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 		StatusPrinter.print(lc);
 		updateBot();
+		/*String data[] = {"gems", "name", "level"};
+		SQLData swag = SQLPool.getData("97092184821465088", data);
+		System.out.println(swag.get("name"));*/
+		//System.out.println(SQLPool.getScoreList());
+		//Posts.top();
 	}
 
 	public static void updateBot() {
