@@ -52,7 +52,7 @@ public class Database {
 		int i = 0;
 		for (UserData userData : userDataList) {
 			users[i] = userData.getUser();
-			scores[i] = Math.floor(((userData.getExp() / (double)UserData.getLevelThreshold(userData.getLevel())) + userData.getLevel()) * 100) / 100; //*100/100 für Nachkommastellenrundung
+			scores[i] = Math.floor(((userData.getExp() / (double)UserData.getLevelThreshold(userData.getLevel())) + userData.getLevel()) * 100) / 100; //*100/100 fÃ¼r Nachkommastellenrundung
 			i++;
 		}
 		IUser tmpUser;

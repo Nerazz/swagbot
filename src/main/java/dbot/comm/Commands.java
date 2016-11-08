@@ -23,7 +23,6 @@ import java.util.regex.*;
 
 public class Commands {
 
-	private static final Database database = Database.getInstance();
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Commands");
 
 	public static void trigger(IMessage message) {
@@ -74,9 +73,9 @@ public class Commands {
 					Buy.m(author, params);
 					break;*/
 				
-				/*case "flip":
-					Flip.m(dAuthor, params);
-					break;*/
+				case "flip":
+					Flip.m(author, params);
+					break;
 
 				/*case "raffle":
 					RaffleTimer.m(dAuthor, params);
@@ -129,8 +128,9 @@ public class Commands {
 					break;
 			}
 			del(message);
-		} else if (author.getID().equals(Statics.ID_NERAZ)) {
-			pattern = Pattern.compile("^§([a-z]+)(\\s(.+))?");
+		} else if (author.getID().equals(Statics.ID_NERAZ) && message.getContent().startsWith("Â§")) {//TODO: ohne if-elseif, sondern nur mit ifs und return?
+			System.out.println("admin-trigger");
+			pattern = Pattern.compile("^Â§([a-z]+)(\\s(.+))?");
 			matcher = pattern.matcher(message.getContent().toLowerCase());
 			if (matcher.matches()) {
 				//String params = "" + matcher.group(3);
@@ -141,8 +141,7 @@ public class Commands {
 						break;
 					case "logout":
 						Flip.closeAll();
-						database.save(false);
-						del(message);//TODO: pool an messages, die es noch gibt, die dann gelöscht werden?
+						del(message);//TODO: pool an messages, die es noch gibt, die dann gelï¿½scht werden?
 						del(Flip.getRoomPost());
 						try {
 							Statics.BOT_CLIENT.logout();

@@ -63,7 +63,7 @@ public class Lotto {
 
 		if (params.equals("next")) {
 			LocalDateTime next = getNextDrawing();
-			post("Nächste Ziehung ist am " + next.format(DateTimeFormatter.ofPattern("dd.MM.")) + " um " + next.format(DateTimeFormatter.ofPattern("HH:mm")));
+			post("NÃ¤chste Ziehung ist am " + next.format(DateTimeFormatter.ofPattern("dd.MM.")) + " um " + next.format(DateTimeFormatter.ofPattern("HH:mm")));
 			return;
 		}
 

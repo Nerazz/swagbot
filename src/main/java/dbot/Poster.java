@@ -39,7 +39,7 @@ public class Poster {
 		});
 	}
 
-	public static Future<IMessage> post(String s) { //TODO: läuft so oder futuremessage zwischenspeichern?; könnte besser gemacht werden?
+	public static Future<IMessage> post(String s) { //TODO: lÃ¤uft so oder futuremessage zwischenspeichern?; kÃ¶nnte besser gemacht werden?
 		return post(s, 60000);
 	}
 
@@ -83,7 +83,7 @@ public class Poster {
 
 	public static String buildNum(int i) {
 		Matcher matcher = Pattern.compile("(\\d)(\\d)?(\\d)?").matcher(String.valueOf(i));
-		if (!matcher.matches()) System.out.println("wtf");//TODO: nötig, aber nicht mit wtf...
+		if (!matcher.matches()) System.out.println("wtf");//TODO: nÃ¶tig, aber nicht mit wtf...
 		String s = NUMBER_STRINGS[Integer.parseInt(matcher.group(1))];
 		if (matcher.group(2) != null) {
 			s += NUMBER_STRINGS[Integer.parseInt(matcher.group(2))];

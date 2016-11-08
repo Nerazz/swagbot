@@ -16,7 +16,7 @@ import java.sql.Statement;
 /**
  * Created by Niklas on 17.08.2016.
  */
-public class Xpot {//Buy extenden oder ähnliches?
+public class Xpot {//Buy extenden oder Ã¤hnliches?
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.items.Xpot");
 
 	public Xpot(IUser user, String pot) {
@@ -50,7 +50,7 @@ public class Xpot {//Buy extenden oder ähnliches?
 			if (gems < price) {//TODO: "gems" oder 1?
 				post(user.getName() + ", du hast zu wenig :gem:.");
 			} else if (rs.getDouble("expRate") > 1.0) {
-				post(user.getName() + ", letzter XPot ist noch für " + rs.getInt("potDuration") + " min aktiv.");
+				post(user.getName() + ", letzter XPot ist noch fÃ¼r " + rs.getInt("potDuration") + " min aktiv.");
 			} else {
 				statement.executeUpdate("UPDATE `users` SET `gems` = gems - " + price + " WHERE `id` = " + user.getID());
 				//TODO: Rest updaten

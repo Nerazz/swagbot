@@ -63,7 +63,7 @@ public class Posts {
 	/*static void rank(DataMap<IUser, Double> dataMap, IUser author) {
 		int i = 0;
 		while ((i < dataMap.size()) && !dataMap.getKey(i).getID().equals(author.getID())) i++;
-		String message = "Umgebende Ränge:";
+		String message = "Umgebende Rï¿½nge:";
 		if (i != 0) message += "\n" + medalGen(i - 1) + dataMap.getKey(i - 1).getName() + " - " + dataMap.getValue(i - 1);
 		message += "\n" + medalGen(i) + dataMap.getKey(i) + " - " + dataMap.getValue(i);
 		if (i != dataMap.size()) message += "\n" + medalGen(i + 1) + dataMap.getKey(i + 1).getName() + " - " + dataMap.getValue(i + 1);
@@ -76,8 +76,8 @@ public class Posts {
 
 	static void info() {
 		post(	"v" + Statics.VERSION + "; D4J v" + Statics.DFJ_VERSION + "\n" +
-				"» Jede Minute erhalten Leute nach Status:\n" +
-				"\t» Online     3 :gem: + Mod durch Swag\n"
+				"Â» Jede Minute erhalten Leute nach Status:\n" +
+				"\tÂ» Online     3 :gem: + Mod durch Swag\n"
 		);
 	}
 
@@ -92,20 +92,20 @@ public class Posts {
 		post(
 				"der nice Laden hat folgendes nicht im Angebot:\n" +//TODO: nicht weg bei funktion
 				"```xl\n" +
-				"» XPot\n" +
-				" $ » tall     (500G)  - 70  Minuten 1.5x Exp (+50%) $ BEST OFFER $\n" +
-				"   » grande   (1000G) - 65  Minuten 2x   Exp (+100%)\n" +
-				"   » venti    (2000G) - 60  Minuten 3x   Exp (+200%)\n" +
-				"   » giant    (9999G) - 120 Minuten 5x   Exp (+400%)\n" +
-				"   » unstable (10000G)- 10  Minuten ??x  Exp (+???%)\n" +
-				"» Reminder    (100G)  - Erinnert, wenn XPot nicht mehr wirkt, mit Anzahl moglich\n" +
+				"Â» XPot\n" +
+				" $ Â» tall     (500G)  - 70  Minuten 1.5x Exp (+50%) $ BEST OFFER $\n" +
+				"   Â» grande   (1000G) - 65  Minuten 2x   Exp (+100%)\n" +
+				"   Â» venti    (2000G) - 60  Minuten 3x   Exp (+200%)\n" +
+				"   Â» giant    (9999G) - 120 Minuten 5x   Exp (+400%)\n" +
+				"   Â» unstable (10000G)- 10  Minuten ??x  Exp (+???%)\n" +
+				"Â» Reminder    (100G)  - Erinnert, wenn XPot nicht mehr wirkt, mit Anzahl moglich\n" +
 				"```"
 		);
 	}
 
 	static void commands() {
 		post(	"```xl\n" +
-				"3/4 läuft immoment nicht, rip\n" +
+				"3/4 lÃ¤uft immoment nicht, rip\n" +
 				"!commands               |diese Liste\n" +
 				"!changelog              |letzte Anderungen\n" +
 				"!info                   |allgemeine Infos zum Swagbot\n" +
@@ -130,12 +130,12 @@ public class Posts {
 
 	static void prestigeInfo() {
 		post(	"Infos zum Prestigen:\n" +
-				"- Level wird wieder auf 1 gesetzt und alle :gem: gehen verloren, dafür wird das Swaglevel um 1 erhöht\n" +
-				"- jedes Level über 100 gewährt einen Swagpoint\n" +
+				"- Level wird wieder auf 1 gesetzt und alle :gem: gehen verloren, dafÃ¼r wird das Swaglevel um 1 erhÃ¶ht\n" +
+				"- jedes Level Ã¼ber 100 gewÃ¤hrt einen Swagpoint\n" +
 				"- je mehr :gem: verloren gehen, desto mehr Swagpoints werden erlangt\n" +
-				"- je höher das Swaglevel, desto mehr Exp pro Minute\n" +
+				"- je hï¿½her das Swaglevel, desto mehr Exp pro Minute\n" +
 				"- je mehr Swagpoints, desto mehr :gem: pro Minute\n" +
-				"- wenn du sicher bist, dass du prestigen willst, gönn dir mit:\n" +
+				"- wenn du sicher bist, dass du prestigen willst, gÃ¶nn dir mit:\n" +
 				"!ichwilljetztwirklichresettenundkennedieregelnzuswagpointsundcomindestenseinigermassen"
 		);
 	}

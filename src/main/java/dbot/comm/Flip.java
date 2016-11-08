@@ -17,7 +17,7 @@ public class Flip {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Flip");
 	private static final List<FlipRoom> lRooms = new ArrayList<>();
 	private static IMessage roomPost = null;
-	private static final String startString = "Offene Flip-Räume:```xl\n";
+	private static final String startString = "Offene Flip-RÃ¤ume:```xl\n";
 
 	static {
 		Future<IMessage> fMessage = post(startString + "keine```", -1);
@@ -28,8 +28,8 @@ public class Flip {
 		}
 	}
 
-	static void m(UserData uData, String params) {//TODO: static?
-		IUser author = uData.getUser();
+	static void m(IUser author, String params) {//TODO: static?
+		UserData uData = new UserData(author);//yolo
 		Pattern pattern = Pattern.compile("(\\d+|allin|join|close)(\\s(top|kek|\\d+))?");
 		Matcher matcher = pattern.matcher(params);
 		if (!matcher.matches()) return;
@@ -52,8 +52,8 @@ public class Flip {
 				} else if (bet < 500) {//min-Wert
 					post("min. 500");
 					return;
-				} else if (containsUser(author)) {//TODO: 3 oder 5 räume pro person, datamap<user, fliproom(id?)>
-					post(author.getName() + ", du hast schon genug Räume offen...");
+				} else if (containsUser(author)) {//TODO: 3 oder 5 rÃ¤ume pro person, datamap<user, fliproom(id?)>
+					post(author.getName() + ", du hast schon genug RÃ¤ume offen...");
 					return;
 				}
 				break;
@@ -98,7 +98,7 @@ public class Flip {
 	private static void open(IUser author, int bet, String seite, UserData uData) {
 		FlipRoom fRoom = new FlipRoom(author, bet, seite, uData);
 		LOGGER.info("{} opened FlipRoom, ID: {}, Pot: {}, Seite: {}", author.getName(), fRoom.getPot(), fRoom.getRoomID(), seite);
-		post(author.getName() + " hat neuen Raum um " + fRoom.getPot() + ":gem: geöffnet mit ID: " + fRoom.getRoomID() + " (" + seite + ")");
+		post(author.getName() + " hat neuen Raum um " + fRoom.getPot() + ":gem: geÃ¶ffnet mit ID: " + fRoom.getRoomID() + " (" + seite + ")");
 		lRooms.add(fRoom);
 		postRooms();
 	}

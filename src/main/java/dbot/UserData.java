@@ -20,7 +20,7 @@ public class UserData extends Database {//implements comparable?
 	private int swagPoints = 0;
 	private int reminder = 0;
 
-	UserData(IUser user) {
+	public UserData(IUser user) {
 		this.user = user;
 		id = user.getID();
 		name = user.getName();
@@ -88,7 +88,7 @@ public class UserData extends Database {//implements comparable?
 			return;
 		}
 		int swagPointGain = (int)Math.ceil(Math.sqrt((double)gems / 10000.0) * ((double)swagLevel + 2.0) / ((double)swagPoints + 2.0)) + level - 100;
-		swagPoints += swagPointGain;//TODO: bei stats o.Ä. theoretische SP anzeigen + gems zum nächesten
+		swagPoints += swagPointGain;//TODO: bei stats o.Ã„. theoretische SP anzeigen + gems zum nÃ¤chesten
 		LOGGER.info("{} gained {} swagPoints by abandoning {} G", name, swagPointGain, gems);
 		gems = 0;
 		//TODO: ordentliches gem-abziehen, nicer post
@@ -128,7 +128,7 @@ public class UserData extends Database {//implements comparable?
 				setExpRate(1);
 				LOGGER.info("{} XPot empty", name);
 				if (reminder > 0) {
-					post("Hey, dein XPot zeigt keine Wirkung mehr...", user);//TODO: kauf und staffelung prüfen
+					post("Hey, dein XPot zeigt keine Wirkung mehr...", user);//TODO: kauf und staffelung prÃ¼fen
 					LOGGER.info("{} got reminded", name);
 					reminder--;
 				}
@@ -174,7 +174,7 @@ public class UserData extends Database {//implements comparable?
 		if (that == null) return false;
 		if (this == that) return true;
 		if (!that.getClass().equals(getClass())) return false;
-		return this.id.equals(((UserData)that).id);//ACHTUNG: ES WIRD NUR ID GEPRÜFT!!
+		return this.id.equals(((UserData)that).id);//ACHTUNG: ES WIRD NUR ID GEPRÃœFT!!
 	}
 
 	@Override

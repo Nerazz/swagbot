@@ -12,7 +12,7 @@ import java.sql.*;
 import java.util.List;
 import java.util.*;
 
-class MainTimer implements Runnable {//TODO: namen ändern
+class MainTimer implements Runnable {//TODO: namen Ã¤ndern
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.MainTimer");
 	private static final Presences ONLINE = Presences.valueOf("ONLINE");
 	private static final IDiscordClient BOT_CLIENT = Statics.BOT_CLIENT;

@@ -77,7 +77,7 @@ public class SQLPool {
 			}
 		} catch(SQLException e) {
 			System.out.println(e);
-			return null;//TODO: nötig?
+			return null;//TODO: nÃ¶tig?
 		}
 		return new SQLData(strings, data);
 	}

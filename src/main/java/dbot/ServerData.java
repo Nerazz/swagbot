@@ -2,7 +2,7 @@ package dbot;
 
 public class ServerData extends Database {
 	private int gems = 100;
-	//längste online-zeit
+	//lÃ¤ngste online-zeit
 	//flip-room id
 	private int flipRoomID = 1;
 	private String test = "test";

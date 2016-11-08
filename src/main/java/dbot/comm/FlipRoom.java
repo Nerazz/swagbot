@@ -58,7 +58,7 @@ public class FlipRoom extends Flip {
 	
 	private int updateID() {
 		return currentID++;
-	}//TODO: (noch nötig?) sollte dann ++currentID (nach serverData load-implementation)
+	}//TODO: (noch nÃ¶tig?) sollte dann ++currentID (nach serverData load-implementation)
 	
 	int getRoomID() {
 		return roomID;
@@ -86,7 +86,7 @@ public class FlipRoom extends Flip {
 	
 	@Override
 	public String toString() {
-		return "\nID»'" + roomID + "' Einsatz»'" + pot + "' Seite»'" + seite + "' Host»'" + uHost.getName() + "'";
+		return "\nIDÂ»'" + roomID + "' EinsatzÂ»'" + pot + "' SeiteÂ»'" + seite + "' HostÂ»'" + uHost.getName() + "'";
 	}
 	//TODO: equals + hashCode
 }

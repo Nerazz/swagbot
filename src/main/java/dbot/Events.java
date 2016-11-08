@@ -71,7 +71,7 @@ public class Events {
 			LOGGER.info("added role(Newfags) to {}", event.getUser().getName());
 			Poster.post(	"Willkommen auf dem nicesten Discord-Server ever :)" +
 							"\nWenn du Lust hast, schau doch mal im #botspam vorbei, hier kann man ne nice Runde gamblen und co :)" +
-							"\nZus‰tzlich solltest du #botspam auf @mention stellen (oder muten)" +
+							"\nZus√§tzlich solltest du #botspam auf @mention stellen (oder muten)" +
 							"\nBei Fragen am Besten an @DPD oder @Stammboys wenden.", event.getUser());
 		} catch(MissingPermissionsException | DiscordException | RateLimitException e) {
 			LOGGER.error("Error while adding role to {} (or couldn't send message)", event.getUser().getName(), e);
