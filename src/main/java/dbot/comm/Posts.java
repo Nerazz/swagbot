@@ -15,9 +15,9 @@ public class Posts {
 	private static final String medals[] = {":first_place:", ":second_place:", ":third_place:", ":military_medal:"};
 
 	static void stats(IUser user) {
-		UserData data = new UserData(user, 30);
+		UserData data = new UserData(user, 255);//exp, level, expRate, potDur, swagLevel, swagPoints, reminder
 		String message = "";
-		if (data.getSwagLevel() > 0) message += " :trident:" + buildNum(data.getSwagLevel());
+		if (data.getSwagLevel() > 0) message += " :trident:" + buildNum(data.getSwagLevel());//TODO: swagpoints anzeigen mit nicem emoji
 		message += "\nLevel " + data.getLevel() + " mit " + data.getExp() + "/" + UserData.getLevelThreshold(data.getLevel()) + " Exp";
 		//message += "\n" + data.getGems() + ":gem:";
 
@@ -83,13 +83,14 @@ public class Posts {
 		post(	"neuer Shit:\n" +
 				"- nimmt langsam wieder Form an :)\n" +
 				"- man kann wieder leveln + Swag wird eingerechnet\n" +
-				"- Pots laufen wieder (aber noch nicht kaufbar topkek)"
+				"- Pots laufen wieder (und wieder kaufbar, aber scheinbar noch in bestimmten Fällen Formatierungsfehler)\n" +
+				"- reminder gehen wieder"
 		);
 	}
 
 	static void shop() {
 		post(
-				"der nice Laden hat folgendes nicht im Angebot:\n" +//TODO: nicht weg bei funktion
+				"der nice Laden hat folgendes im Angebot:\n" +//TODO: nicht weg bei funktion
 				"```xl\n" +
 				"» XPot\n" +
 				" $ » tall     (500G)  - 70  Minuten 1.5x Exp (+50%) $ BEST OFFER $\n" +
@@ -104,21 +105,21 @@ public class Posts {
 
 	static void commands() {
 		post(	"```xl\n" +
-				"3/4 läuft immer noch nicht, rip\n" +
+				"2/4 läuft immer noch nicht, rip\n" +
 				"!commands               |diese Liste\n" +
 				"!changelog              |letzte Anderungen\n" +
 				"!info                   |allgemeine Infos zum Swagbot\n" +
 				"!shop                   |nicer Laden\n" +
 				"!stats                  |Infos des Schreibenden\n" +
 				"!gems                   |Eingebers Gems\n" +
-				//"!buy 'x'                |kauft Item 'x'\n" +
+				"!buy 'x'                |kauft Item 'x'\n" +
 				"!top                    |Rangliste der Top5\n" +
 				//"!rank                   |postet umgebende Range des Schreibenden\n" +
 				//"!give '@person' 'gems'  |gibt Person Gems\n" +
 				//"!flip 'gems' ('top/kek')|offnet Coinflip-Raum (statt 'gems' ist auch 'allin' moglich)\n" +
 				//"!flip join 'ID'         |flippt gegen den Raumersteller\n" +
 				//"!flip close             |schliesst eigenen Flipraum (Gems werden erstattet)\n" +
-				//"!remind                 |togglet Reminder\n" +
+				"!remind                 |togglet Reminder\n" +
 				"!prestigeinfo           |Infos zum Prestigen\n" +
 				"!roll                   |Roll zwischen 1 und 100\n" +
 				"!roll 'x'               |Roll zwischen 1 und 'x'\n" +

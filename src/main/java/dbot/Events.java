@@ -63,7 +63,7 @@ public class Events {
 			//final MainTimer mainTimer = new MainTimer();
 			//scheduler.scheduleAtFixedRate(new MainTimer(), 5, 5, SECONDS);
 			Timer timer = new Timer();
-			timer.scheduleAtFixedRate(new MainTimer(), 5000, 10000);
+			timer.scheduleAtFixedRate(new MainTimer(), 10000, 60000);
 			bInit = true;
 			LOGGER.debug("Initialization done");
 		}
@@ -71,7 +71,7 @@ public class Events {
 	}
 
 	@EventSubscriber
-	public void onDiscordDisconnectedEvent(DiscordDisconnectedEvent event) {//TODO: sollte gesaved werden?
+	public void onDiscordDisconnectedEvent(DiscordDisconnectedEvent event) {
 		LOGGER.warn("Bot disconnected due to {}", event.getReason());
 		RelogTimer.addDC();
 		new RelogTimer();

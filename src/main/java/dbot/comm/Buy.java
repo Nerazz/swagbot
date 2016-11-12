@@ -32,33 +32,24 @@ final class Buy {
 				int price = 100;
 				int anzahl = 1;
 				params = "" + matcher.group(3);
-				pattern = pattern.compile("\\d+");
+				pattern = pattern.compile("\\d+");//sollte negative abfangen
 				matcher = pattern.matcher(params);
 				if (matcher.matches()) anzahl = Integer.parseInt(matcher.group());
 
-
-				try(Connection conn = SQLPool.getDataSource().getConnection(); Statement statement = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE)) {//TODO: welcher type?
-					ResultSet rs = statement.executeQuery("SELECT `gems`, `reminder` FROM `users` WHERE `id` = " + buyer.getID());
-					int gems = rs.getInt("gems");
-					if (gems < (price * anzahl)) {//TODO: "gems" oder 1?
-						post(buyer.getName() + ", du hast zu wenig :gem:.");
-					} else {
-						rs.updateInt("gems", gems - (price * anzahl));
-						rs.updateInt("reminder", rs.getInt("reminder") + anzahl);
-						LOGGER.info("{} bought {} Reminder", buyer.getName(), anzahl);
-
-						if (anzahl > 1) {
-							post(buyer.getName() + ", hier sind deine " + anzahl + " Reminder.");
-						} else {
-							post(buyer.getName() + ", hier ist dein Reminder.");
-						}
-					}
-				} catch(SQLException e) {
-					e.printStackTrace();
+				UserData data = new UserData(buyer, 129);//gems, reminder
+				if (data.getGems() < (price * anzahl)) {
+					post(buyer + ", du hast zu wenig :gem:.");
+					return;
 				}
-
-
-
+				data.subGems(price * anzahl);
+				data.addReminder(anzahl);
+				LOGGER.info("{} bought {} Reminder", buyer.getName(), anzahl);
+				if (anzahl > 1) {
+					post(buyer + ", hier sind deine " + anzahl + " Reminder!");
+				} else {
+					post(buyer + ", hier ist dein Reminder!");
+				}
+				data.update();
 				break;
 
 			default:

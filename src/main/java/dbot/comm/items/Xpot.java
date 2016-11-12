@@ -22,49 +22,55 @@ public class Xpot {//Buy extenden oder ähnliches?
 	public Xpot(IUser user, String pot) {
 		switch(pot) {
 			case "tall":
-				use(user, 70, 1.5, 500);
+				use(user, 70, 1500, 500);
 				break;
 			case "grande":
-				use(user, 65, 2.0, 1000);
+				use(user, 65, 2000, 1000);
 				break;
 			case "venti":
-				use(user, 60, 3.0, 2000);
+				use(user, 60, 3000, 2000);
 				break;
 			case "giant":
-				use(user, 120, 5.0, 9999);
+				use(user, 120, 5000, 9999);
 				break;
 			case "unstable":
-				use (user, 10, Math.round(Math.random() * 90.0 + 10.0), 10000);
+				double rnd = Math.random();
+				int mix;
+				if (rnd < 0.05) {
+					mix = rnd(1000);
+				}else if (rnd < 0.15) {
+					mix = rnd(4000) + 1000;
+				}else if (rnd < 0.55) {
+					mix = rnd(45000) + 5000;
+				}else if (rnd < 0.95) {
+					mix = rnd(100000) + 50000;
+				}else {
+					mix = 200000;
+				}
+				use (user, 10, mix, 10000);
 				break;
 			default:
 				break;
 		}
 	}
 
-	private void use(IUser user, int duration, double amp, int price) {
-		try(Connection conn = SQLPool.getDataSource().getConnection(); Statement statement = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE)) {//TODO: welcher type?
-			ResultSet rs = statement.executeQuery("SELECT `gems`, `expRate`, `potDuration` FROM `users` WHERE `id` = " + user.getID());
-			//String query = "UPDATE `users` SET WHERE `id` = " + user.getID();
-			rs.next();
-			int gems = rs.getInt("gems");
-			if (gems < price) {//TODO: "gems" oder 1?
-				post(user.getName() + ", du hast zu wenig :gem:.");
-			} else if (rs.getDouble("expRate") > 1.0) {
-				post(user.getName() + ", letzter XPot ist noch für " + rs.getInt("potDuration") + " min aktiv.");
-			} else {
-				statement.executeUpdate("UPDATE `users` SET `gems` = gems - " + price + " WHERE `id` = " + user.getID());
-				//TODO: Rest updaten
+	private int rnd(int mult) {
+		return (int)(Math.round(Math.random() * mult));
+	}
 
-
-				rs.updateInt("gems", gems - price);
-				post(user.getName() + ", hier ist dein XPot (x" + amp + ") for " + duration + " min!");
-				LOGGER.info("{} -> XPot for {} (x{})", user.getName(), price, amp);
-				rs.updateDouble("expRate", amp);
-				rs.updateInt("potDuration", duration);
-			}
-		} catch(SQLException e) {
-			e.printStackTrace();
+	private void use(IUser user, int duration, int amp, int price) {//duration in ticks
+		UserData data = new UserData(user, 25);//gems, expRate, potDur
+		if (data.getGems() < price) {
+			post(user + ", du hast zu wenig :gem:.");
+		}else if (data.getPotDuration() > 0) {
+			post(user + ", letzter XPot(x" + data.getExpRate() / 1000 + ") ist noch für " + data.getPotDuration() + " min aktiv.");
+		} else {
+			data.subGems(price);
+			data.setExpRate(amp);
+			data.setPotDuration(duration);
+			post(user + ", hier ist dein XPot (x" + amp / 1000 + ") für " + duration + " min!");
+			LOGGER.info("{} -> XPot for {} (x{})", user.getName(), price, amp);
+			data.update();
 		}
-
 	}
 }

@@ -52,15 +52,6 @@ public class Commands {
 					//post(author + ", du hast " + new UserData(author, 1).getGems() + ":gem:.");
 					post(author + ", du hast " + UserData.getData(author, "gems") + ":gem:.");
 					break;
-
-				/*case "conn":
-					Connection con = SQLPool.getInstance().getConnection();
-					System.out.println("connected");
-					try {
-						con.close();
-					} catch(SQLException e) {
-						System.out.println("error: " + e);
-					}*/
 				
 				case "top":
 					Posts.top();
@@ -71,9 +62,9 @@ public class Commands {
 					post("coming soon(TM)");
 					break;
 				
-				/*case "buy":
+				case "buy":
 					Buy.m(author, params);
-					break;*/
+					break;
 				
 				/*case "flip":
 					Flip.m(author, params);
@@ -91,10 +82,12 @@ public class Commands {
 					Give.m(dAuthor, params);
 					break;*/
 
-				/*case "remind":
-					dAuthor.negateReminder();
+				case "remind":
+					UserData data = new UserData(author, 128);
+					data.negateReminder();
+					data.update();
 					post("Reminder getogglet");
-					break;*/
+					break;
 
 				case "changelog":
 					Posts.changelog();

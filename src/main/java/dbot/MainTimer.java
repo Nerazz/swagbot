@@ -19,8 +19,6 @@ class MainTimer extends TimerTask {//TODO: namen ändern
 	private static final Presences ONLINE = Presences.valueOf("ONLINE");
 	private static final IDiscordClient BOT_CLIENT = Statics.BOT_CLIENT;
 	private static final IGuild GUILD = Statics.GUILD;
-	//private static final Database DATABASE = Database.getInstance();
-	//private static final ServerData SERVER_DATA = DATABASE.getServerData();
 	
 	private static int minuteCount	= 0;
 	private static int hourCount	= 0;
@@ -34,14 +32,14 @@ class MainTimer extends TimerTask {//TODO: namen ändern
 	@Override
 	public void run() {
 		System.out.println("tick");
-		minuteCount += 1;
+		minuteCount++;
 		if ((minuteCount % 5) == 0) {
 			if ((minuteCount % 60) == 0) {
-				hourCount += 1;
+				hourCount++;
 				minuteCount = 0;
 
 				if ((hourCount % 24) == 0) {
-					dayCount += 1;
+					dayCount++;
 					hourCount = 0;//TODO: day++
 					//SERVER_DATA.addDay();
 				/*if ((SERVER_DATA.getDaysOnline() % 3) == 0) {
@@ -125,24 +123,23 @@ class MainTimer extends TimerTask {//TODO: namen ändern
 		for (IUser user : userList) {
 			UserData data;//TODO: vor schleife für weniger overhead?
 			if (user.getPresence() == ONLINE) {
-				data = new UserData(user, 15);
+				data = new UserData(user, 255);//gems, exp, level, expRate, potDur, swagLevel, swagPoints, reminder
 				if (data.getSwagLevel() > 0) {
 					double tmpPoints = (double)data.getSwagPoints();
 					data.addGems((int)Math.round(3.0 + tmpPoints / 5.0 * (tmpPoints / (tmpPoints + 5.0) + 1.0)));
 				} else {
 					data.addGems(3);
 				}
-				data.addExp((int)((Math.round(Math.random() * 3.0) + 4.0 + data.getSwagLevel()) * data.getExpRate()));
+				//data.addExp((int)((Math.round(Math.random() * 3.0) + 4.0 + data.getSwagLevel()) * data.getExpRate()));
+				int exp = (int)((Math.round(Math.random() * 3) + 4 + data.getSwagLevel()) * data.getExpRate()) / 1000;
+				//System.out.println(user.getName() + " getting " + exp + "Exp");
+				data.addExp(exp);
 			} else {
-				data = new UserData(user, 20);
+				data = new UserData(user, 152);//expRate, potDur, reminder
 			}
 			data.reducePotDuration();
 			data.update();
 		}
-
-
-
-
 		System.out.println("done");
 	}
 

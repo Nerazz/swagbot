@@ -14,29 +14,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * +num		+load
+ * num		load
  * 1		gems
- * 2		exp + level
- * 4		expRate + potDur
- * 8		swagLevel + swagPoints
- * 16		reminder
+ * 2		exp
+ * 4		level
+ * 8		expRate
+ * 16		potDur
+ * 32		swagLevel
+ * 64		swagPoints
+ * 128		reminder
  */
 
 public class UserData extends Database {//implements comparable?
 	//private static final String[] VALUES = {"'gems'", "'exp', 'level'", "'expRate', 'potDuration'", "'swagLevel', 'swagPoints'", "'reminder'"};
-	private static final String[][] VALUES = {{"gems"}, {"exp", "level"}, {"expRate", "potDuration"}, {"swagLevel", "swagPoints"}, {"reminder"}};
+	//private static final String[][] VALUES = {{"gems"}, {"exp", "level"}, {"expRate", "potDuration"}, {"swagLevel", "swagPoints"}, {"reminder"}};
+	private static final String[] VALUES = {"gems", "exp", "level", "expRate", "potDur", "swagLevel", "swagPoints", "reminder"};
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.UserData");
 	private final List<String> argsList = new ArrayList<>();
-	//private final String[] disc;
-	//private final Object[] data;
 	private String id = null;
 	private String name = null;
 	private IUser user = null;
 	private int gems = -1;
 	private int level = -1;
-	private int exp = -1;
-	private double expRate = -1;
-	private int potDuration = -1;
+	private int exp = Integer.MIN_VALUE;
+	private int expRate = Integer.MIN_VALUE;//1000 == 100%
+	private int potDur = -1;
 	private int swagLevel = -1;
 	private int swagPoints = -1;
 	private int reminder = Integer.MIN_VALUE;
@@ -58,13 +60,15 @@ public class UserData extends Database {//implements comparable?
 			//if (bit != 0) query += ", ";
 			if (last) query += ", ";
 			if ((load & 1) == 1) {
-				for (int i = 0; i < VALUES[bit].length; i++) {
+				query += "`" + VALUES[bit] + "`";
+				argsList.add(VALUES[bit]);
+				/*for (int i = 0; i < VALUES[bit].length; i++) {
 					if (i != 0) query += ", ";
 					query += "`" + VALUES[bit][i] + "`";
 					argsList.add(VALUES[bit][i]);
-					last = true;//geht vielleicht besser
-				}
 
+				}*/
+				last = true;//geht vielleicht besser
 			} else {
 				last = false;
 			}
@@ -98,10 +102,10 @@ public class UserData extends Database {//implements comparable?
 						level = rs.getInt(args);
 						break;
 					case "expRate":
-						expRate = rs.getDouble(args);
+						expRate = rs.getInt(args);
 						break;
-					case "potDuration":
-						potDuration = rs.getInt(args);
+					case "potDur":
+						potDur = rs.getInt(args);
 						break;
 					case "swagLevel":
 						swagLevel = rs.getInt(args);
@@ -141,8 +145,8 @@ public class UserData extends Database {//implements comparable?
 				case "expRate":
 					update += "`" + args + "` = " + expRate;
 					break;
-				case "potDuration":
-					update += "`" + args + "` = " + potDuration;
+				case "potDur":
+					update += "`" + args + "` = " + potDur;
 					break;
 				case "swagLevel":
 					update += "`" + args + "` = " + swagLevel;
@@ -251,31 +255,31 @@ public class UserData extends Database {//implements comparable?
 		return swagPoints;
 	}
 	
-	public double getExpRate() {
+	public int getExpRate() {
 		return expRate;
 	}
 	
-	public void setExpRate(double expRate) {
+	public void setExpRate(int expRate) {
 		this.expRate = expRate;
 	}
 	
 	public int getPotDuration() {
-		return potDuration;
+		return potDur;
 	}
 	
-	public void setPotDuration(int potDuration) {
-		if (potDuration < 0) {
+	public void setPotDuration(int potDur) {
+		if (potDur < 0) {
 			LOGGER.error("{} potDuration ist < 0", name);
 			throw new IllegalArgumentException("PotDuration darf nicht < 0 sein!");
 		}
-		this.potDuration = potDuration;
+		this.potDur = potDur;
 	}
 	
 	void reducePotDuration() {
-		if (potDuration > 0) {
-			potDuration -= 1;
-			if (potDuration < 1) {
-				setExpRate(1);
+		if (potDur > 0) {
+			potDur -= 1;
+			if (potDur < 1) {
+				setExpRate(10000);
 				LOGGER.info("{} XPot empty", name);
 				if (reminder > 0) {
 					post("Hey, dein XPot zeigt keine Wirkung mehr...", user);//TODO: kauf und staffelung prüfen
