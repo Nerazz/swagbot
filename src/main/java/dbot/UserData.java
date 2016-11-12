@@ -23,6 +23,7 @@ import java.util.List;
  * 32		swagLevel
  * 64		swagPoints
  * 128		reminder
+ *
  */
 
 public class UserData extends Database {//implements comparable?
