@@ -40,7 +40,7 @@ public class Poster {
 	}
 
 	public static Future<IMessage> post(String s) { //TODO: läuft so oder futuremessage zwischenspeichern?; könnte besser gemacht werden?
-		return post(s, 60000);
+		return post(s, 120000);
 	}
 
 	public static Future<IMessage> post(String s, IUser user) {

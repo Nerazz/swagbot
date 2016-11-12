@@ -14,29 +14,27 @@ import java.util.ArrayList;
 public class Posts {
 	private static final String medals[] = {":first_place:", ":second_place:", ":third_place:", ":military_medal:"};
 
-	static void stats(String id) {
-		//                  0       1      2        3            4              5          6
-		String strings[] = {"name", "exp", "level", "swagLevel", "potDuration", "expRate", "reminder"};
-		SQLData data = SQLPool.getData(id, strings);
+	static void stats(IUser user) {
+		UserData data = new UserData(user, 30);
 		String message = "";
-		if (data.getInt("swagLevel") > 0) message += " :trident:" + buildNum(data.getInt("swagLevel"));
-		message += "\nLevel " + data.getString("level") + " mit " + data.getString("exp") + "/" + UserData.getLevelThreshold(data.getInt("level")) + " Exp";
-		//message += "\n" + dAuthor.getGems() + ":gem:";
+		if (data.getSwagLevel() > 0) message += " :trident:" + buildNum(data.getSwagLevel());
+		message += "\nLevel " + data.getLevel() + " mit " + data.getExp() + "/" + UserData.getLevelThreshold(data.getLevel()) + " Exp";
+		//message += "\n" + data.getGems() + ":gem:";
 
-		if (data.getInt("potDuration") > 0) {
-			message += "\nBoost(x" + data.getString("expRate") + ") ist noch " + data.getString("potDuration") + " min aktiv";
+		if (data.getPotDuration() > 0) {
+			message += "\nBoost(x" + data.getExpRate() + ") ist noch " + data.getPotDuration() + " min aktiv";
 		} else {
 			message += "\nKein aktiver Boost";
 		}
-		if (data.getInt("reminder") != 0) {
-			message += "\n" + Math.abs(data.getInt("reminder")) + " Reminder";
-			if (data.getInt("reminder") > 0) {
+		if (data.getReminder() != 0) {
+			message += "\n" + Math.abs(data.getReminder()) + " Reminder";
+			if (data.getReminder() > 0) {
 				message += "(on)";
 			} else {
 				message += "(off)";
 			}
 		}
-		post(data.getString("name") + message);
+		post(user + message);
 	}
 
 	private static String medalGen(int i) {
@@ -47,7 +45,7 @@ public class Posts {
 		}
 	}
 
-	public static void top() {
+	static void top() {
 		String message = "TOP 5:";
 		ArrayList<SQLData> topList = SQLPool.getScoreList();
 		for (int i = 0; (i < topList.size()) && (i < 5); i++) {
@@ -56,8 +54,8 @@ public class Posts {
 			double score = data.getInt("level") + (double)data.getInt("exp") / (double)UserData.getLevelThreshold(data.getInt("level"));
 			message += "\n" + medalGen(i) + data.getString("name") + " - " + String.format("%.2f", score);
 		}
-		System.out.println(message);
-		//post(message);
+		//System.out.println(message);
+		post(message);
 	}
 
 	/*static void rank(DataMap<IUser, Double> dataMap, IUser author) {
@@ -83,8 +81,9 @@ public class Posts {
 
 	static void changelog() {
 		post(	"neuer Shit:\n" +
-				"alles im Arsch :(, aber:\n" +
-				"D A T E N B A N K B O Y S"
+				"- nimmt langsam wieder Form an :)\n" +
+				"- man kann wieder leveln + Swag wird eingerechnet\n" +
+				"- Pots laufen wieder (aber noch nicht kaufbar topkek)"
 		);
 	}
 
@@ -105,7 +104,7 @@ public class Posts {
 
 	static void commands() {
 		post(	"```xl\n" +
-				"3/4 läuft immoment nicht, rip\n" +
+				"3/4 läuft immer noch nicht, rip\n" +
 				"!commands               |diese Liste\n" +
 				"!changelog              |letzte Anderungen\n" +
 				"!info                   |allgemeine Infos zum Swagbot\n" +
@@ -133,7 +132,7 @@ public class Posts {
 				"- Level wird wieder auf 1 gesetzt und alle :gem: gehen verloren, dafür wird das Swaglevel um 1 erhöht\n" +
 				"- jedes Level über 100 gewährt einen Swagpoint\n" +
 				"- je mehr :gem: verloren gehen, desto mehr Swagpoints werden erlangt\n" +
-				"- je h�her das Swaglevel, desto mehr Exp pro Minute\n" +
+				"- je höher das Swaglevel, desto mehr Exp pro Minute\n" +
 				"- je mehr Swagpoints, desto mehr :gem: pro Minute\n" +
 				"- wenn du sicher bist, dass du prestigen willst, gönn dir mit:\n" +
 				"!ichwilljetztwirklichresettenundkennedieregelnzuswagpointsundcomindestenseinigermassen"

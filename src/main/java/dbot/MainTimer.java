@@ -12,7 +12,9 @@ import java.sql.*;
 import java.util.List;
 import java.util.*;
 
-class MainTimer implements Runnable {//TODO: namen ändern
+import static dbot.Poster.post;
+
+class MainTimer extends TimerTask {//TODO: namen ändern
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.MainTimer");
 	private static final Presences ONLINE = Presences.valueOf("ONLINE");
 	private static final IDiscordClient BOT_CLIENT = Statics.BOT_CLIENT;
@@ -26,6 +28,7 @@ class MainTimer implements Runnable {//TODO: namen ändern
 
 	MainTimer() {
 		BOT_CLIENT.changeStatus(Status.game("frisch online"));
+		//System.out.println("constructed maintimer");
 	}
 
 	@Override
@@ -41,9 +44,9 @@ class MainTimer implements Runnable {//TODO: namen ändern
 					dayCount += 1;
 					hourCount = 0;//TODO: day++
 					//SERVER_DATA.addDay();
-					/*if ((SERVER_DATA.getDaysOnline() % 3) == 0) {
-						DATABASE.save(true);
-					}*/
+				/*if ((SERVER_DATA.getDaysOnline() % 3) == 0) {
+					DATABASE.save(true);
+				}*/
 				}
 			}
 
@@ -55,77 +58,97 @@ class MainTimer implements Runnable {//TODO: namen ändern
 				BOT_CLIENT.changeStatus(Status.game("seit " + minuteCount + "m online"));
 			}
 
-			/*if (((hourCount % 5) == 0) && (minuteCount == 0)) {
-				DATABASE.save(false);
-				LOGGER.info("Database saved from MainTimer");
-			}*/
+		/*if (((hourCount % 5) == 0) && (minuteCount == 0)) {
+			DATABASE.save(false);
+			LOGGER.info("Database saved from MainTimer");
+		}*/
 		}
 
-		/*try(Connection conn = SQLPool.getDataSource().getConnection(); Statement statement = conn.createStatement()) {//TODO: welcher type?
-			ResultSet rs = statement.executeQuery("SELECT `id`, `gems`, `exp` FROM `users`");
-			while(rs.next()) {
-				String id =
-				if (!user.get)
+		/*try (Connection con = SQLPool.getDataSource().getConnection();
+			PreparedStatement ps = con.prepareStatement("SELECT `exp`, `level`, `swagLevel`, `swagPoints`, `potDuration`, `expRate` FROM `users` WHERE `id` = ?")) {
+			List<IUser> userList = GUILD.getUsers();
+			for (IUser user : userList) {
+				ps.setString(1, user.getID());
+				ResultSet rs = ps.executeQuery();
+				if (!rs.next()) {//DB doesn't contain user
+					System.out.println("adding");
+					try (PreparedStatement psAdd = con.prepareStatement("INSERT INTO `users` (`id`, `name`) VALUES (?, ?)")) {
+						psAdd.setString(1, user.getID());
+						psAdd.setString(2, user.getName());
+						psAdd.executeUpdate();
+						con.commit();
+					}
+					rs = ps.executeQuery();
+					rs.next();
+				}
+				int potDuration = rs.getInt("potDuration");
+				if (user.getPresence() == ONLINE) {
+					int exp = rs.getInt("exp");
+					int level = rs.getInt("level");
+					int swagLevel = rs.getInt("swagLevel");
+					int swagPoints = rs.getInt("swagPoints");
+					double expRate = rs.getDouble("expRate");
+					int gems;
+					if (swagLevel > 0) {
+						gems = (int) Math.round(3.0 + swagPoints / 5.0 * (swagPoints / (swagPoints + 5.0) + 1.0));
+					} else {
+						gems = 3;
+					}
+					exp += (int)((Math.round(Math.random() * 3.0) + 4.0 + swagLevel) * expRate);
+					if (exp >= getLevelThreshold(level)) {
+						while (exp >= getLevelThreshold(level)) {
+							exp -= getLevelThreshold(level);
+							level++;
+							post(":tada: DING! " + user.getName() + " ist Level " + level + "! :tada:");
+							LOGGER.info("{} leveled to Level {}", user.getName(), level);
+						}
+						ps.executeUpdate("UPDATE `users` SET `level` = " + level + " WHERE `id` = " + user.getID());//TODO: mit if an anderes update anhängen (flaggen, wenn lvlup)
+					}
+					ps.executeUpdate("UPDATE `users` SET `gems` = `gems` + " + gems + ", `exp` = " + exp + " WHERE `id` = " + user.getID());
+				}
+				rs.close();
+				if (potDuration > 0) {
+					potDuration--;
+					if (potDuration < 1) {
+						ps.executeUpdate("UPDATE `users` SET `potDuration` = 0, `expRate` = 1.0 WHERE `id` = " + user.getID());
+					} else {
+						ps.executeUpdate("UPDATE `users` SET `potDuration` = " + potDuration + " WHERE `id` = " + user.getID());
+					}
+				}
 			}
-			//String query = "UPDATE `users` SET WHERE `id` = " + user.getID();
-			rs.next();
-			int gems = rs.getInt("gems");
-			if (gems < price) {//TODO: "gems" oder 1?
-			} else if (rs.getDouble("expRate") > 1.0) {
-			} else {
-				statement.executeUpdate("UPDATE `users` SET `gems` = gems - " + price + " WHERE `id` = " + user.getID());
-				//TODO: Rest updaten
-
-
-				rs.updateInt("gems", gems - price);
-				LOGGER.info("{} -> XPot for {} (x{})", user.getName(), price, amp);
-				rs.updateDouble("expRate", amp);
-				rs.updateInt("potDuration", duration);
-			}
+			con.commit();
 		} catch(SQLException e) {
 			e.printStackTrace();
 		}*/
 
-
-		try(Connection conn = SQLPool.getDataSource().getConnection(); PreparedStatement statement = conn.prepareStatement("SELECT `gems`, `exp`, `swagLevel`, `swagPoints` FROM `users` WHERE `id` = ?")) {//TODO: welcher type?
-
 		List<IUser> userList = GUILD.getUsers();
-		for(IUser user: userList) {
-			if (!user.getID().equals(Statics.ID_BOT)) {
-				if (user.getPresence() == ONLINE) {
-					statement.setString(1, user.getID());
-					ResultSet rs = statement.executeQuery();
-					rs.next();
-					int exp = rs.getInt("exp");
-					int gems = rs.getInt("gems");
-					int swagLevel = rs.getInt("swagLevel");
-					int swagPoints = rs.getInt("swagPoints");
-					rs.close();
-					exp += (int)((Math.round(Math.random() * 3.0) + 4.0 + 0));//TODO: swaglevel dazu!!!
-					gems += 3;
-					//System.out.println(user.getName() + ": " + gems + "; " + exp);
-					//statement = conn.prepareStatement("UPDATE `users` SET `gems` = " + gems + ", `exp` = " + exp + " WHERE `id` = "+ user.getID());
-					statement.executeUpdate("UPDATE `users` SET `gems` = " + gems + ", `exp` = " + exp + " WHERE `id` = "+ user.getID());
-
-					//ps.executeUpdate();
-					//ps.close();
-					//statement.executeUpdate("UPDATE `users` SET `gems` = " + gems + ", `exp` = " + exp + " WHERE `id` = "+ user.getID());//TODO: mit ? machen und batchupdate
+		for (IUser user : userList) {
+			UserData data;//TODO: vor schleife für weniger overhead?
+			if (user.getPresence() == ONLINE) {
+				data = new UserData(user, 15);
+				if (data.getSwagLevel() > 0) {
+					double tmpPoints = (double)data.getSwagPoints();
+					data.addGems((int)Math.round(3.0 + tmpPoints / 5.0 * (tmpPoints / (tmpPoints + 5.0) + 1.0)));
+				} else {
+					data.addGems(3);
 				}
-				/*if (DATABASE.containsUser(user)) {TODO:!!!
-					DATABASE.getData(user).reducePotDuration();
-				}*/
+				data.addExp((int)((Math.round(Math.random() * 3.0) + 4.0 + data.getSwagLevel()) * data.getExpRate()));
+			} else {
+				data = new UserData(user, 20);
 			}
-		}
-		conn.commit();
-		} catch(SQLException e) {
-			e.printStackTrace();
+			data.reducePotDuration();
+			data.update();
 		}
 
+
+
+
+		System.out.println("done");
 	}
 
 	//private void update(IUser user) {
 		
-		/*if (!DATABASE.containsUser(user)) {//TODO: OPTIMIEREN (DOUBLE-CHECK!!), vielleicht alle user, egal ob online oder nicht, in db laden?
+		/*if (!DATABASE.containsUser(user)) {
 			DATABASE.add(user);
 			LOGGER.info("{} added to Database!", user.getName());
 		}*/

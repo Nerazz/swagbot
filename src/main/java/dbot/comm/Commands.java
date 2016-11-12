@@ -18,7 +18,9 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.RateLimitException;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.regex.*;
 
 public class Commands {
@@ -40,15 +42,15 @@ public class Commands {
 					break;
 
 				case "stats":
-					//Posts.stats(dAuthor);
-					Posts.stats(author.getID());
+					Posts.stats(author);
 					break;
 
 				case "gems":
 					//post(author + ", du hast " + dAuthor.getGems() + ":gem:.");
 					//SQLPool.getInstance().getData("test", "gems");
 					//SQLPool.getData(author.getID(), "gems");
-					post(author + ", du hast " + SQLPool.getData(author.getID(), "gems") + ":gem:.");
+					//post(author + ", du hast " + new UserData(author, 1).getGems() + ":gem:.");
+					post(author + ", du hast " + UserData.getData(author, "gems") + ":gem:.");
 					break;
 
 				/*case "conn":
@@ -73,9 +75,9 @@ public class Commands {
 					Buy.m(author, params);
 					break;*/
 				
-				case "flip":
+				/*case "flip":
 					Flip.m(author, params);
-					break;
+					break;*/
 
 				/*case "raffle":
 					RaffleTimer.m(dAuthor, params);
@@ -136,12 +138,12 @@ public class Commands {
 				//String params = "" + matcher.group(3);
 				switch (matcher.group(1)) {
 					case "save":
-						Database.getInstance().save(false);
-						post("Aye aye, Meister " + author.getName() + " :ok_hand:", 5000);
+						//Database.getInstance().save(false);
+						post("Ne ne, Meister " + author.getName() + " :ok_hand:", 5000);
 						break;
 					case "logout":
 						Flip.closeAll();
-						del(message);//TODO: pool an messages, die es noch gibt, die dann gel�scht werden?
+						del(message);//TODO: pool an messages, die es noch gibt, die dann gelöscht werden?
 						del(Flip.getRoomPost());
 						try {
 							Statics.BOT_CLIENT.logout();

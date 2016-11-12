@@ -6,24 +6,183 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IUser;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * +num		+load
+ * 1		gems
+ * 2		exp + level
+ * 4		expRate + potDur
+ * 8		swagLevel + swagPoints
+ * 16		reminder
+ */
+
 public class UserData extends Database {//implements comparable?
+	//private static final String[] VALUES = {"'gems'", "'exp', 'level'", "'expRate', 'potDuration'", "'swagLevel', 'swagPoints'", "'reminder'"};
+	private static final String[][] VALUES = {{"gems"}, {"exp", "level"}, {"expRate", "potDuration"}, {"swagLevel", "swagPoints"}, {"reminder"}};
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.UserData");
+	private final List<String> argsList = new ArrayList<>();
+	//private final String[] disc;
+	//private final Object[] data;
 	private String id = null;
 	private String name = null;
-	private transient IUser user = null;
-	private int gems = 0;
-	private int level = 1;
-	private int exp = 0;
-	private double expRate = 1;
-	private int potDuration = 0;
-	private int swagLevel = 0;
-	private int swagPoints = 0;
-	private int reminder = 0;
+	private IUser user = null;
+	private int gems = -1;
+	private int level = -1;
+	private int exp = -1;
+	private double expRate = -1;
+	private int potDuration = -1;
+	private int swagLevel = -1;
+	private int swagPoints = -1;
+	private int reminder = Integer.MIN_VALUE;
 
-	public UserData(IUser user) {
+	public UserData(IUser user) {}
+
+	public UserData(IUser user, int load) {
+		if (load < 1) {
+			System.out.println("ERROR in UserData, load < 0");
+			return;
+		}
 		this.user = user;
 		id = user.getID();
 		name = user.getName();
+		String query = "SELECT ";
+		int bit = 0;
+		boolean last = false;
+		while (load != 0) {
+			//if (bit != 0) query += ", ";
+			if (last) query += ", ";
+			if ((load & 1) == 1) {
+				for (int i = 0; i < VALUES[bit].length; i++) {
+					if (i != 0) query += ", ";
+					query += "`" + VALUES[bit][i] + "`";
+					argsList.add(VALUES[bit][i]);
+					last = true;//geht vielleicht besser
+				}
+
+			} else {
+				last = false;
+			}
+			load >>= 1;
+			bit += 1;
+		}
+		query += " FROM `users` WHERE `id` = " + id;
+		//System.out.println(query);
+		try (Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(query)) {
+			ResultSet rs = ps.executeQuery();
+			if (!rs.next()) {//user not in DB
+				LOGGER.info("ADDING USER TO DATABASE: " + name);
+				try (PreparedStatement psAdd = con.prepareStatement("INSERT INTO `users` (`id`, `name`) VALUES (?, ?)")) {
+					psAdd.setString(1, user.getID());
+					psAdd.setString(2, user.getName());
+					psAdd.executeUpdate();
+					con.commit();
+				}
+				rs = ps.executeQuery();
+				rs.next();
+			}
+			for (String args : argsList) {//TODO: schon ziemlich fail so...
+				switch (args) {
+					case "gems":
+						gems = rs.getInt(args);
+						break;
+					case "exp":
+						exp = rs.getInt(args);
+						break;
+					case "level":
+						level = rs.getInt(args);
+						break;
+					case "expRate":
+						expRate = rs.getDouble(args);
+						break;
+					case "potDuration":
+						potDuration = rs.getInt(args);
+						break;
+					case "swagLevel":
+						swagLevel = rs.getInt(args);
+						break;
+					case "swagPoints":
+						swagPoints = rs.getInt(args);
+						break;
+					case "reminder":
+						reminder = rs.getInt(args);
+						break;
+					default:
+						System.out.println("ERROR in UserData switch!");
+						break;
+				}
+			}
+			rs.close();
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public void update() {//lieber string für batch-update returnen?
+		//"UPDATE `users` SET `gems` = `gems` + " + gems + ", `exp` = " + exp + " WHERE `id` = " + user.getID()
+		String update = "UPDATE `users` SET ";
+		for (String args : argsList) {
+			switch (args) {
+				case "gems":
+					update += "`" + args + "` = " + gems;
+					break;
+				case "exp":
+					update += "`" + args + "` = " + exp;
+					break;
+				case "level":
+					update += "`" + args + "` = " + level;
+					break;
+				case "expRate":
+					update += "`" + args + "` = " + expRate;
+					break;
+				case "potDuration":
+					update += "`" + args + "` = " + potDuration;
+					break;
+				case "swagLevel":
+					update += "`" + args + "` = " + swagLevel;
+					break;
+				case "swagPoints":
+					update += "`" + args + "` = " + swagPoints;
+					break;
+				case "reminder":
+					update += "`" + args + "` = " + reminder;
+					break;
+				default:
+					System.out.println("ERROR in UserData UPDATE switch!");
+					break;
+			}
+			if (argsList.indexOf(args) != argsList.size() - 1) {
+				update += ", ";
+			}
+		}
+		update += " WHERE `id` = " + id;
+		//System.out.println(update);
+		try (Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(update)) {
+			ps.executeUpdate();
+			con.commit();
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static Object getData(IUser user, String data) {
+		String query = "SELECT `" + data + "` FROM `users` WHERE `id` = ?";
+		try (Connection conn = SQLPool.getDataSource().getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
+			ps.setString(1, user.getID());
+			try (ResultSet rs = ps.executeQuery()) {
+				rs.next();
+				return rs.getObject(data);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	String getID() {
@@ -32,15 +191,6 @@ public class UserData extends Database {//implements comparable?
 	
 	public IUser getUser() {
 		return user;
-	}
-
-	void initUser() {
-		try {
-			user = Statics.GUILD.getUserByID(id);
-		} catch(Exception e) {
-			System.out.println("User not found: " + name);//TODO: LOGGER
-			System.out.println(e);
-		}
 	}
 	
 	public String getName() {
@@ -63,10 +213,10 @@ public class UserData extends Database {//implements comparable?
 		return exp;
 	}
 
-	void addExp(int rpgExp) {
-		this.exp += rpgExp;
-		while (this.exp >= getLevelThreshold(level)) {
-			this.exp -= getLevelThreshold(level);
+	void addExp(int addedExp) {
+		exp += addedExp;
+		while (exp >= getLevelThreshold(level)) {
+			exp -= getLevelThreshold(level);
 			level++;
 			post(":tada: DING! " + name + " ist Level " + level + "! :tada:");
 			LOGGER.info("{} leveled to Level {}", name, level);

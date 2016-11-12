@@ -25,6 +25,9 @@ public class Bot {
 		LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 		StatusPrinter.print(lc);
 		updateBot();
+
+		//Events events = new Events();
+		//events.onGuildCreateEvent();
 		/*String data[] = {"gems", "name", "level"};
 		SQLData swag = SQLPool.getData("97092184821465088", data);
 		System.out.println(swag.get("name"));*/

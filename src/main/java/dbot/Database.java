@@ -79,7 +79,7 @@ public class Database {
 		return dataMap;
 	}
 	
-	void load() {//TODO: load & save lotto tickets
+	/*void load() {//TODO: load & save lotto tickets
 		LOGGER.info("loading Databases...");
 		try (FileReader fr = new FileReader(FILE_PATH)){
 			Gson gson = new Gson();
@@ -123,7 +123,7 @@ public class Database {
 			LOGGER.error("IOException while saving Database", e);
 		}
 
-	}
+	}*/
 
 	public ServerData getServerData() {
 		return serverData;

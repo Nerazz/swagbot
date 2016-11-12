@@ -18,6 +18,8 @@ public class SQLPool {
 	static {
 		HikariConfig config = new HikariConfig();
 		config.setDriverClassName("org.mariadb.jdbc.Driver");
+		//config.setDataSourceClassName("org.mariadb.jdbc.MariaDbDataSource");
+		//config.setDataSourceClassName("ork.mariadb.jdbc.Driver");
 		config.setJdbcUrl(Statics.DB_URL);
 		config.setUsername(Statics.DB_USER);
 		config.setPassword(Statics.DB_PASS);
@@ -33,7 +35,7 @@ public class SQLPool {
 		return dataSource;
 	}
 
-	public static Object getData(String id, String data) {
+	/*public static Object getData(String id, String data) {
 		//String query = "SELECT ? FROM `users` WHERE `id` = ?";
 
 		//String query = "SELECT * FROM `users` WHERE `exp` < 1000";
@@ -52,7 +54,7 @@ public class SQLPool {
 			System.out.println(e);
 		}
 		return null;
-	}
+	}*/
 
 	public static SQLData getData(String id, String[] strings) {//TODO: classe erstellen mit methode get(string rowName)
 		Object data[] = new Object[strings.length];
@@ -104,7 +106,6 @@ public class SQLPool {
 	public static ArrayList<SQLData> getScoreList() {//TODO: List statt ArrayList?
 		String strings[] = {"name", "level", "exp"};
 		String query = "SELECT `name`, `level`, `exp` FROM `users` ORDER BY `level` DESC, `exp` DESC";
-		//String query = "SELECT `gems` FROM `users` WHERE `id` = ?";
 		ArrayList<SQLData> dataList = new ArrayList<>();
 		try(Connection conn = getDataSource().getConnection(); PreparedStatement statement = conn.prepareStatement(query)) {
 			try(ResultSet resultSet = statement.executeQuery()) {
@@ -113,17 +114,12 @@ public class SQLPool {
 					data[0] = resultSet.getObject("name");
 					data[1] = resultSet.getObject("level");
 					data[2] = resultSet.getObject("exp");
-					//System.out.println(data[0]);
-					//System.out.println(resultSet.getObject("name"));
-					//dataList.add((String)data[0]);
-
 					SQLData sqlData = new SQLData(strings, data);
 					dataList.add(sqlData);
-					//dataList.add(new SQLData(strings, data));
 				}
 			}
 		} catch(SQLException e) {
-			System.out.println(e);
+			e.printStackTrace();
 		}
 		return dataList;
 	}

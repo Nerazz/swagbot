@@ -16,8 +16,10 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 
+import java.util.Timer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -37,9 +39,31 @@ public class Events {
 			guild = Statics.GUILD;
 			LOGGER.debug("Bot joined guild: {}", guild.getName());
 			//DATABASE.load();
-			final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-			final MainTimer mainTimer = new MainTimer();
-			scheduler.scheduleAtFixedRate(mainTimer, 5, 60, SECONDS);
+			//final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+		/*final ThreadFactory factory = new ThreadFactory() {
+
+				@Override
+				public Thread newThread(Runnable target) {
+					final Thread thread = new Thread(target);
+					LOGGER.debug("Creating new worker thread");
+					thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+
+						@Override
+						public void uncaughtException(Thread t, Throwable e) {
+							LOGGER.error("Uncaught Exception", e);
+						}
+					});
+					return thread;
+				}
+			};*/
+
+
+			//final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(factory);
+			//final MainTimer mainTimer = new MainTimer();
+			//scheduler.scheduleAtFixedRate(new MainTimer(), 5, 5, SECONDS);
+			Timer timer = new Timer();
+			timer.scheduleAtFixedRate(new MainTimer(), 5000, 10000);
 			bInit = true;
 			LOGGER.debug("Initialization done");
 		}
@@ -48,7 +72,7 @@ public class Events {
 
 	@EventSubscriber
 	public void onDiscordDisconnectedEvent(DiscordDisconnectedEvent event) {//TODO: sollte gesaved werden?
-		LOGGER.warn("Bot disconnected");
+		LOGGER.warn("Bot disconnected due to {}", event.getReason());
 		RelogTimer.addDC();
 		new RelogTimer();
 	}
