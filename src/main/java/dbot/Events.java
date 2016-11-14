@@ -23,7 +23,7 @@ import java.util.concurrent.ThreadFactory;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-public class Events {
+class Events {
 	private final static Logger LOGGER = LoggerFactory.getLogger("dbot.Events");
 	private static boolean bInit = false;
 	private static IGuild guild;
@@ -63,7 +63,7 @@ public class Events {
 			//final MainTimer mainTimer = new MainTimer();
 			//scheduler.scheduleAtFixedRate(new MainTimer(), 5, 5, SECONDS);
 			Timer timer = new Timer();
-			timer.scheduleAtFixedRate(new MainTimer(), 10000, 60000);
+			timer.scheduleAtFixedRate(new MainTimer(), 10000, 60000);//TODO: care
 			bInit = true;
 			LOGGER.debug("Initialization done");
 		}

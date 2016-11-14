@@ -121,24 +121,24 @@ class MainTimer extends TimerTask {//TODO: namen ändern
 
 		List<IUser> userList = GUILD.getUsers();
 		for (IUser user : userList) {
-			UserData data;//TODO: vor schleife für weniger overhead?
+			UserData uData;//TODO: vor schleife für weniger overhead?
 			if (user.getPresence() == ONLINE) {
-				data = new UserData(user, 255);//gems, exp, level, expRate, potDur, swagLevel, swagPoints, reminder
-				if (data.getSwagLevel() > 0) {
-					double tmpPoints = (double)data.getSwagPoints();
-					data.addGems((int)Math.round(3.0 + tmpPoints / 5.0 * (tmpPoints / (tmpPoints + 5.0) + 1.0)));
+				uData = new UserData(user, 255);//gems, exp, level, expRate, potDur, swagLevel, swagPoints, reminder
+				if (uData.getSwagLevel() > 0) {
+					double tmpPoints = (double)uData.getSwagPoints();
+					uData.addGems((int)Math.round(3.0 + tmpPoints / 5.0 * (tmpPoints / (tmpPoints + 5.0) + 1.0)));
 				} else {
-					data.addGems(3);
+					uData.addGems(3);
 				}
 				//data.addExp((int)((Math.round(Math.random() * 3.0) + 4.0 + data.getSwagLevel()) * data.getExpRate()));
-				int exp = (int)((Math.round(Math.random() * 3) + 4 + data.getSwagLevel()) * data.getExpRate()) / 1000;
+				int exp = (int)((Math.round(Math.random() * 3) + 4 + uData.getSwagLevel()) * uData.getExpRate()) / 1000;
 				//System.out.println(user.getName() + " getting " + exp + "Exp");
-				data.addExp(exp);
+				uData.addExp(exp);
 			} else {
-				data = new UserData(user, 152);//expRate, potDur, reminder
+				uData = new UserData(user, 152);//expRate, potDur, reminder
 			}
-			data.reducePotDuration();
-			data.update();
+			uData.reducePotDuration();
+			uData.update();
 		}
 		System.out.println("done");
 	}

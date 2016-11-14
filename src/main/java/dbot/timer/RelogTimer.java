@@ -1,7 +1,6 @@
 package dbot.timer;
 
 import dbot.Bot;
-import dbot.Events;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +24,7 @@ public class RelogTimer implements Runnable {//TODO: name: RelogTimer
 	public void run() {
 		LOGGER.info("started new RelogTimer");
 		try {
-			Thread.sleep(20 * 60000);//20 min, sollte höher sein als reconnectdauer
+			Thread.sleep(20 * 60000);//20 min, sollte hÃ¶her sein als reconnectdauer
 			dcCount = 0;
 			Bot.updateBot();
 		} catch(InterruptedException e) {

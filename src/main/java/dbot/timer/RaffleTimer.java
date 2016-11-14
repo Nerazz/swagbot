@@ -13,7 +13,7 @@ import static dbot.Poster.post;
 /**
  * Created by niklas on 29.09.16.
  */
-public class RaffleTimer implements Runnable {
+class RaffleTimer implements Runnable {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.timer.RaffleTimer");
 	private List<UserData> dataList = new LinkedList<>();
 	private List<Integer> betList = new LinkedList<>();
@@ -75,12 +75,12 @@ public class RaffleTimer implements Runnable {
 		try {
 			Thread.sleep(10000);
 		} catch(InterruptedException e) {
-			System.out.println(e);
+			LOGGER.error("interrupted run", e);
 		}
 		closed = true;
 		System.out.println("closed timer");
 		//UserData winner =
-		int rng = (int)Math.round(Math.random() * (pot - 1) + 1);//0 muss übersprungen werden!, tuts noch nicht
+		int rng = (int)Math.round(Math.random() * (pot - 1) + 1);//0 muss Ã¼bersprungen werden!, tuts noch nicht
 		System.out.println("rng: " + rng);
 		int x = 0, i = 0;
 		while (rng < x && i < betList.size()) {

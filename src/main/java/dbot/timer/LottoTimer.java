@@ -92,8 +92,8 @@ public class LottoTimer extends Lotto implements Runnable {
 				score = 1;//Kinn richtig geraten
 				ticket.remove(0);
 			}
-			score += ticket.size() * 2;//für Verteilung in winnerList
-			if (score >= 2) winnerList.get(score - 2).add(TICKET_MAP.getKey(i));//>= 3 für Gewinn?
+			score += ticket.size() * 2;//fÃ¼r Verteilung in winnerList
+			if (score >= 2) winnerList.get(score - 2).add(TICKET_MAP.getKey(i));//>= 3 fÃ¼r Gewinn?
 		}
 		distribute(winnerList);
 	}

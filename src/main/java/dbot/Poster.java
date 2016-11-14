@@ -8,10 +8,10 @@ import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.MissingPermissionsException;
-import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.MessageBuilder;
-import sx.blah.discord.util.RequestBuffer;
+import sx.blah.discord.util.*;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -58,6 +58,7 @@ public class Poster {
 	public static void del(IMessage message) {
 		RequestBuffer.request(() -> {
 			try {
+				DelTimer.remove(message);
 				message.delete();
 			} catch(MissingPermissionsException | DiscordException e) {
 				LOGGER.error("failed deleting message", e);
@@ -81,9 +82,9 @@ public class Poster {
 		});
 	}
 
-	public static String buildNum(int i) {
-		Matcher matcher = Pattern.compile("(\\d)(\\d)?(\\d)?").matcher(String.valueOf(i));
-		if (!matcher.matches()) System.out.println("wtf");//TODO: nötig, aber nicht mit wtf...
+	public static String buildNum(int n) {
+		Matcher matcher = Pattern.compile("(\\d)(\\d)?(\\d)?").matcher(String.valueOf(n));
+		if (!matcher.matches()) LOGGER.error("failed building number: {}", n);//TODO: nötig, aber nicht mit wtf...
 		String s = NUMBER_STRINGS[Integer.parseInt(matcher.group(1))];
 		if (matcher.group(2) != null) {
 			s += NUMBER_STRINGS[Integer.parseInt(matcher.group(2))];

@@ -11,24 +11,24 @@ import java.util.ArrayList;
 /**
  * Created by Niklas on 13.09.2016.
  */
-public class Posts {
+class Posts {
 	private static final String medals[] = {":first_place:", ":second_place:", ":third_place:", ":military_medal:"};
 
 	static void stats(IUser user) {
-		UserData data = new UserData(user, 255);//exp, level, expRate, potDur, swagLevel, swagPoints, reminder
+		UserData uData = new UserData(user, 255);//exp, level, expRate, potDur, swagLevel, swagPoints, reminder
 		String message = "";
-		if (data.getSwagLevel() > 0) message += " :trident:" + buildNum(data.getSwagLevel());//TODO: swagpoints anzeigen mit nicem emoji
-		message += "\nLevel " + data.getLevel() + " mit " + data.getExp() + "/" + UserData.getLevelThreshold(data.getLevel()) + " Exp";
+		if (uData.getSwagLevel() > 0) message += " :trident:" + buildNum(uData.getSwagLevel());//TODO: swagpoints anzeigen mit nicem emoji
+		message += "\nLevel " + uData.getLevel() + " mit " + uData.getExp() + "/" + UserData.getLevelThreshold(uData.getLevel()) + " Exp";
 		//message += "\n" + data.getGems() + ":gem:";
 
-		if (data.getPotDuration() > 0) {
-			message += "\nBoost(x" + data.getExpRate() + ") ist noch " + data.getPotDuration() + " min aktiv";
+		if (uData.getPotDuration() > 0) {
+			message += "\nBoost(x" + uData.getExpRate() + ") ist noch " + uData.getPotDuration() + " min aktiv";
 		} else {
 			message += "\nKein aktiver Boost";
 		}
-		if (data.getReminder() != 0) {
-			message += "\n" + Math.abs(data.getReminder()) + " Reminder";
-			if (data.getReminder() > 0) {
+		if (uData.getReminder() != 0) {
+			message += "\n" + Math.abs(uData.getReminder()) + " Reminder";
+			if (uData.getReminder() > 0) {
 				message += "(on)";
 			} else {
 				message += "(off)";
@@ -49,10 +49,10 @@ public class Posts {
 		String message = "TOP 5:";
 		ArrayList<SQLData> topList = SQLPool.getScoreList();
 		for (int i = 0; (i < topList.size()) && (i < 5); i++) {
-			SQLData data = topList.get(i);
+			SQLData uData = topList.get(i);
 			//double score = ((Integer)data.get("level")).doubleValue() + Math.floor(((Integer)data.get("exp")).doubleValue() / (double)UserData.getLevelThreshold((Integer)data.get("level")) * 100) / 100;
-			double score = data.getInt("level") + (double)data.getInt("exp") / (double)UserData.getLevelThreshold(data.getInt("level"));
-			message += "\n" + medalGen(i) + data.getString("name") + " - " + String.format("%.2f", score);
+			double score = uData.getInt("level") + (double)uData.getInt("exp") / (double)UserData.getLevelThreshold(uData.getInt("level"));
+			message += "\n" + medalGen(i) + uData.getString("name") + " - " + String.format("%.2f", score);
 		}
 		//System.out.println(message);
 		post(message);
@@ -81,10 +81,21 @@ public class Posts {
 
 	static void changelog() {
 		post(	"neuer Shit:\n" +
-				"- nimmt langsam wieder Form an :)\n" +
+				"v5.2.x - v5.3.x:\n" +
 				"- man kann wieder leveln + Swag wird eingerechnet\n" +
 				"- Pots laufen wieder (und wieder kaufbar, aber scheinbar noch in bestimmten Fällen Formatierungsfehler)\n" +
-				"- reminder gehen wieder"
+				"- reminder gehen wieder\n" +
+				"v5.4.0:\n" +
+				"- flip geht wieder (+ derbe gepimpt) :)\n" +
+				"- massig Abkürzungen für Befehle am start\n" +
+				"- !sourcecode\n" +
+				"- besserer logout (noch bisschen buggy lel)" +
+				"v5.4.1\n" +
+				"- Post vergessen zu editieren" +
+				"v5.4.2\n" +
+				"- flip Fix Nr.1 (flippen ohne Seite nicht mölich)" +
+				"v5.4.3\n" +
+				"flip Fix Nr.2 ((:gem:-Verlust duch bestimmte flips))"
 		);
 	}
 
@@ -105,7 +116,7 @@ public class Posts {
 
 	static void commands() {
 		post(	"```xl\n" +
-				"2/4 läuft immer noch nicht, rip\n" +
+				"1/4 läuft immer noch nicht, rip\n" +
 				"!commands               |diese Liste\n" +
 				"!changelog              |letzte Anderungen\n" +
 				"!info                   |allgemeine Infos zum Swagbot\n" +
@@ -116,9 +127,10 @@ public class Posts {
 				"!top                    |Rangliste der Top5\n" +
 				//"!rank                   |postet umgebende Range des Schreibenden\n" +
 				//"!give '@person' 'gems'  |gibt Person Gems\n" +
-				//"!flip 'gems' ('top/kek')|offnet Coinflip-Raum (statt 'gems' ist auch 'allin' moglich)\n" +
-				//"!flip join 'ID'         |flippt gegen den Raumersteller\n" +
-				//"!flip close             |schliesst eigenen Flipraum (Gems werden erstattet)\n" +
+				"!flip 'gems' ('top/kek')|offnet Coinflip-Raum (statt 'gems' ist auch 'allin' moglich)\n" +
+				"!flip join 'ID'         |flippt gegen den Raumersteller\n" +
+				"!flip close             |schliesst eigenen Flipraum (Gems werden erstattet)\n" +
+				"!flip close all         |siehe !flip close fur alle\n" +
 				"!remind                 |togglet Reminder\n" +
 				"!prestigeinfo           |Infos zum Prestigen\n" +
 				"!roll                   |Roll zwischen 1 und 100\n" +

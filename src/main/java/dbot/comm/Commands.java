@@ -1,15 +1,12 @@
 package dbot.comm;
 
-import dbot.Database;
-import dbot.SQLPool;
-import dbot.UserData;
+import dbot.*;
 
 import static dbot.Poster.post;
 import static dbot.Poster.del;
-import dbot.Statics;
 
+import dbot.timer.DelTimer;
 import dbot.timer.LottoTimer;
-import dbot.timer.RaffleTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IMessage;
@@ -33,8 +30,7 @@ public class Commands {
 		Pattern pattern = Pattern.compile("^!([a-z]+)(\\s(.+))?");
 		Matcher matcher = pattern.matcher(message.getContent().toLowerCase());
 		if (matcher.matches()) {
-			//UserData dAuthor = database.getData(author);
-			String params = "" + matcher.group(3);
+			String params = matcher.group(3);
 			
 			switch (matcher.group(1)) {
 				case "roll":
@@ -42,10 +38,12 @@ public class Commands {
 					break;
 
 				case "stats":
+				case "st":
 					Posts.stats(author);
 					break;
 
 				case "gems":
+				case "g":
 					//post(author + ", du hast " + dAuthor.getGems() + ":gem:.");
 					//SQLPool.getInstance().getData("test", "gems");
 					//SQLPool.getData(author.getID(), "gems");
@@ -63,12 +61,14 @@ public class Commands {
 					break;
 				
 				case "buy":
+				case "b":
 					Buy.m(author, params);
 					break;
 				
-				/*case "flip":
+				case "flip":
+				case "f":
 					Flip.m(author, params);
-					break;*/
+					break;
 
 				/*case "raffle":
 					RaffleTimer.m(dAuthor, params);
@@ -83,17 +83,20 @@ public class Commands {
 					break;*/
 
 				case "remind":
-					UserData data = new UserData(author, 128);
-					data.negateReminder();
-					data.update();
+				case "rem":
+					UserData uData = new UserData(author, 128);
+					uData.negateReminder();
+					uData.update();
 					post("Reminder getogglet");
 					break;
 
 				case "changelog":
+				case "cl":
 					Posts.changelog();
 					break;
 
 				case "prestigeinfo":
+				case "pi":
 				case "prestige"://TODO: Nachfrage
 					Posts.prestigeInfo();
 					break;
@@ -107,22 +110,32 @@ public class Commands {
 					break;
 
 				case "shop":
+				case "s":
 					Posts.shop();
 					break;
 
 				case "commands":
+				case "cmd":
+				case "c":
 					Posts.commands();
 					break;
 
-				/*case "close":
-					SQLPool.getInstance().close();
-					break;*/
+				case "sourcecode":
+				case "swagcode":
+				case "sc":
+					if (params == null) {//kp wie sonst, null und "" gehen nicht...
+						post("Care, bester Code ever :)):\n" +
+								"https://github.com/nerazz/swagbot");
+					} else {
+						post("https://github.com/nerazz/swagbot/blob/master/src/main/java/dbot/comm/" + params.substring(0,1).toUpperCase() + params.substring(1) + ".java");
+					}
+					break;
 
 				default:
 					LOGGER.info("Command '{}' not found", message.getContent());
 					break;
 			}
-			del(message);
+			del(message);//befehl
 		} else if (author.getID().equals(Statics.ID_NERAZ) && message.getContent().startsWith("§")) {//TODO: ohne if-elseif, sondern nur mit ifs und return?
 			System.out.println("admin-trigger");
 			pattern = Pattern.compile("^§([a-z]+)(\\s(.+))?");
@@ -130,26 +143,39 @@ public class Commands {
 			if (matcher.matches()) {
 				//String params = "" + matcher.group(3);
 				switch (matcher.group(1)) {
-					case "save":
-						//Database.getInstance().save(false);
-						post("Ne ne, Meister " + author.getName() + " :ok_hand:", 5000);
-						break;
 					case "logout":
-						Flip.closeAll();
-						del(message);//TODO: pool an messages, die es noch gibt, die dann gelöscht werden?
+					case "lo":
+						//Flip.closeAll();
+						DelTimer.add(message);
+						DelTimer.deleteAll();
 						del(Flip.getRoomPost());
 						try {
+							post("Logging out...:ok_hand:", -1);
 							Statics.BOT_CLIENT.logout();
 							System.exit(0);
 						} catch(DiscordException | RateLimitException e) {
 							LOGGER.error("Error while logging out", e);
 						}
 						break;
+
+					case "forcelo":
+						try {
+							Statics.BOT_CLIENT.logout();
+							System.exit(0);
+						} catch (DiscordException | RateLimitException e) {
+							LOGGER.error("Error while logging out", e);
+						}
+						break;
+
+					case "cl":
+						DelTimer.checkList();
+						break;
 					default:
+						post("Command nicht erkannt");
 						break;
 				}
 			}
-			del(message, 5000);
+			del(message, 3000);
 		} else {//kein Befehl
 			del(message, 60000);
 		}

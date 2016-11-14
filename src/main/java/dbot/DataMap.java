@@ -7,7 +7,7 @@ import java.util.List;
  * Created by niklas on 30.09.16.
  */
 public class DataMap<K, V> {
-	private List<Pair> pairs = new ArrayList<>();
+	private final List<Pair> pairs = new ArrayList<>();
 
 	public DataMap() {}
 

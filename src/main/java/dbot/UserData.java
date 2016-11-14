@@ -26,9 +26,7 @@ import java.util.List;
  *
  */
 
-public class UserData extends Database {//implements comparable?
-	//private static final String[] VALUES = {"'gems'", "'exp', 'level'", "'expRate', 'potDuration'", "'swagLevel', 'swagPoints'", "'reminder'"};
-	//private static final String[][] VALUES = {{"gems"}, {"exp", "level"}, {"expRate", "potDuration"}, {"swagLevel", "swagPoints"}, {"reminder"}};
+public class UserData {//implements comparable?
 	private static final String[] VALUES = {"gems", "exp", "level", "expRate", "potDur", "swagLevel", "swagPoints", "reminder"};
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.UserData");
 	private final List<String> argsList = new ArrayList<>();
@@ -48,7 +46,7 @@ public class UserData extends Database {//implements comparable?
 
 	public UserData(IUser user, int load) {
 		if (load < 1) {
-			System.out.println("ERROR in UserData, load < 0");
+			LOGGER.error("load < 1 ({}) in constructor", load);
 			return;
 		}
 		this.user = user;
@@ -118,13 +116,13 @@ public class UserData extends Database {//implements comparable?
 						reminder = rs.getInt(args);
 						break;
 					default:
-						System.out.println("ERROR in UserData switch!");
+						LOGGER.error("Switch default in constructor from {}", args);
 						break;
 				}
 			}
 			rs.close();
 		} catch(SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("SQL failed in constructor", e);
 		}
 
 	}
@@ -159,7 +157,7 @@ public class UserData extends Database {//implements comparable?
 					update += "`" + args + "` = " + reminder;
 					break;
 				default:
-					System.out.println("ERROR in UserData UPDATE switch!");
+					LOGGER.error("Switch default in update from {}", args);
 					break;
 			}
 			if (argsList.indexOf(args) != argsList.size() - 1) {
@@ -172,7 +170,7 @@ public class UserData extends Database {//implements comparable?
 			ps.executeUpdate();
 			con.commit();
 		} catch(SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("SQL failed in update", e);
 		}
 	}
 
@@ -185,12 +183,12 @@ public class UserData extends Database {//implements comparable?
 				return rs.getObject(data);
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			LOGGER.error("SQL failed in getData", e);
 		}
 		return null;
 	}
 	
-	String getID() {
+	public String getID() {
 		return id;
 	}
 	
@@ -270,7 +268,7 @@ public class UserData extends Database {//implements comparable?
 	
 	public void setPotDuration(int potDur) {
 		if (potDur < 0) {
-			LOGGER.error("{} potDuration ist < 0", name);
+			LOGGER.error("{} potDuration ist < 0 in setPotDuration", name);
 			throw new IllegalArgumentException("PotDuration darf nicht < 0 sein!");
 		}
 		this.potDur = potDur;
@@ -310,7 +308,7 @@ public class UserData extends Database {//implements comparable?
 	public static int getLevelThreshold(int level) {
 		level--;
 		if (level < 0) {
-			LOGGER.warn("level is < 0");
+			LOGGER.warn("level is < 0; getLevelThreshold({})", level);
 			throw new IllegalArgumentException("Level darf nicht < 0 sein!");
 		} else if (level < 100) {
 			return level * 80 + 1000;

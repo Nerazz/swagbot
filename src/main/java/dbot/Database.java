@@ -4,7 +4,6 @@ import static java.io.File.separator;
 
 import java.io.*;
 
-import dbot.comm.FlipRoom;
 import dbot.comm.Lotto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
