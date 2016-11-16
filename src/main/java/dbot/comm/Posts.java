@@ -89,11 +89,11 @@ class Posts {
 				"- flip geht wieder (+ derbe gepimpt) :)\n" +
 				"- massig Abkürzungen für Befehle am start\n" +
 				"- !sourcecode\n" +
-				"- besserer logout (noch bisschen buggy lel)" +
+				"- besserer logout (noch bisschen buggy lel)\n" +
 				"v5.4.1\n" +
-				"- Post vergessen zu editieren" +
+				"- Post vergessen zu editieren\n" +
 				"v5.4.2\n" +
-				"- flip Fix Nr.1 (flippen ohne Seite nicht mölich)" +
+				"- flip Fix Nr.1 (flippen ohne Seite nicht mölich)\n" +
 				"v5.4.3\n" +
 				"flip Fix Nr.2 ((:gem:-Verlust duch bestimmte flips))"
 		);

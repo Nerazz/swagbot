@@ -131,6 +131,12 @@ public class Commands {
 					}
 					break;
 
+				case "lastditch":
+				case "ld":
+					post("Meister Niklas letzter Ditch fand statt:\n" +
+							"vor 3 Leben 1669 AD");
+					break;
+
 				default:
 					LOGGER.info("Command '{}' not found", message.getContent());
 					break;
@@ -159,6 +165,7 @@ public class Commands {
 						break;
 
 					case "forcelo":
+					case "folo":
 						try {
 							Statics.BOT_CLIENT.logout();
 							System.exit(0);
