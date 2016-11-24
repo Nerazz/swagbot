@@ -278,7 +278,7 @@ public class UserData {//implements comparable?
 		if (potDur > 0) {
 			potDur -= 1;
 			if (potDur < 1) {
-				setExpRate(10000);
+				setExpRate(1000);
 				LOGGER.info("{} XPot empty", name);
 				if (reminder > 0) {
 					post("Hey, dein XPot zeigt keine Wirkung mehr...", user);//TODO: kauf und staffelung prüfen
@@ -305,11 +305,11 @@ public class UserData {//implements comparable?
 		reminder = -reminder;
 	}
 
-	public static int getLevelThreshold(int level) {
-		level--;
-		if (level < 0) {
-			LOGGER.warn("level is < 0; getLevelThreshold({})", level);
-			throw new IllegalArgumentException("Level darf nicht < 0 sein!");
+	public static int getLevelThreshold(int level) {//TODO: angucken
+		//level--;
+		if (level < 1) {
+			LOGGER.warn("level is < 1; getLevelThreshold({})", level);
+			throw new IllegalArgumentException("Level darf nicht < 1 sein!");
 		} else if (level < 100) {
 			return level * 80 + 1000;
 		} else {

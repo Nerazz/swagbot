@@ -95,7 +95,9 @@ class Posts {
 				"v5.4.2\n" +
 				"- flip Fix Nr.1 (flippen ohne Seite nicht mölich)\n" +
 				"v5.4.3\n" +
-				"flip Fix Nr.2 ((:gem:-Verlust duch bestimmte flips))"
+				"flip Fix Nr.2 ((:gem:-Verlust duch bestimmte flips))" +
+				"v5.4.4\n" +
+				"xpRate reset nach XPot Fix"
 		);
 	}
 
@@ -136,6 +138,7 @@ class Posts {
 				"!roll                   |Roll zwischen 1 und 100\n" +
 				"!roll 'x'               |Roll zwischen 1 und 'x'\n" +
 				"!roll 'x' 'y'           |Roll zwischen 'x' und 'y'" +
+				"!sourcecode ('com')     |Link zum Sourcecode, auch für viele Befehle" +
 				"```"
 		);
 	}
