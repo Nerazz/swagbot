@@ -18,6 +18,8 @@ public class SQLPool {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.SQLPool");
 	private static final DataSource dataSource;
 
+	private SQLPool() {}
+
 	static {
 		HikariConfig config = new HikariConfig();
 		config.setDriverClassName("org.mariadb.jdbc.Driver");
@@ -57,9 +59,6 @@ public class SQLPool {
 			LOGGER.error("SQL failed in getScoreList", e);
 		}
 		return dataList;
-	}
-
-	private SQLPool() {
 	}
 
 	/*public Connection getConnection() {

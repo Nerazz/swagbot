@@ -45,7 +45,7 @@ public class Database {
 		}
 	}
 
-	public DataMap<IUser, Double> sortByScore() {//TODO: vielleicht <String, Double> und nur Namen speichern?; Swaglevel mit einrechnen
+	public DataMap<IUser, Double> sortByScore() {//TODO: vielleicht <String, Double> und nur Namen speichern?; Swaglevel mit einrechnen?
 		IUser[] users = new IUser[userDataList.size()];
 		double[] scores = new double[userDataList.size()];
 		int i = 0;
@@ -56,7 +56,7 @@ public class Database {
 		}
 		IUser tmpUser;
 		double tmpScore;
-		for (; i > 1; i--) {//bubblesort
+		for (; i > 1; i--) {//bubblesort TODO: besseren sort
 			for (int j = 0; j < (i - 1); j++) {
 				if (scores[j] < scores[j + 1]) {
 					tmpUser = users[j];

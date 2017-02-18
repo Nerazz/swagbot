@@ -55,11 +55,6 @@ class MainTimer extends TimerTask {//TODO: namen ändern
 			} else {
 				BOT_CLIENT.changeStatus(Status.game("seit " + minuteCount + "m online"));
 			}
-
-		/*if (((hourCount % 5) == 0) && (minuteCount == 0)) {
-			DATABASE.save(false);
-			LOGGER.info("Database saved from MainTimer");
-		}*/
 		}
 
 		/*try (Connection con = SQLPool.getDataSource().getConnection();

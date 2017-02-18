@@ -12,7 +12,12 @@ public class RelogTimer implements Runnable {//TODO: name: RelogTimer
 	private static boolean isRunning = false;
 	private static int dcCount = 0;
 
-	public RelogTimer() {
+	@Override
+	public void run() {
+		System.out.println("RIP");
+	}
+
+	/*public RelogTimer() {
 		LOGGER.debug("trying to start new RelogTimer");
 		if (!isRunning) {
 			isRunning = true;
@@ -40,5 +45,5 @@ public class RelogTimer implements Runnable {//TODO: name: RelogTimer
 			LOGGER.error("over 30 DCs in 20 min, killing Bot");
 			System.exit(1);
 		}
-	}
+	}*/
 }

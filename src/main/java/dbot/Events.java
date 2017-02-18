@@ -5,76 +5,122 @@ import dbot.comm.Flip;
 import dbot.timer.RelogTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sx.blah.discord.handle.impl.events.DiscordDisconnectedEvent;
-import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
-import sx.blah.discord.handle.impl.events.GuildCreateEvent;
-import sx.blah.discord.handle.impl.events.UserJoinEvent;
+import sx.blah.discord.handle.impl.events.*;
+import sx.blah.discord.handle.impl.obj.Channel;
+import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.api.events.EventSubscriber;
+import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
+import sx.blah.discord.util.RequestBuffer;
 
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.Set;
 import java.util.Timer;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.*;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 class Events {
 	private final static Logger LOGGER = LoggerFactory.getLogger("dbot.Events");
-	private static boolean bInit = false;
-	private static IGuild guild;
+	//private static boolean bInit = false;
+	//private static IGuild guild;
+	//private static IGuild[] guilds;
+	//private static ArrayList<IGuild> guildList = new ArrayList<>();
+	private static DataMap<String, Integer> guildMap = new DataMap<>();
 	//private static final Database DATABASE = Database.getInstance();
 
 	Events() {}
 	
-	@EventSubscriber
+	/*@EventSubscriber
 	public void onGuildCreateEvent(GuildCreateEvent event) {
 		LOGGER.debug("GuildCreateEvent");
 		if (!bInit) {
 			Statics.GUILD = Statics.BOT_CLIENT.getGuildByID(Statics.ID_GUILD);
 			guild = Statics.GUILD;
 			LOGGER.debug("Bot joined guild: {}", guild.getName());
-			//DATABASE.load();
-			//final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
-		/*final ThreadFactory factory = new ThreadFactory() {
-
-				@Override
-				public Thread newThread(Runnable target) {
-					final Thread thread = new Thread(target);
-					LOGGER.debug("Creating new worker thread");
-					thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-
-						@Override
-						public void uncaughtException(Thread t, Throwable e) {
-							LOGGER.error("Uncaught Exception", e);
-						}
-					});
-					return thread;
-				}
-			};*/
-
-
-			//final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(factory);
-			//final MainTimer mainTimer = new MainTimer();
-			//scheduler.scheduleAtFixedRate(new MainTimer(), 5, 5, SECONDS);
 			Timer timer = new Timer();
-			timer.scheduleAtFixedRate(new MainTimer(), 10000, 60000);//TODO: care
+			timer.scheduleAtFixedRate(new MainTimer(), 10 * 1000, 60 * 1000);//TODO: care
 			bInit = true;
 			LOGGER.debug("Initialization done");
 		}
 		LOGGER.info("Bot ready");
+	}*/
+
+	@EventSubscriber
+	public synchronized void onGuildCreateEvent(GuildCreateEvent event) {
+		LOGGER.debug("GuildCreateEvent");
+		IGuild guild = event.getGuild();
+		LOGGER.info("Bot joined {}", guild.getName());
+		try {
+			wait();
+		}catch(InterruptedException e) {
+			e.printStackTrace();//TODO: log
+		}
+		String query = "SELECT `ref` FROM `guilds` WHERE `id` = ?";
+		try(Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(query)) {
+			ps.setString(1, guild.getID());
+			ResultSet rs = ps.executeQuery();
+			if (!rs.next()) {
+				LOGGER.info("GUILD {} NOT FOUND, ADDING GUILD TO DATABASE", guild.getName());
+				try(PreparedStatement psAdd = con.prepareStatement("INSERT INTO `guilds` (`id`, `botChannel`) VALUES (?, ?)")) {
+					psAdd.setString(1, guild.getID());
+					LOGGER.info("creating botChannel on {}", guild.getName());
+					Future<String> fID = RequestBuffer.request(() -> {
+						try {
+							IChannel botChannel = guild.createChannel("testchannel");
+							EnumSet<Permissions> allPerms = EnumSet.allOf(Permissions.class);
+							EnumSet<Permissions> nonePerms = EnumSet.noneOf(Permissions.class);
+							EnumSet<Permissions> addPerms = EnumSet.of(Permissions.READ_MESSAGES, Permissions.SEND_MESSAGES, Permissions.READ_MESSAGE_HISTORY);
+							EnumSet<Permissions> remPerms = EnumSet.of(Permissions.MANAGE_CHANNEL, Permissions.MANAGE_PERMISSIONS, Permissions.MANAGE_MESSAGES);
+							botChannel.overrideUserPermissions(Statics.BOT_CLIENT.getOurUser(), allPerms, nonePerms);
+							botChannel.overrideRolePermissions(guild.getEveryoneRole(), addPerms, remPerms);
+							botChannel.changeTopic("swag");
+							return botChannel.getID();
+						}catch(MissingPermissionsException | DiscordException e) {
+							e.printStackTrace();//TODO: log
+						}
+						return null;
+					});
+					psAdd.setString(2, fID.get());
+					System.out.println(Statics.BOT_CLIENT.isReady());
+					psAdd.executeUpdate();
+					con.commit();
+					LOGGER.info("Init for new Server ({}) done.", guild.getName());
+				}
+				rs = ps.executeQuery();
+				rs.next();
+			}
+			guildMap.put(guild.getID(), rs.getInt("ref"));
+		} catch(SQLException | InterruptedException | ExecutionException e) {
+			LOGGER.error("SQL or Future failed in onGuildCreateEvent", e);
+		}
 	}
 
 	@EventSubscriber
-	public void onDiscordDisconnectedEvent(DiscordDisconnectedEvent event) {
+	public synchronized void onReadyEvent(ReadyEvent event) {
+		LOGGER.info("BotReadyEvent");
+		notifyAll();
+	}
+
+	/*return RequestBuffer.request(() -> {
+		try {
+			IPrivateChannel privateChannel = user.getOrCreatePMChannel();
+			return new MessageBuilder(bClient).withChannel(privateChannel).withContent(s).build();
+		} catch(MissingPermissionsException | DiscordException e) {
+			LOGGER.error("failed posting private(to {}): {}", user.getName(), s, e);
+		}
+		return null;
+	});*/
+
+	@EventSubscriber
+	public void onDisconnectedEvent(DisconnectedEvent event) {
 		LOGGER.warn("Bot disconnected due to {}", event.getReason());
-		RelogTimer.addDC();
-		new RelogTimer();
 	}
 	
 	@EventSubscriber
@@ -91,7 +137,7 @@ class Events {
 	@EventSubscriber
 	public void onUserAdded(UserJoinEvent event) {
 		try {
-			event.getUser().addRole(guild.getRolesByName("Newfags").get(0));
+			event.getUser().addRole(event.getGuild().getRolesByName("Newfags").get(0));
 			LOGGER.info("added role(Newfags) to {}", event.getUser().getName());
 			Poster.post(	"Willkommen auf dem nicesten Discord-Server ever :)" +
 							"\nWenn du Lust hast, schau doch mal im #botspam vorbei, hier kann man ne nice Runde gamblen und co :)" +

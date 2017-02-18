@@ -17,24 +17,24 @@ import java.util.ArrayList;
  */
 public class Bot {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.Bot");//TODO: alle final logger capslock
-	private static final Events EVENTS = new Events();
-	private static IDiscordClient botClient = null;
+	//private static final Events EVENTS = new Events();
+	//private static IDiscordClient botClient = null;
 
 	public static void main(String[] args) {
 		LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 		StatusPrinter.print(lc);
-		updateBot();
-
-		//Events events = new Events();
-		//events.onGuildCreateEvent();
-		/*String data[] = {"gems", "name", "level"};
-		SQLData swag = SQLPool.getData("97092184821465088", data);
-		System.out.println(swag.get("name"));*/
-		//System.out.println(SQLPool.getScoreList());
-		//Posts.top();
+		//updateBot();
+		try {
+			IDiscordClient botClient = new ClientBuilder().withToken(Statics.BOT_TOKEN).setMaxReconnectAttempts(5).login();
+			Statics.BOT_CLIENT = botClient;
+			Events events = new Events();
+			botClient.getDispatcher().registerListener(events);
+		} catch(DiscordException e) {
+			LOGGER.error("Error while creating new Bot", e);
+		}
 	}
 
-	public static void updateBot() {
+	/*public static void updateBot() {
 		if (botClient != null) {
 			if (botClient.isReady()) return;
 			botClient.getDispatcher().unregisterListener(EVENTS);
@@ -47,5 +47,5 @@ public class Bot {
 		} catch(DiscordException e) {
 			LOGGER.error("Error while creating new Bot", e);
 		}
-	}
+	}*/
 }

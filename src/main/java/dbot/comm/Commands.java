@@ -123,18 +123,14 @@ public class Commands {
 				case "sourcecode":
 				case "swagcode":
 				case "sc":
-					if (params == null) {//kp wie sonst, null und "" gehen nicht...
-						post("Care, bester Code ever :)):\n" +
-								"https://github.com/nerazz/swagbot");
-					} else {
-						post("https://github.com/nerazz/swagbot/blob/master/src/main/java/dbot/comm/" + params.substring(0,1).toUpperCase() + params.substring(1) + ".java");
-					}
+					post("Care, bester Code ever :)):\n +" +
+							"https://github.com/nerazz/swagbot");
+
 					break;
 
 				case "lastditch":
 				case "ld":
-					post("Meister Niklas letzter Ditch fand statt:\n" +
-							"vor 3 Leben 1669 AD");
+					post("Meister Niklas letzter Ditch war vor 3 Leben 1669 AD");
 					break;
 
 				default:
@@ -159,7 +155,7 @@ public class Commands {
 							post("Logging out...:ok_hand:", -1);
 							Statics.BOT_CLIENT.logout();
 							System.exit(0);
-						} catch(DiscordException | RateLimitException e) {
+						} catch(DiscordException e) {
 							LOGGER.error("Error while logging out", e);
 						}
 						break;
@@ -169,7 +165,7 @@ public class Commands {
 						try {
 							Statics.BOT_CLIENT.logout();
 							System.exit(0);
-						} catch (DiscordException | RateLimitException e) {
+						} catch (DiscordException e) {
 							LOGGER.error("Error while logging out", e);
 						}
 						break;
