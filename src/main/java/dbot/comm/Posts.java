@@ -1,9 +1,13 @@
 package dbot.comm;
 
-import static dbot.Poster.buildNum;
-import static dbot.Poster.post;
+import static dbot.util.Poster.buildNum;
+import static dbot.util.Poster.post;
 
 import dbot.*;
+import dbot.sql.SQLData;
+import dbot.sql.SQLPool;
+import dbot.sql.UserData;
+import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
 
 import java.util.ArrayList;
@@ -14,8 +18,8 @@ import java.util.ArrayList;
 class Posts {
 	private static final String medals[] = {":first_place:", ":second_place:", ":third_place:", ":military_medal:"};
 
-	static void stats(IUser user) {
-		UserData uData = new UserData(user, 255);//exp, level, expRate, potDur, swagLevel, swagPoints, reminder
+	static void stats(IUser user, int ref, IChannel channel) {
+		UserData uData = new UserData(user, ref, 255);//exp, level, expRate, potDur, swagLevel, swagPoints, reminder
 		String message = "";
 		if (uData.getSwagLevel() > 0) message += " :trident:" + buildNum(uData.getSwagLevel());//TODO: swagpoints anzeigen mit nicem emoji
 		message += "\nLevel " + uData.getLevel() + " mit " + uData.getExp() + "/" + UserData.getLevelThreshold(uData.getLevel()) + " Exp";
@@ -34,7 +38,7 @@ class Posts {
 				message += "(off)";
 			}
 		}
-		post(user + message);
+		post(user + message, channel);
 	}
 
 	private static String medalGen(int i) {
@@ -45,7 +49,7 @@ class Posts {
 		}
 	}
 
-	static void top() {
+	static void top(IChannel channel) {
 		String message = "TOP 5:";
 		ArrayList<SQLData> topList = SQLPool.getScoreList();
 		for (int i = 0; (i < topList.size()) && (i < 5); i++) {
@@ -55,7 +59,7 @@ class Posts {
 			message += "\n" + medalGen(i) + uData.getString("name") + " - " + String.format("%.2f", score);
 		}
 		//System.out.println(message);
-		post(message);
+		post(message, channel);
 	}
 
 	/*static void rank(DataMap<IUser, Double> dataMap, IUser author) {
@@ -72,14 +76,14 @@ class Posts {
 
 	}
 
-	static void info() {
+	static void info(IChannel channel) {
 		post(	"v" + Statics.VERSION + "; D4J v" + Statics.DFJ_VERSION + "\n" +
 				"» Jede Minute erhalten Leute nach Status:\n" +
 				"\t» Online     3 :gem: + Mod durch Swag\n"
-		);
+		, channel);
 	}
 
-	static void changelog() {
+	static void changelog(IChannel channel) {
 		post(	"neuer Shit:\n" +
 				"v5.2.x - v5.3.x:\n" +
 				"- man kann wieder leveln + Swag wird eingerechnet\n" +
@@ -98,10 +102,10 @@ class Posts {
 				"flip Fix Nr.2 ((:gem:-Verlust duch bestimmte flips))" +
 				"v5.4.4\n" +
 				"xpRate reset nach XPot Fix"
-		);
+		, channel);
 	}
 
-	static void shop() {
+	static void shop(IChannel channel) {
 		post(
 				"der nice Laden hat folgendes im Angebot:\n" +//TODO: nicht weg bei funktion
 				"```xl\n" +
@@ -113,10 +117,10 @@ class Posts {
 				"   » unstable (10000G)- 10  Minuten ??x  Exp (+???%)\n" +
 				"» Reminder    (100G)  - Erinnert, wenn XPot nicht mehr wirkt, mit Anzahl moglich\n" +
 				"```"
-		);
+		, channel);
 	}
 
-	static void commands() {
+	static void commands(IChannel channel) {
 		post(	"```xl\n" +
 				"1/4 läuft immer noch nicht, rip\n" +
 				"!commands               |diese Liste\n" +
@@ -140,10 +144,10 @@ class Posts {
 				"!roll 'x' 'y'           |Roll zwischen 'x' und 'y'" +
 				"!sourcecode ('com')     |Link zum Sourcecode, auch für viele Befehle" +
 				"```"
-		);
+		, channel);
 	}
 
-	static void prestigeInfo() {
+	static void prestigeInfo(IChannel channel) {
 		post(	"Infos zum Prestigen:\n" +
 				"- Level wird wieder auf 1 gesetzt und alle :gem: gehen verloren, dafür wird das Swaglevel um 1 erhöht\n" +
 				"- jedes Level über 100 gewährt einen Swagpoint\n" +
@@ -152,6 +156,6 @@ class Posts {
 				"- je mehr Swagpoints, desto mehr :gem: pro Minute\n" +
 				"- wenn du sicher bist, dass du prestigen willst, gönn dir mit:\n" +
 				"!ichwilljetztwirklichresettenundkennedieregelnzuswagpointsundcomindestenseinigermassen"
-		);
+		, channel);
 	}
 }

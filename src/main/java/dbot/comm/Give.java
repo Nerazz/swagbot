@@ -1,10 +1,9 @@
 package dbot.comm;
 
-import static dbot.Poster.post;
+import static dbot.util.Poster.post;
 
-import dbot.Database;
 import dbot.Statics;
-import dbot.UserData;
+import dbot.sql.UserData;
 
 import java.util.regex.*;
 
@@ -16,7 +15,7 @@ import sx.blah.discord.handle.obj.Presences;
 final class Give {//TODO: genauer angucken, scheint schlecht; funktioniert nicht auf mainserver
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Give");
 
-	static void m(UserData dGiver, String params) {
+	/*static void m(UserData dGiver, String params) {
 		Pattern pattern = Pattern.compile("^<@(\\d+)>\\s(\\d+)$");
 		Matcher matcher = pattern.matcher(params);
 		if (!matcher.matches()) return;
@@ -37,5 +36,5 @@ final class Give {//TODO: genauer angucken, scheint schlecht; funktioniert nicht
 		dGetter.addGems(gems);
 		post(uGetter + " bekommt " + gems + " :gem: von " + dGiver.getUser());
 		LOGGER.info("{} gave {} {} Gems", dGiver.getName(), uGetter.getName(), gems);
-	}
+	}*/
 }

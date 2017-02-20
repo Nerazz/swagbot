@@ -1,7 +1,8 @@
-package dbot;
+package dbot.sql;
 
-import static dbot.Poster.post;
+import static dbot.util.Poster.post;
 
+import dbot.Statics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IUser;
@@ -28,11 +29,12 @@ import java.util.List;
 
 public class UserData {//implements comparable?
 	private static final String[] VALUES = {"gems", "exp", "level", "expRate", "potDur", "swagLevel", "swagPoints", "reminder"};
-	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.UserData");
+	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.sql.UserData");
 	private final List<String> argsList = new ArrayList<>();
 	private String id = null;
 	private String name = null;
 	private IUser user = null;
+	private int ref = -1;
 	private int gems = -1;
 	private int level = -1;
 	private int exp = Integer.MIN_VALUE;
@@ -44,14 +46,15 @@ public class UserData {//implements comparable?
 
 	public UserData(IUser user) {}
 
-	public UserData(IUser user, int load) {
-		if (load < 1) {
-			LOGGER.error("load < 1 ({}) in constructor", load);
-			return;
+	public UserData(IUser user, int ref, int load) {
+		if (load < 1 || ref < 0) {
+			LOGGER.error("load oder ref < 0 (load: {}, ref: {}) in constructor", load, ref);
+			throw new IllegalArgumentException("ref darf nicht < 0 und load < 1 sein!");
 		}
 		this.user = user;
 		id = user.getID();
 		name = user.getName();
+		this.ref = ref;
 		String query = "SELECT ";
 		int bit = 0;
 		boolean last = false;
@@ -74,13 +77,13 @@ public class UserData {//implements comparable?
 			load >>= 1;
 			bit += 1;
 		}
-		query += " FROM `users` WHERE `id` = " + id;
+		query += " FROM `users" + ref + "` WHERE `id` = " + id;//TODO: übersichtlicher
 		//System.out.println(query);
 		try (Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(query)) {
 			ResultSet rs = ps.executeQuery();
 			if (!rs.next()) {//user not in DB
 				LOGGER.info("ADDING USER TO DATABASE: " + name);
-				try (PreparedStatement psAdd = con.prepareStatement("INSERT INTO `users` (`id`, `name`) VALUES (?, ?)")) {
+				try (PreparedStatement psAdd = con.prepareStatement("INSERT INTO `users" + ref + "` (`id`, `name`) VALUES (?, ?)")) {//TODO: übersichtlicher michen (+ref)
 					psAdd.setString(1, user.getID());
 					psAdd.setString(2, user.getName());
 					psAdd.executeUpdate();
@@ -129,7 +132,7 @@ public class UserData {//implements comparable?
 
 	public void update() {//lieber string für batch-update returnen?
 		//"UPDATE `users` SET `gems` = `gems` + " + gems + ", `exp` = " + exp + " WHERE `id` = " + user.getID()
-		String update = "UPDATE `users` SET ";
+		String update = "UPDATE `users" + ref + "` SET ";//TODO: übersicht
 		for (String args : argsList) {
 			switch (args) {
 				case "gems":
@@ -174,8 +177,8 @@ public class UserData {//implements comparable?
 		}
 	}
 
-	public static Object getData(IUser user, String data) {
-		String query = "SELECT `" + data + "` FROM `users` WHERE `id` = ?";
+	public static Object getData(IUser user, int ref, String data) {
+		String query = "SELECT `" + data + "` FROM `users" + ref + "` WHERE `id` = ?";//TODO: übersicht
 		try (Connection conn = SQLPool.getDataSource().getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
 			ps.setString(1, user.getID());
 			try (ResultSet rs = ps.executeQuery()) {
@@ -188,7 +191,7 @@ public class UserData {//implements comparable?
 		return null;
 	}
 	
-	public String getID() {
+	public String getId() {
 		return id;
 	}
 	
@@ -216,12 +219,12 @@ public class UserData {//implements comparable?
 		return exp;
 	}
 
-	void addExp(int addedExp) {
+	public void addExp(int addedExp) {
 		exp += addedExp;
 		while (exp >= getLevelThreshold(level)) {
 			exp -= getLevelThreshold(level);
 			level++;
-			post(":tada: DING! " + name + " ist Level " + level + "! :tada:");
+			post(":tada: DING! " + name + " ist Level " + level + "! :tada:", Statics.GUILD_LIST.getBotChannel(ref));
 			LOGGER.info("{} leveled to Level {}", name, level);
 		}
 	}
@@ -237,7 +240,7 @@ public class UserData {//implements comparable?
 	public void prestige() {
 		if (level < 100) {
 			LOGGER.info("{} Level ist nicht hoch genug zum prestigen", name);
-			post(name + ", du musst mindestens Level 100 sein.");
+			post(name + ", du musst mindestens Level 100 sein.", Statics.GUILD_LIST.getBotChannel(ref));
 			return;
 		}
 		int swagPointGain = (int)Math.ceil(Math.sqrt((double)gems / 10000.0) * ((double)swagLevel + 2.0) / ((double)swagPoints + 2.0)) + level - 100;
@@ -250,7 +253,7 @@ public class UserData {//implements comparable?
 		LOGGER.info("{} now is swagLevel {} with {} swagPoints", name, swagLevel, swagPoints);
 	}
 
-	int getSwagPoints() {
+	public int getSwagPoints() {
 		return swagPoints;
 	}
 	
@@ -274,7 +277,7 @@ public class UserData {//implements comparable?
 		this.potDur = potDur;
 	}
 	
-	void reducePotDuration() {
+	public void reducePotDuration() {
 		if (potDur > 0) {
 			potDur -= 1;
 			if (potDur < 1) {

@@ -1,4 +1,4 @@
-package dbot;
+package dbot.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,18 @@ public class DataMap<K, V> {
 	public DataMap() {}
 
 	public void put(K key, V value) {
+		pairs.add(new Pair(key, value));
+	}
+
+	public void putWithNulls(int index, K key, V value) {
+		if (index >= 0 && index <= pairs.size()) {
+			pairs.add(index, new Pair(key, value));
+			return;
+		}
+		int nulls = index - pairs.size();
+		for (int i = 0; i < nulls; i++) {
+			pairs.add(new Pair(null, null));
+		}
 		pairs.add(new Pair(key, value));
 	}
 
@@ -32,6 +44,7 @@ public class DataMap<K, V> {
 
 	public int getKeyIndex(K key) {
 		for (int i = 0; i < pairs.size(); i++) {
+			if(pairs.get(i).getKey() == null) continue;
 			if (pairs.get(i).key.equals(key)) return i;
 		}
 		return -1;

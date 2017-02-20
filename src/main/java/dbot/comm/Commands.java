@@ -2,22 +2,18 @@ package dbot.comm;
 
 import dbot.*;
 
-import static dbot.Poster.post;
-import static dbot.Poster.del;
+import static dbot.util.Poster.post;
+import static dbot.util.Poster.del;
 
+import dbot.sql.UserData;
 import dbot.timer.DelTimer;
-import dbot.timer.LottoTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.RateLimitException;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.regex.*;
 
 public class Commands {
@@ -26,6 +22,9 @@ public class Commands {
 
 	public static void trigger(IMessage message) {
 		IUser author = message.getAuthor();
+		IChannel channel = message.getChannel();
+		//System.out.println();
+		int ref = Statics.GUILD_LIST.getRef(message.getGuild());
 		LOGGER.debug("Message({}): {}", author.getName(), message.getContent());
 		Pattern pattern = Pattern.compile("^!([a-z]+)(\\s(.+))?");
 		Matcher matcher = pattern.matcher(message.getContent().toLowerCase());
@@ -34,12 +33,12 @@ public class Commands {
 			
 			switch (matcher.group(1)) {
 				case "roll":
-					Roll.m(author, params);
+					Roll.m(author, channel, params);
 					break;
 
 				case "stats":
 				case "st":
-					Posts.stats(author);
+					Posts.stats(author, ref, channel);
 					break;
 
 				case "gems":
@@ -48,27 +47,27 @@ public class Commands {
 					//SQLPool.getInstance().getData("test", "gems");
 					//SQLPool.getData(author.getID(), "gems");
 					//post(author + ", du hast " + new UserData(author, 1).getGems() + ":gem:.");
-					post(author + ", du hast " + UserData.getData(author, "gems") + ":gem:.");
+					post(author + ", du hast " + UserData.getData(author, ref, "gems") + ":gem:.", channel);
 					break;
 				
 				case "top":
-					Posts.top();
+					Posts.top(channel);
 					break;
 
 				case "rank":
 					//Posts.rank(database.sortByScore(), author);
-					post("coming soon(TM)");
+					post("coming soon(TM)", channel);
 					break;
 				
-				case "buy":
+				/*case "buy":
 				case "b":
-					Buy.m(author, params);
-					break;
+					Buy.m(author, ref, params, channel);
+					break;*/
 				
-				case "flip":
+				/*case "flip":
 				case "f":
-					Flip.m(author, params);
-					break;
+					Flip.m(author, ref, params, channel);
+					break;*/
 
 				/*case "raffle":
 					RaffleTimer.m(dAuthor, params);
@@ -84,21 +83,21 @@ public class Commands {
 
 				case "remind":
 				case "rem":
-					UserData uData = new UserData(author, 128);
+					UserData uData = new UserData(author, ref, 128);
 					uData.negateReminder();
 					uData.update();
-					post("Reminder getogglet");
+					post("Reminder getogglet", channel);
 					break;
 
 				case "changelog":
 				case "cl":
-					Posts.changelog();
+					Posts.changelog(channel);
 					break;
 
 				case "prestigeinfo":
 				case "pi":
 				case "prestige"://TODO: Nachfrage
-					Posts.prestigeInfo();
+					Posts.prestigeInfo(channel);
 					break;
 
 				/*case "ichwilljetztwirklichresettenundkennedieregelnzuswagpointsundcomindestenseinigermassen":
@@ -106,31 +105,31 @@ public class Commands {
 					break;*/
 
 				case "info":
-					Posts.info();
+					Posts.info(channel);
 					break;
 
 				case "shop":
 				case "s":
-					Posts.shop();
+					Posts.shop(channel);
 					break;
 
 				case "commands":
 				case "cmd":
 				case "c":
-					Posts.commands();
+					Posts.commands(channel);
 					break;
 
-				case "sourcecode":
+				/*case "sourcecode":
 				case "swagcode":
 				case "sc":
 					post("Care, bester Code ever :)):\n +" +
-							"https://github.com/nerazz/swagbot");
+							"https://github.com/nerazz/swagbot", channel);
 
-					break;
+					break;*/
 
 				case "lastditch":
 				case "ld":
-					post("Meister Niklas letzter Ditch war vor 3 Leben 1669 AD");
+					post("Meister Niklas letzter Ditch war vor 3 Leben 1669 AD", channel);
 					break;
 
 				default:
@@ -148,11 +147,11 @@ public class Commands {
 					case "logout":
 					case "lo":
 						//Flip.closeAll();
-						DelTimer.add(message);
-						DelTimer.deleteAll();
-						del(Flip.getRoomPost());
+						//DelTimer.add(message);
+						//DelTimer.deleteAll();
+						//del(Flip.getRoomPost());
 						try {
-							post("Logging out...:ok_hand:", -1);
+							post("Logging out...:ok_hand:", channel, -1);
 							Statics.BOT_CLIENT.logout();
 							System.exit(0);
 						} catch(DiscordException e) {
@@ -171,10 +170,10 @@ public class Commands {
 						break;
 
 					case "cl":
-						DelTimer.checkList();
+						//DelTimer.checkList();
 						break;
 					default:
-						post("Command nicht erkannt");
+						post("Command nicht erkannt", channel);
 						break;
 				}
 			}

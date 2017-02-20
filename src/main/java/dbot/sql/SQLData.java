@@ -1,4 +1,4 @@
-package dbot;
+package dbot.sql;
 
 /**
  * Created by Niklas on 23.10.2016.

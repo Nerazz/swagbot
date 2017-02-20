@@ -1,21 +1,20 @@
 package dbot.comm;
 
-import static dbot.Poster.post;
+import static dbot.util.Poster.post;
 
-import dbot.SQLPool;
-import dbot.UserData;
+import dbot.sql.UserData;
 import dbot.comm.items.Xpot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
 
-import java.sql.*;
 import java.util.regex.*;
 
 final class Buy {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Buy");
 
-	static void m(IUser buyer, String params) {
+	static void m(IUser buyer, int ref, String params, IChannel channel) {
 		Pattern pattern = Pattern.compile("([a-z]+)(\\s(.+))?");
 		Matcher matcher = pattern.matcher(params);
 		if (!matcher.matches()) return;
@@ -25,7 +24,7 @@ final class Buy {
 				pattern = Pattern.compile("([a-z]+)");
 				matcher = pattern.matcher(matcher.group(3));
 				if (!matcher.matches()) return;
-				new Xpot(buyer, matcher.group(1));
+				new Xpot(buyer, ref, matcher.group(1), channel);
 				break;
 
 			case "reminder":
@@ -36,18 +35,18 @@ final class Buy {
 				matcher = pattern.matcher(params);
 				if (matcher.matches()) anzahl = Integer.parseInt(matcher.group());
 
-				UserData data = new UserData(buyer, 129);//gems, reminder
+				UserData data = new UserData(buyer, ref, 129);//gems, reminder
 				if (data.getGems() < (price * anzahl)) {
-					post(buyer + ", du hast zu wenig :gem:.");
+					post(buyer + ", du hast zu wenig :gem:.", channel);
 					return;
 				}
 				data.subGems(price * anzahl);
 				data.addReminder(anzahl);
 				LOGGER.info("{} bought {} Reminder", buyer.getName(), anzahl);
 				if (anzahl > 1) {
-					post(buyer + ", hier sind deine " + anzahl + " Reminder!");
+					post(buyer + ", hier sind deine " + anzahl + " Reminder!", channel);
 				} else {
-					post(buyer + ", hier ist dein Reminder!");
+					post(buyer + ", hier ist dein Reminder!", channel);
 				}
 				data.update();
 				break;

@@ -1,12 +1,13 @@
 package dbot;
 
 import dbot.comm.Commands;
-import dbot.comm.Flip;
-import dbot.timer.RelogTimer;
+import dbot.sql.SQLPool;
+import dbot.timer.MainTimer;
+import dbot.util.GuildList;
+import dbot.util.Poster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.impl.events.*;
-import sx.blah.discord.handle.impl.obj.Channel;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IGuild;
@@ -18,21 +19,16 @@ import sx.blah.discord.util.RateLimitException;
 import sx.blah.discord.util.RequestBuffer;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.Set;
-import java.util.Timer;
 import java.util.concurrent.*;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 class Events {
 	private final static Logger LOGGER = LoggerFactory.getLogger("dbot.Events");
 	//private static boolean bInit = false;
 	//private static IGuild guild;
 	//private static IGuild[] guilds;
-	//private static ArrayList<IGuild> guildList = new ArrayList<>();
-	private static DataMap<String, Integer> guildMap = new DataMap<>();
+	//private static ArrayList<IGuild> GUILD_LIST = new ArrayList<>();
+	//private static DataMap<String, Integer> guildMap = new DataMap<>();
 	//private static final Database DATABASE = Database.getInstance();
 
 	Events() {}
@@ -54,22 +50,28 @@ class Events {
 
 	@EventSubscriber
 	public synchronized void onGuildCreateEvent(GuildCreateEvent event) {
+		boolean newGuild = false;
 		LOGGER.debug("GuildCreateEvent");
 		IGuild guild = event.getGuild();
 		LOGGER.info("Bot joined {}", guild.getName());
-		try {
-			wait();
-		}catch(InterruptedException e) {
-			e.printStackTrace();//TODO: log
+		if (!Statics.BOT_CLIENT.isReady()) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();//TODO: log
+			}
 		}
-		String query = "SELECT `ref` FROM `guilds` WHERE `id` = ?";
+		String query = "SELECT `ref`, `botChannel` FROM `guilds` WHERE `id` = ?";
+
 		try(Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(query)) {
 			ps.setString(1, guild.getID());
 			ResultSet rs = ps.executeQuery();
-			if (!rs.next()) {
+			if (!rs.next()) {//TODO: in extramethode
+				newGuild = true;
 				LOGGER.info("GUILD {} NOT FOUND, ADDING GUILD TO DATABASE", guild.getName());
-				try(PreparedStatement psAdd = con.prepareStatement("INSERT INTO `guilds` (`id`, `botChannel`) VALUES (?, ?)")) {
+				try(PreparedStatement psAdd = con.prepareStatement("INSERT INTO `guilds` (`id`, `name`, `botChannel`) VALUES (?, ?, ?)")) {
 					psAdd.setString(1, guild.getID());
+					psAdd.setString(2, guild.getName());
 					LOGGER.info("creating botChannel on {}", guild.getName());
 					Future<String> fID = RequestBuffer.request(() -> {
 						try {
@@ -82,21 +84,44 @@ class Events {
 							botChannel.overrideRolePermissions(guild.getEveryoneRole(), addPerms, remPerms);
 							botChannel.changeTopic("swag");
 							return botChannel.getID();
-						}catch(MissingPermissionsException | DiscordException e) {
+						} catch(MissingPermissionsException | DiscordException e) {
 							e.printStackTrace();//TODO: log
 						}
 						return null;
 					});
-					psAdd.setString(2, fID.get());
+					psAdd.setString(3, fID.get());
 					System.out.println(Statics.BOT_CLIENT.isReady());
 					psAdd.executeUpdate();
+					/**/
 					con.commit();
-					LOGGER.info("Init for new Server ({}) done.", guild.getName());
+					//LOGGER.info("Init for new Server ({}) done.", guild.getName());
 				}
 				rs = ps.executeQuery();
 				rs.next();
 			}
-			guildMap.put(guild.getID(), rs.getInt("ref"));
+			int ref = rs.getInt("ref");
+			Statics.GUILD_LIST.addGuild(ref, guild, guild.getChannelByID(rs.getString("botChannel")));//TODO: vielleicht besser machbar
+			if (newGuild) {
+				String queryUsers = "CREATE TABLE `users" + ref + "` (" +//TODO: mit ? machen (prepStmt)
+						"`id` varchar(128) CHARACTER SET utf8 NOT NULL," +
+						"`name` varchar(128) CHARACTER SET latin1 NOT NULL," +
+						"`gems` int(11) NOT NULL DEFAULT '0'," +
+						"`level` int(11) NOT NULL DEFAULT '1'," +
+						"`exp` int(11) NOT NULL DEFAULT '0'," +
+						"`swagLevel` int(11) NOT NULL DEFAULT '0'," +
+						"`swagPoints` int(11) NOT NULL DEFAULT '0'," +
+						"`reminder` int(11) NOT NULL DEFAULT '0'," +
+						"`expRate` int(11) NOT NULL DEFAULT '1000'," +
+						"`potDur` int(11) NOT NULL DEFAULT '0'," +
+						"PRIMARY KEY (`id`)," +
+						"UNIQUE KEY `UNIQUE_USERS_ID` (`id`)" +
+						") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";
+
+				try (PreparedStatement psUsers = con.prepareStatement(queryUsers)) {
+					psUsers.executeUpdate();
+					con.commit();
+				}
+			}
 		} catch(SQLException | InterruptedException | ExecutionException e) {
 			LOGGER.error("SQL or Future failed in onGuildCreateEvent", e);
 		}
@@ -106,6 +131,13 @@ class Events {
 	public synchronized void onReadyEvent(ReadyEvent event) {
 		LOGGER.info("BotReadyEvent");
 		notifyAll();
+		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+		MainTimer mainTimer = new MainTimer();
+		try {
+			executor.scheduleAtFixedRate(mainTimer, 5, 10, TimeUnit.SECONDS);//TODO: care, 60sec
+		} catch(Exception e) {
+			e.printStackTrace();//TODO: log
+		}
 	}
 
 	/*return RequestBuffer.request(() -> {

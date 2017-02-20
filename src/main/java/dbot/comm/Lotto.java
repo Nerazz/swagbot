@@ -1,16 +1,13 @@
 package dbot.comm;
 
-import dbot.DataMap;
-import dbot.Database;
-import dbot.ServerData;
-import dbot.UserData;
+import dbot.util.DataMap;
+import dbot.sql.UserData;
 import dbot.timer.LottoTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,14 +16,14 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static dbot.Poster.post;
+import static dbot.util.Poster.post;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Created by Niklas on 19.10.2016.
  */
 public class Lotto {
-	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.timer.LottoTimer");
+	/*private static final Logger LOGGER = LoggerFactory.getLogger("dbot.timer.LottoTimer");
 	protected static int lastDay = Database.getInstance().getServerData().getLastLottoDay();//1 = Monday, 7 = Sunday
 	protected static final int POT_MAX = 420000;
 	private static final int PRICE = 250;
@@ -132,7 +129,7 @@ public class Lotto {
 		return test.with(TemporalAdjusters.nextOrSame(DayOfWeek.of(softRotate()))).withHour(20).withMinute(0).withSecond(0);//jeden donnerstag 20:00:00*/
 		//return LocalDateTime.now().withDayOfMonth(LocalDateTime.now().getDayOfMonth() + 5).withHour(20).withMinute(0).withSecond(0);//alle 5 tage 20:00:00
 		//return LocalDateTime.now().withSecond(LocalDateTime.now().getSecond() + 15);//in 15 sekunden
-	}
+	/*}
 
 	protected static int rotateDay(boolean hardChange) {
 		int tmpDay = lastDay + 5;
@@ -147,5 +144,5 @@ public class Lotto {
 
 	public static int getLastDay() {
 		return lastDay;
-	}
+	}*/
 }

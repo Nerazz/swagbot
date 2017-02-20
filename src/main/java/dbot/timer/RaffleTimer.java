@@ -1,6 +1,6 @@
 package dbot.timer;
 
-import dbot.UserData;
+import dbot.sql.UserData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,13 +8,18 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static dbot.Poster.post;
+import static dbot.util.Poster.post;
 
 /**
  * Created by niklas on 29.09.16.
  */
 class RaffleTimer implements Runnable {
-	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.timer.RaffleTimer");
+
+	@Override
+	public void run() {
+		System.out.println("RIP");
+	}
+	/*private static final Logger LOGGER = LoggerFactory.getLogger("dbot.timer.RaffleTimer");
 	private List<UserData> dataList = new LinkedList<>();
 	private List<Integer> betList = new LinkedList<>();
 	private int pot = 0;
@@ -66,7 +71,7 @@ class RaffleTimer implements Runnable {
 			//new Timer().schedule(instance, 5000, 0);
 			System.out.println("3");
 		}*/
-	}
+	/*}
 
 	@Override
 	public void run() {
@@ -93,5 +98,5 @@ class RaffleTimer implements Runnable {
 		LOGGER.info("{} hat mit {} gewonnen.", winner.getName(), rng);
 
 		instance = null;
-	}
+	}*/
 }

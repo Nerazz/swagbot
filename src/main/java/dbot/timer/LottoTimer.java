@@ -1,12 +1,10 @@
 package dbot.timer;
 
-import static dbot.Poster.post;
-import static dbot.Poster.edit;
-import static dbot.Poster.buildNum;
+import static dbot.util.Poster.post;
+import static dbot.util.Poster.edit;
+import static dbot.util.Poster.buildNum;
 
-import dbot.DataMap;
-import dbot.Database;
-import dbot.UserData;
+import dbot.sql.UserData;
 import dbot.comm.Lotto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,17 +12,18 @@ import sx.blah.discord.handle.obj.IMessage;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by niklas on 29.09.16.
  */
 public class LottoTimer extends Lotto implements Runnable {
-	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.timer.LottoTimer");
+
+	@Override
+	public void run() {
+		System.out.println("RIP");
+	}
+	/*private static final Logger LOGGER = LoggerFactory.getLogger("dbot.timer.LottoTimer");
 
 	@Override
 	public void run() {//TODO: jeden tag um 8 oder so ziehung
@@ -147,6 +146,6 @@ public class LottoTimer extends Lotto implements Runnable {
 		} catch(InterruptedException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 
 }

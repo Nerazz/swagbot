@@ -1,17 +1,12 @@
 package dbot.comm.items;
 
-import static dbot.Poster.post;
+import static dbot.util.Poster.post;
 
-import dbot.SQLPool;
-import dbot.UserData;
+import dbot.sql.UserData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 /**
  * Created by Niklas on 17.08.2016.
@@ -19,19 +14,19 @@ import java.sql.Statement;
 public class Xpot {//Buy extenden oder ähnliches?
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.items.Xpot");
 
-	public Xpot(IUser user, String pot) {
+	public Xpot(IUser user, int ref, String pot, IChannel channel) {
 		switch(pot) {
 			case "tall":
-				use(user, 70, 1500, 500);
+				use(user, ref, 70, 1500, 500, channel);
 				break;
 			case "grande":
-				use(user, 65, 2000, 1000);
+				use(user, ref, 65, 2000, 1000, channel);
 				break;
 			case "venti":
-				use(user, 60, 3000, 2000);
+				use(user, ref, 60, 3000, 2000, channel);
 				break;
 			case "giant":
-				use(user, 120, 5000, 9999);
+				use(user, ref, 120, 5000, 9999, channel);
 				break;
 			case "unstable":
 				double rnd = Math.random();
@@ -47,7 +42,7 @@ public class Xpot {//Buy extenden oder ähnliches?
 				}else {
 					mix = 200000;
 				}
-				use (user, 10, mix, 10000);
+				use (user, ref, 10, mix, 10000, channel);
 				break;
 			default:
 				break;
@@ -58,17 +53,17 @@ public class Xpot {//Buy extenden oder ähnliches?
 		return (int)(Math.round(Math.random() * mult));
 	}
 
-	private void use(IUser user, int duration, int amp, int price) {//duration in ticks
-		UserData data = new UserData(user, 25);//gems, expRate, potDur
+	private void use(IUser user, int ref, int duration, int amp, int price, IChannel channel) {//duration in ticks
+		UserData data = new UserData(user, ref, 25);//gems, expRate, potDur
 		if (data.getGems() < price) {
-			post(user + ", du hast zu wenig :gem:.");
+			post(user + ", du hast zu wenig :gem:.", channel);
 		}else if (data.getPotDuration() > 0) {
-			post(user + ", letzter XPot(x" + data.getExpRate() / 1000 + ") ist noch für " + data.getPotDuration() + " min aktiv.");
+			post(user + ", letzter XPot(x" + data.getExpRate() / 1000 + ") ist noch für " + data.getPotDuration() + " min aktiv.", channel);
 		} else {
 			data.subGems(price);
 			data.setExpRate(amp);
 			data.setPotDuration(duration);
-			post(user + ", hier ist dein XPot (x" + amp / 1000 + ") für " + duration + " min!");
+			post(user + ", hier ist dein XPot (x" + amp / 1000 + ") für " + duration + " min!", channel);
 			LOGGER.info("{} -> XPot for {} (x{})", user.getName(), price, amp);
 			data.update();
 		}

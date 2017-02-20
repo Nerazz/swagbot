@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-	<timestamp key="stamp" datePattern="dd.MM.yy-HH.mm"/>
+	<!--<timestamp key="stamp" datePattern="dd.MM.yy-HH.mm"/>-->
+	<timestamp key="stamp" datePattern="yy.MM.dd-HH.mm"/>
 
-	<appender name="D4J_FILE" class="ch.qos.logback.core.FileAppender">
+	<!--<appender name="D4J_FILE" class="ch.qos.logback.core.FileAppender">
 		<file>logs/d4j_${stamp}.log</file>
 		<append>true</append>
 		<encoder>
 			<pattern>%d{dd.MM.yy-HH:mm:ss} [%21.21thread] %-5level %-15logger{15} - %msg%n</pattern>
 		</encoder>
-	</appender>
+	</appender>-->
 
 	<appender name="SWAGLOG" class="ch.qos.logback.core.FileAppender"><!--bytimerollover-->
-		<file>logs/swagbot_${stamp}.log</file>
+		<file>logs/sbot_${stamp}.log</file>
 		<append>true</append>
 		<encoder>
 			<pattern>%d{dd.MM.yy-HH:mm:ss} [%21.21thread] %-5level %-15logger{15} - %msg%n</pattern>
@@ -33,7 +34,7 @@
 	</logger>
 
     <logger name="sx.blah.discord.Discord4J" level="INFO">
-        <appender-ref ref="D4J_FILE"/>
+        <appender-ref ref="SWAGLOG"/>
     </logger>
 
 	<!--<root level="warn">

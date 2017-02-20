@@ -1,5 +1,6 @@
-package dbot;
+package dbot.util;
 
+import dbot.Statics;
 import dbot.timer.DelTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,13 +19,13 @@ import java.util.regex.Pattern;
 
 public class Poster {
 	private static final IDiscordClient bClient = Statics.BOT_CLIENT;
-	private static final IChannel channel = Statics.GUILD.getChannelByID(Statics.ID_BOTSPAM);
-	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.Poster");
+	//private static final IChannel channel = Statics.GUILD.getChannelByID(Statics.ID_BOTSPAM);
+	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.util.Poster");
 	private static final String NUMBER_STRINGS[] = {":zero:", ":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:", ":nine:"};
 
 	private Poster() {}
 	
-	public static Future<IMessage> post(String s, int duration) {
+	public static Future<IMessage> post(String s, IChannel channel, int duration) {
 		return RequestBuffer.request(() -> {
 			try {
 				IMessage message = new MessageBuilder(bClient).withChannel(channel).withContent(s).build();
@@ -39,8 +40,8 @@ public class Poster {
 		});
 	}
 
-	public static Future<IMessage> post(String s) { //TODO: läuft so oder futuremessage zwischenspeichern?; könnte besser gemacht werden?
-		return post(s, 120000);
+	public static Future<IMessage> post(String s, IChannel channel) { //TODO: läuft so oder futuremessage zwischenspeichern?; könnte besser gemacht werden?
+		return post(s, channel, 120000);
 	}
 
 	public static Future<IMessage> post(String s, IUser user) {
@@ -58,7 +59,7 @@ public class Poster {
 	public static void del(IMessage message) {
 		RequestBuffer.request(() -> {
 			try {
-				DelTimer.remove(message);
+				//DelTimer.remove(message);
 				message.delete();
 			} catch(MissingPermissionsException | DiscordException e) {
 				LOGGER.error("failed deleting message", e);
