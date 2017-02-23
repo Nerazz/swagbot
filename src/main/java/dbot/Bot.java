@@ -2,14 +2,13 @@ package dbot;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
+import dbot.listeners.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.util.DiscordException;
-
-import java.util.ArrayList;
 
 /**
  * Bot - Mainclass
@@ -27,8 +26,14 @@ public class Bot {
 		try {
 			IDiscordClient botClient = new ClientBuilder().withToken(Statics.BOT_TOKEN).setMaxReconnectAttempts(5).login();
 			Statics.BOT_CLIENT = botClient;
-			Events events = new Events();
-			botClient.getDispatcher().registerListener(events);
+			EventDispatcher dispatcher = botClient.getDispatcher();
+			dispatcher.registerListener(new ReadyListener());
+			dispatcher.registerListener(new GuildCreateListener());
+			dispatcher.registerListener(new DisconnectedListener());
+			dispatcher.registerListener(new UserJoinListener());
+			dispatcher.registerListener(new MessageListener());
+			//Events listeners = new Events();
+			//botClient.getDispatcher().registerListener(listeners);
 		} catch(DiscordException e) {
 			LOGGER.error("Error while creating new Bot", e);
 		}
