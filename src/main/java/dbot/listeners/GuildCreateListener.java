@@ -25,7 +25,8 @@ import java.util.concurrent.Future;
  * Created by Niklas on 23.02.2017.
  */
 public class GuildCreateListener implements IListener<GuildCreateEvent> {
-	private final static Logger LOGGER = LoggerFactory.getLogger("dbot.listeners.GuildCreateListener");
+	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.listeners.GuildCreateListener");
+	static final Object LOCK = new Object();
 
 	@Override
 	public void handle(GuildCreateEvent event) {
@@ -33,10 +34,12 @@ public class GuildCreateListener implements IListener<GuildCreateEvent> {
 		IGuild guild = event.getGuild();
 		LOGGER.info("Bot joined {}", guild.getName());
 		if (!Statics.BOT_CLIENT.isReady()) {
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				e.printStackTrace();//TODO: log
+			synchronized (LOCK) {
+				try {
+					LOCK.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();//TODO: log
+				}
 			}
 		}
 

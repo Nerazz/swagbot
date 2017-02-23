@@ -19,10 +19,12 @@ public class ReadyListener implements IListener<ReadyEvent> {
 	@Override
 	public void handle(ReadyEvent event) {
 		LOGGER.info("BotReadyEvent");
-		notifyAll();
+		synchronized (GuildCreateListener.LOCK) {
+			GuildCreateListener.LOCK.notifyAll();
+		}
 		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 		MainTimer mainTimer = new MainTimer();
-			try {
+		try {
 			executor.scheduleAtFixedRate(mainTimer, 5, 10, TimeUnit.SECONDS);//TODO: care, 60sec
 		} catch(Exception e) {
 			e.printStackTrace();//TODO: log
