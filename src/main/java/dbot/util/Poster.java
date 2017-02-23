@@ -29,7 +29,7 @@ public class Poster {
 		return RequestBuffer.request(() -> {
 			try {
 				IMessage message = new MessageBuilder(bClient).withChannel(channel).withContent(s).build();
-				if (duration > 0) {//oder -1?
+				if (duration > 0 && !channel.isPrivate()) {//oder -1?
 					new DelTimer(message, duration);
 				}
 				return message;

@@ -18,8 +18,7 @@ public class MainTimer implements Runnable{//TODO: namen ändern
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.timer.MainTimer");
 	private static final Presences ONLINE = Presences.valueOf("ONLINE");
 	private static final IDiscordClient BOT_CLIENT = Statics.BOT_CLIENT;
-	//private static final IGuild GUILD = Statics.GUILD;
-	
+
 	private static int minuteCount	= 0;
 	private static int hourCount	= 0;
 	private static int dayCount		= 0;
@@ -58,12 +57,17 @@ public class MainTimer implements Runnable{//TODO: namen ändern
 				}
 			}
 
-			for (int i = 0; i < Statics.GUILD_LIST.size(); i++) {//TODO: eigenen iterator schreiben für GuildMap
-				//if (Statics.GUILD_LIST.getGuild(i) == -1) continue;
-				IGuild guild = Statics.GUILD_LIST.getGuild(i);
+			/*for (int ref = 0; ref < Statics.GUILD_LIST.size(); ref++) {
+				IGuild guild = Statics.GUILD_LIST.getGuild(ref);
+				if (guild == null) continue;
+				UserData.addUsers(guild.getUsers(), ref);
+			}*/
+
+			/*for (int ref = 0; ref < Statics.GUILD_LIST.size(); ref++) {//TODO: eigenen iterator schreiben für GuildMap
+				IGuild guild = Statics.GUILD_LIST.getGuild(ref);
 				if (guild == null) continue;
 				List<IUser> userList = guild.getUsers();
-				int ref = Statics.GUILD_LIST.getRef(guild);
+				//int ref = Statics.GUILD_LIST.getRef(guild);
 				for (IUser user : userList) {
 					UserData uData;//TODO: vor schleife für weniger overhead?
 					if (user.getPresence() == ONLINE) {
@@ -84,7 +88,7 @@ public class MainTimer implements Runnable{//TODO: namen ändern
 					uData.reducePotDuration();
 					uData.update();
 				}
-			}
+			}*/
 			System.out.println("done");
 		}catch(Exception e) {
 			e.printStackTrace();//TODO: log

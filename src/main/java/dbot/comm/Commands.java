@@ -136,7 +136,7 @@ public class Commands {
 					LOGGER.info("Command '{}' not found", message.getContent());
 					break;
 			}
-			del(message);//befehl
+			if (!channel.isPrivate()) del(message);//befehl
 		} else if (author.getID().equals(Statics.ID_NERAZ) && message.getContent().startsWith("§")) {//TODO: ohne if-elseif, sondern nur mit ifs und return?
 			System.out.println("admin-trigger");
 			pattern = Pattern.compile("^§([a-z]+)(\\s(.+))?");
@@ -177,9 +177,9 @@ public class Commands {
 						break;
 				}
 			}
-			del(message, 3000);
+			if(!channel.isPrivate()) del(message, 3000);
 		} else {//kein Befehl
-			del(message, 60000);
+			if(!channel.isPrivate()) del(message, 60000);
 		}
 	}
 }

@@ -2,6 +2,7 @@ package dbot;
 
 import dbot.comm.Commands;
 import dbot.sql.SQLPool;
+import dbot.sql.UserData;
 import dbot.timer.MainTimer;
 import dbot.util.GuildList;
 import dbot.util.Poster;
@@ -22,35 +23,13 @@ import java.sql.*;
 import java.util.EnumSet;
 import java.util.concurrent.*;
 
-class Events {
+class Events {//TODO: IListener benutzen
 	private final static Logger LOGGER = LoggerFactory.getLogger("dbot.Events");
-	//private static boolean bInit = false;
-	//private static IGuild guild;
-	//private static IGuild[] guilds;
-	//private static ArrayList<IGuild> GUILD_LIST = new ArrayList<>();
-	//private static DataMap<String, Integer> guildMap = new DataMap<>();
-	//private static final Database DATABASE = Database.getInstance();
 
 	Events() {}
-	
-	/*@EventSubscriber
-	public void onGuildCreateEvent(GuildCreateEvent event) {
-		LOGGER.debug("GuildCreateEvent");
-		if (!bInit) {
-			Statics.GUILD = Statics.BOT_CLIENT.getGuildByID(Statics.ID_GUILD);
-			guild = Statics.GUILD;
-			LOGGER.debug("Bot joined guild: {}", guild.getName());
-			Timer timer = new Timer();
-			timer.scheduleAtFixedRate(new MainTimer(), 10 * 1000, 60 * 1000);//TODO: care
-			bInit = true;
-			LOGGER.debug("Initialization done");
-		}
-		LOGGER.info("Bot ready");
-	}*/
 
 	@EventSubscriber
 	public synchronized void onGuildCreateEvent(GuildCreateEvent event) {
-		boolean newGuild = false;
 		LOGGER.debug("GuildCreateEvent");
 		IGuild guild = event.getGuild();
 		LOGGER.info("Bot joined {}", guild.getName());
@@ -61,70 +40,75 @@ class Events {
 				e.printStackTrace();//TODO: log
 			}
 		}
-		String query = "SELECT `ref`, `botChannel` FROM `guilds` WHERE `id` = ?";
 
+		String query = "SELECT `ref`, `botChannel` FROM `guilds` WHERE `id` = ?";//TODO: geht bestimmt besser, wird zweimal abgerufen
 		try(Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(query)) {
 			ps.setString(1, guild.getID());
 			ResultSet rs = ps.executeQuery();
-			if (!rs.next()) {//TODO: in extramethode
-				newGuild = true;
-				LOGGER.info("GUILD {} NOT FOUND, ADDING GUILD TO DATABASE", guild.getName());
-				try(PreparedStatement psAdd = con.prepareStatement("INSERT INTO `guilds` (`id`, `name`, `botChannel`) VALUES (?, ?, ?)")) {
-					psAdd.setString(1, guild.getID());
-					psAdd.setString(2, guild.getName());
-					LOGGER.info("creating botChannel on {}", guild.getName());
-					Future<String> fID = RequestBuffer.request(() -> {
-						try {
-							IChannel botChannel = guild.createChannel("testchannel");
-							EnumSet<Permissions> allPerms = EnumSet.allOf(Permissions.class);
-							EnumSet<Permissions> nonePerms = EnumSet.noneOf(Permissions.class);
-							EnumSet<Permissions> addPerms = EnumSet.of(Permissions.READ_MESSAGES, Permissions.SEND_MESSAGES, Permissions.READ_MESSAGE_HISTORY);
-							EnumSet<Permissions> remPerms = EnumSet.of(Permissions.MANAGE_CHANNEL, Permissions.MANAGE_PERMISSIONS, Permissions.MANAGE_MESSAGES);
-							botChannel.overrideUserPermissions(Statics.BOT_CLIENT.getOurUser(), allPerms, nonePerms);
-							botChannel.overrideRolePermissions(guild.getEveryoneRole(), addPerms, remPerms);
-							botChannel.changeTopic("swag");
-							return botChannel.getID();
-						} catch(MissingPermissionsException | DiscordException e) {
-							e.printStackTrace();//TODO: log
-						}
-						return null;
-					});
-					psAdd.setString(3, fID.get());
-					System.out.println(Statics.BOT_CLIENT.isReady());
-					psAdd.executeUpdate();
-					/**/
-					con.commit();
-					//LOGGER.info("Init for new Server ({}) done.", guild.getName());
-				}
-				rs = ps.executeQuery();
-				rs.next();
+			if (!rs.next()) {
+				rs = getGuildRef(con, ps, guild);
 			}
 			int ref = rs.getInt("ref");
 			Statics.GUILD_LIST.addGuild(ref, guild, guild.getChannelByID(rs.getString("botChannel")));//TODO: vielleicht besser machbar
-			if (newGuild) {
-				String queryUsers = "CREATE TABLE `users" + ref + "` (" +//TODO: mit ? machen (prepStmt)
-						"`id` varchar(128) CHARACTER SET utf8 NOT NULL," +
-						"`name` varchar(128) CHARACTER SET latin1 NOT NULL," +
-						"`gems` int(11) NOT NULL DEFAULT '0'," +
-						"`level` int(11) NOT NULL DEFAULT '1'," +
-						"`exp` int(11) NOT NULL DEFAULT '0'," +
-						"`swagLevel` int(11) NOT NULL DEFAULT '0'," +
-						"`swagPoints` int(11) NOT NULL DEFAULT '0'," +
-						"`reminder` int(11) NOT NULL DEFAULT '0'," +
-						"`expRate` int(11) NOT NULL DEFAULT '1000'," +
-						"`potDur` int(11) NOT NULL DEFAULT '0'," +
-						"PRIMARY KEY (`id`)," +
-						"UNIQUE KEY `UNIQUE_USERS_ID` (`id`)" +
-						") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";
-
-				try (PreparedStatement psUsers = con.prepareStatement(queryUsers)) {
-					psUsers.executeUpdate();
-					con.commit();
-				}
-			}
-		} catch(SQLException | InterruptedException | ExecutionException e) {
+			rs.close();
+		} catch(SQLException e) {
 			LOGGER.error("SQL or Future failed in onGuildCreateEvent", e);
 		}
+		//TODO: addUsers() von userdata
+	}
+
+	private static ResultSet getGuildRef(Connection con, PreparedStatement ps, IGuild guild) {
+		ResultSet rs = null;
+		LOGGER.info("GUILD {} NOT FOUND, ADDING GUILD TO DATABASE", guild.getName());
+		String insertQuery = "INSERT INTO `guilds` (`id`, `name`, `botChannel`) VALUES (?, ?, ?)";
+		try (PreparedStatement psInsertGuild = con.prepareStatement(insertQuery)) {
+			psInsertGuild.setString(1, guild.getID());
+			psInsertGuild.setString(2, guild.getName());
+			LOGGER.info("creating botChannel on {}", guild.getName());
+			Future<String> fID = RequestBuffer.request(() -> {
+				try {
+					IChannel botChannel = guild.createChannel("testchannel");
+					EnumSet<Permissions> allPerms = EnumSet.allOf(Permissions.class);
+					EnumSet<Permissions> nonePerms = EnumSet.noneOf(Permissions.class);
+					EnumSet<Permissions> addPerms = EnumSet.of(Permissions.READ_MESSAGES, Permissions.SEND_MESSAGES, Permissions.READ_MESSAGE_HISTORY);
+					EnumSet<Permissions> remPerms = EnumSet.of(Permissions.MANAGE_CHANNEL, Permissions.MANAGE_PERMISSIONS, Permissions.MANAGE_MESSAGES);
+					botChannel.overrideUserPermissions(Statics.BOT_CLIENT.getOurUser(), allPerms, nonePerms);
+					botChannel.overrideRolePermissions(guild.getEveryoneRole(), addPerms, remPerms);
+					botChannel.changeTopic("swag");
+					return botChannel.getID();
+				} catch (MissingPermissionsException | DiscordException e) {
+					e.printStackTrace();//TODO: log
+				}
+				return null;
+			});
+			psInsertGuild.setString(3, fID.get());
+			System.out.println(Statics.BOT_CLIENT.isReady());
+			psInsertGuild.executeUpdate();
+			con.commit();//hier ref erstellt
+			rs = ps.executeQuery();
+			rs.next();
+			int ref = rs.getInt("ref");
+
+			String createQuery = "CREATE TABLE `guild" + ref + "` (" +
+					"`id` varchar(128) COLLATE utf8_bin NOT NULL," +
+					"`name` varchar(128) COLLATE utf8_bin NOT NULL, " +
+					"PRIMARY KEY (`id`), " +
+					"UNIQUE KEY `id_UNIQUE` (`id`), " +
+					"KEY `id_INDEX` (`id`), " +
+					"KEY `name_INDEX` (`name`), " +
+					"CONSTRAINT `FKEY_id_G" + ref + "` FOREIGN KEY (`id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE, " +
+					"CONSTRAINT `FKEY_name_G" + ref + "` FOREIGN KEY (`name`) REFERENCES `users` (`name`) ON DELETE CASCADE ON UPDATE CASCADE" +
+					") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";
+
+			try(PreparedStatement psCreateGuild = con.prepareStatement(createQuery)) {
+				psCreateGuild.executeUpdate();
+				con.commit();
+			}
+			//LOGGER.info("Init for new Server ({}) done.", guild.getName());
+		} catch(SQLException | InterruptedException | ExecutionException e) {
+			e.printStackTrace();//TODO: log
+		}
+		return rs;
 	}
 
 	@EventSubscriber
@@ -140,16 +124,6 @@ class Events {
 		}
 	}
 
-	/*return RequestBuffer.request(() -> {
-		try {
-			IPrivateChannel privateChannel = user.getOrCreatePMChannel();
-			return new MessageBuilder(bClient).withChannel(privateChannel).withContent(s).build();
-		} catch(MissingPermissionsException | DiscordException e) {
-			LOGGER.error("failed posting private(to {}): {}", user.getName(), s, e);
-		}
-		return null;
-	});*/
-
 	@EventSubscriber
 	public void onDisconnectedEvent(DisconnectedEvent event) {
 		LOGGER.warn("Bot disconnected due to {}", event.getReason());
@@ -159,11 +133,6 @@ class Events {
 	public synchronized void onMessageEvent(MessageReceivedEvent event) {
 		IMessage message = event.getMessage();
 		Commands.trigger(message);
-		/*if (DATABASE.containsUser(message.getAuthor())) {TODO: fix mit db
-			Commands.trigger(message);
-		} else {
-			LOGGER.warn("Typing user wasn't found in Database");
-		}*/
 	}
 	
 	@EventSubscriber

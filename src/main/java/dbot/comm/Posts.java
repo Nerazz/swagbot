@@ -83,8 +83,8 @@ class Posts {
 		, channel);
 	}
 
-	static void changelog(IChannel channel) {
-		post(	"neuer Shit:\n" +
+	static void changelog(IChannel channel) {//TODO: umdrehen? (neuster shit oben?)
+		post(	"```neuer Shit:\n" +
 				"v5.2.x - v5.3.x:\n" +
 				"- man kann wieder leveln + Swag wird eingerechnet\n" +
 				"- Pots laufen wieder (und wieder kaufbar, aber scheinbar noch in bestimmten Fällen Formatierungsfehler)\n" +
@@ -99,9 +99,15 @@ class Posts {
 				"v5.4.2\n" +
 				"- flip Fix Nr.1 (flippen ohne Seite nicht mölich)\n" +
 				"v5.4.3\n" +
-				"flip Fix Nr.2 ((:gem:-Verlust duch bestimmte flips))" +
+				"flip Fix Nr.2 ((Gemverlust duch bestimmte flips))\n" +
 				"v5.4.4\n" +
-				"xpRate reset nach XPot Fix"
+				"xpRate reset nach XPot Fix\n" +
+				"v5.5.0\n" +
+				"- multi-guild-support\n" +
+				"- geupdatet auf D4J-v2.7.0" +
+				//"- viele Commands vorerst wieder disabled :("
+
+				"```"
 		, channel);
 	}
 

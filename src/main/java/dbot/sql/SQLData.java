@@ -18,7 +18,7 @@ public class SQLData {
 		for (int i = 0; i < strings.length; i++) {
 			if (strings[i].equals(s)) return data[i];
 		}
-		System.out.println("column not found: " + s);
+		System.out.println("column not found: " + s);//TODO: logger
 		return null;
 	}
 

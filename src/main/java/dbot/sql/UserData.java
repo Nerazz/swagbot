@@ -46,6 +46,23 @@ public class UserData {//implements comparable?
 
 	public UserData(IUser user) {}
 
+	public UserData(IUser user, int load) {
+		if (load < 1) {
+			LOGGER.error("load < 1 (load: {}) in constructor", load);//TODO: throw Exception
+			throw new IllegalArgumentException("load darf nicht < 1 sein!");
+		}
+		this.user = user;
+		id = user.getID();
+		name = user.getName();
+		String query = "SELECT ";
+		int bit = 0;
+		boolean last = false;
+		/*
+		TODO: LOADLOGIK
+		 */
+
+	}
+
 	public UserData(IUser user, int ref, int load) {
 		if (load < 1 || ref < 0) {
 			LOGGER.error("load oder ref < 0 (load: {}, ref: {}) in constructor", load, ref);
@@ -77,16 +94,18 @@ public class UserData {//implements comparable?
 			load >>= 1;
 			bit += 1;
 		}
-		query += " FROM `users" + ref + "` WHERE `id` = " + id;//TODO: übersichtlicher
+		query += " FROM `users` WHERE `id` = ?";//TODO: übersichtlicher
 		//System.out.println(query);
 		try (Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(query)) {
+			ps.setString(1, id);
 			ResultSet rs = ps.executeQuery();
 			if (!rs.next()) {//user not in DB
 				LOGGER.info("ADDING USER TO DATABASE: " + name);
-				try (PreparedStatement psAdd = con.prepareStatement("INSERT INTO `users" + ref + "` (`id`, `name`) VALUES (?, ?)")) {//TODO: übersichtlicher michen (+ref)
-					psAdd.setString(1, user.getID());
-					psAdd.setString(2, user.getName());
-					psAdd.executeUpdate();
+				String queryUser = "INSERT INTO `users` (`id`, `name`) VALUES (?, ?)";
+				try (PreparedStatement psUser = con.prepareStatement(queryUser)) {//TODO: übersichtlicher machen (+ref)
+					psUser.setString(1, user.getID());
+					psUser.setString(2, user.getName());
+					psUser.executeUpdate();
 					con.commit();
 				}
 				rs = ps.executeQuery();
@@ -124,15 +143,80 @@ public class UserData {//implements comparable?
 				}
 			}
 			rs.close();
+
+			String checkGuild = "SELECT `id` FROM `guild" + ref + "` WHERE `id` = ?";
+			try(PreparedStatement psGuild = con.prepareStatement(checkGuild)) {
+				//psGuild.setString(1, "guild" + ref);
+				psGuild.setString(1, id);
+				rs = psGuild.executeQuery();
+				if (!rs.next()) {
+					String addGuild = "INSERT INTO `guild" + ref + "` (id, name) VALUES (?, (SELECT `name` FROM `users` WHERE `id` = ?))";
+					try(PreparedStatement psAddGuild = con.prepareStatement(addGuild)) {
+						//psAddGuild.setString(1, "guild" + ref);
+						psAddGuild.setString(1, id);
+						psAddGuild.setString(2, id);
+						psAddGuild.executeUpdate();
+						con.commit();
+					}
+				}
+				rs.close();
+			}
 		} catch(SQLException e) {
 			LOGGER.error("SQL failed in constructor", e);
 		}
+	}
 
+	/*public static void addUser(IUser user) {
+		String id = user.getID();
+		String name = user.getName();
+		LOGGER.info("ADDING USER TO DATABASE: " + name);
+		String queryAddUser = "INSERT INTO `users` (`id`, `name`) VALUES (?, ?)";
+		try (Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement psUser = con.prepareStatement(queryAddUser)) {//TODO: übersichtlicher machen (+ref)
+			psUser.setString(1, user.getID());
+			psUser.setString(2, user.getName());
+			psUser.executeUpdate();
+			con.commit();
+		} catch(SQLException e) {
+			e.printStackTrace();//TODO: logger
+		}
+		rs = ps.executeQuery();
+		rs.next();
+	}*/
+
+	public static void addUsers(List<IUser> userList) {
+		addUsers(userList, -1);
+	}
+
+	public static void addUsers(List<IUser> userList, int ref) {
+		String upsertUser = "INSERT INTO `users` (`id`, `name`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `id` = `id`";
+		try(Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(upsertUser)) {
+			for (IUser user : userList) {
+				ps.setString(1, user.getID());
+				ps.setString(2, user.getName());
+				ps.addBatch();
+			}
+			ps.executeBatch();
+			//ps.clearBatch();
+			ps.close();
+			if (ref >= 0) {
+				String upsertGuild = "INSERT INTO `guild" + ref + "` (`id`, `name`) VALUES (?, (SELECT `name` FROM `users` WHERE `id` = ?))";
+				try(PreparedStatement psGuild = con.prepareStatement(upsertGuild)) {
+					for (IUser user : userList) {
+						psGuild.setString(1, user.getID());
+						psGuild.setString(2, user.getID());
+						psGuild.addBatch();
+					}
+					ps.executeBatch();
+				}
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();//TODO: logger
+		}
 	}
 
 	public void update() {//lieber string für batch-update returnen?
 		//"UPDATE `users` SET `gems` = `gems` + " + gems + ", `exp` = " + exp + " WHERE `id` = " + user.getID()
-		String update = "UPDATE `users" + ref + "` SET ";//TODO: übersicht
+		String update = "UPDATE `users` SET ";//TODO: übersicht
 		for (String args : argsList) {
 			switch (args) {
 				case "gems":
@@ -167,9 +251,9 @@ public class UserData {//implements comparable?
 				update += ", ";
 			}
 		}
-		update += " WHERE `id` = " + id;
-		//System.out.println(update);
+		update += " WHERE `id` = ?";
 		try (Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(update)) {
+			ps.setString(1, id);//TODO: batchupdate; ps wiederverwenden
 			ps.executeUpdate();
 			con.commit();
 		} catch(SQLException e) {
@@ -178,8 +262,9 @@ public class UserData {//implements comparable?
 	}
 
 	public static Object getData(IUser user, int ref, String data) {
-		String query = "SELECT `" + data + "` FROM `users" + ref + "` WHERE `id` = ?";//TODO: übersicht
+		String query = "SELECT `" + data + "` FROM `users` WHERE `id` = ?";//TODO: übersicht
 		try (Connection conn = SQLPool.getDataSource().getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
+			//ps.setString(1, data);
 			ps.setString(1, user.getID());
 			try (ResultSet rs = ps.executeQuery()) {
 				rs.next();
