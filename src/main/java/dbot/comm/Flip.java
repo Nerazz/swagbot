@@ -9,6 +9,7 @@ import dbot.sql.UserData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IMessage;
 
@@ -34,8 +35,8 @@ public class Flip {
 		}
 	}*/
 
-	static void m(IUser author, int ref, String params, IChannel channel) {
-		UserData uData = new UserData(author, ref, 1);//gems
+	static void m(IUser author, String params, int ref, IChannel channel) {
+		UserData uData = new UserData(author, 1);//gems
 		Pattern pattern = Pattern.compile("(\\d+|[a-z]+)(\\s(\\d+|[a-z]+))?");
 		Matcher matcher = pattern.matcher(params);
 		if (!matcher.matches()) return;
@@ -46,7 +47,7 @@ public class Flip {
 					post("nicht genug args", channel);
 					return;
 				}
-				join(uData, ref, matcher.group(3), channel);
+				join(uData, matcher.group(3), ref, channel);
 				break;
 			case "close":
 			case "c":
@@ -103,10 +104,11 @@ public class Flip {
 		} catch(SQLException e) {
 			LOGGER.error("SQL failed in open", e);
 		}
-		//updateRoomPost();
+		System.out.println("open.update");
+		updateRoomPost();
 	}
 
-	private static void join(UserData clientData, int ref, String params, IChannel channel) {
+	private static void join(UserData clientData, String params, int ref, IChannel channel) {
 		Pattern pattern = Pattern.compile("(\\d+)");
 		Matcher matcher = pattern.matcher(params);
 
@@ -124,14 +126,14 @@ public class Flip {
 			} else if (clientData.getId().equals(rs.getString("hostID"))) {
 				post(clientData.getUser() + ", du kannst nicht mit dir selbst flippen...", channel);
 			} else {
-				UserData hostData = new UserData(Statics.GUILD.getUserByID(rs.getString("hostID")), ref, 1);//gems
+				UserData hostData = new UserData(Statics.GUILD_LIST.getGuild(ref).getUserByID(rs.getString("hostID")), 1);//gems;
 				int pot = rs.getInt("pot");
 				String side = rs.getString("side");
 				rs.close();
 				clientData.subGems(pot);
 				ps.executeUpdate("DELETE FROM `flip` WHERE id = " + roomID);
 				con.commit();
-				//updateRoomPost();
+				updateRoomPost();
 				//x hat gewonnen und bekommt ys gems:gem:!
 				String flippedSide = (Math.random() < 0.5) ? "TOP" : "KEK";
 				if (side.equals(flippedSide)) {
@@ -139,7 +141,7 @@ public class Flip {
 				} else {
 					afterFlip(clientData, hostData, pot, side, channel);
 				}
-				//updateRoomPost();
+				updateRoomPost();
 			}
 		} catch(SQLException e) {
 			LOGGER.error("SQL failed in join", e);
@@ -197,24 +199,32 @@ public class Flip {
 				LOGGER.error("SQL failed in close/else", e);
 			}
 		}
-		//updateRoomPost();
+		updateRoomPost();
 	}
 
 	/*static IMessage getRoomPost() {
 		return roomPost;
-	}
+	}*/
 
 	private static void updateRoomPost() {
-		try (Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement("SELECT * FROM `flip`")) {
-			ResultSet rs = ps.executeQuery();
-			String post = startString;
-			while (rs.next()) {
-				post += "\nID»'" + rs.getInt("id") + "' Einsatz»'" + rs.getInt("pot") + "' Seite»'" + rs.getString("side") + "' Host»'" + Statics.GUILD.getUserByID(rs.getString("hostID")).getName() + "'";
+		try {
+			try (Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement("SELECT `flip`.`id`, `hostID`, `pot`, `side`, `name` FROM `flip` JOIN `users` ON `flip`.`hostID`=`users`.`id`;")) {//TODO: besser machbar?
+				ResultSet rs = ps.executeQuery();
+				String post = startString;
+				while (rs.next()) {
+					post += "\nID»'" + rs.getInt("id") + "' Einsatz»'" + rs.getInt("pot") + "' Seite»'" + rs.getString("side") + "' Host»'" + (rs.getString("name")) + "'";
+				}
+				rs.close();
+				post += "```";//TODO: keine, wenn leer (!rs.next)
+				for (IMessage message : Statics.POST_LIST) {
+					edit(message, post);
+					System.out.println("update");
+				}
+			} catch (SQLException e) {
+				LOGGER.error("SQL failed in updateRooms", e);
 			}
-			rs.close();
-			edit(roomPost, post + "```");
-		} catch(SQLException e) {
-			LOGGER.error("SQL failed in updateRooms", e);
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
-	}*/
+	}
 }

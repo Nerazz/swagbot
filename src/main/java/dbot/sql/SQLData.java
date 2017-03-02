@@ -8,7 +8,7 @@ public class SQLData {
 	private final Object[] data;
 	private final int size;
 
-	SQLData(String[] strings, Object[] data) {
+	public SQLData(String[] strings, Object[] data) {
 		this.strings = strings;
 		this.data = data;
 		size = strings.length;

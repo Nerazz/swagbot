@@ -38,7 +38,7 @@ public class Commands {
 
 				case "stats":
 				case "st":
-					Posts.stats(author, ref, channel);
+					Posts.stats(author, channel);
 					break;
 
 				case "gems":
@@ -47,27 +47,33 @@ public class Commands {
 					//SQLPool.getInstance().getData("test", "gems");
 					//SQLPool.getData(author.getID(), "gems");
 					//post(author + ", du hast " + new UserData(author, 1).getGems() + ":gem:.");
-					post(author + ", du hast " + UserData.getData(author, ref, "gems") + ":gem:.", channel);
+					post(author + ", du hast " + UserData.getData(author, "gems") + ":gem:.", channel);
 					break;
 				
-				case "top":
+				case "globaltop":
+				case "gtop":
 					Posts.top(channel);
+					break;
+
+				case "top":
+					Posts.localTop(channel);
 					break;
 
 				case "rank":
 					//Posts.rank(database.sortByScore(), author);
-					post("coming soon(TM)", channel);
+					Posts.rank(author, channel);
+					//post("coming soon(TM)", channel);
 					break;
 				
-				/*case "buy":
+				case "buy":
 				case "b":
-					Buy.m(author, ref, params, channel);
-					break;*/
+					Buy.m(author, params, channel);
+					break;
 				
-				/*case "flip":
+				case "flip":
 				case "f":
-					Flip.m(author, ref, params, channel);
-					break;*/
+					Flip.m(author, params, ref, channel);
+					break;
 
 				/*case "raffle":
 					RaffleTimer.m(dAuthor, params);
@@ -77,13 +83,16 @@ public class Commands {
 					Lotto.addTicket(dAuthor, params);
 					break;*/
 
-				/*case "give":
-					Give.m(dAuthor, params);
-					break;*/
+				case "give":
+					UserData userData = new UserData(author, 1);//gems
+					UserData userDataReceiver = new UserData(message.getMentions().get(0), 1);//gems
+					System.out.println(message.getContent());
+					Give.m(userData, userDataReceiver, params, channel);
+					break;
 
 				case "remind":
 				case "rem":
-					UserData uData = new UserData(author, ref, 128);
+					UserData uData = new UserData(author, 128);
 					uData.negateReminder();
 					uData.update();
 					post("Reminder getogglet", channel);
@@ -171,7 +180,13 @@ public class Commands {
 
 					case "cl":
 						//DelTimer.checkList();
+						try {
+							post("```\n" + Statics.GUILD_LIST.toString() + "```", channel);
+						} catch(Exception e) {
+							e.printStackTrace();
+						}
 						break;
+
 					default:
 						post("Command nicht erkannt", channel);
 						break;

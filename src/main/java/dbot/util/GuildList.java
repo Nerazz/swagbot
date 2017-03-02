@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /**
  * Created by Niklas on 18.02.2017.
  */
-public class GuildList {
+public class GuildList {//TODO: lieber DataMap extenden und add overriden für addWithNulls
 	private final DataMap<IGuild, String[]> guildList = new DataMap<>();//TODO: lieber GuildID als Key?; ref = index
 	//private ArrayList<String[]> guildList = new ArrayList<>();
 
@@ -58,5 +58,16 @@ public class GuildList {
 			return null;
 		}
 		return guildList.getKey(index);
+	}
+
+	@Override
+	public String toString() {//TODO: besser
+		String s = "GuildList: [";
+		/*for (int i = 0; i < guildList.size(); i++) {
+			s += guildList.toString()
+		}*/
+		s += guildList.toString();
+		s += "]";
+		return s;
 	}
 }

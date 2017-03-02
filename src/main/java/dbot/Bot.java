@@ -3,12 +3,18 @@ package dbot;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
 import dbot.listeners.*;
+import dbot.sql.SQLPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.util.DiscordException;
+
+import java.io.*;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Bot - Mainclass
@@ -34,9 +40,18 @@ public class Bot {
 			dispatcher.registerListener(new MessageListener());
 			//Events listeners = new Events();
 			//botClient.getDispatcher().registerListener(listeners);
+			LOGGER.debug("Added Listeners");
 		} catch(DiscordException e) {
 			LOGGER.error("Error while creating new Bot", e);
 		}
+		//Object object = new Object();
+		//URL url = object.getClass().getClassLoader().getResource("hikari.properties");
+		//System.out.println(url.toString());
+		/*try(Connection con = SQLPool.getDataSource().getConnection()) {
+			System.out.println(con.toString());
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}*/
 	}
 
 	/*public static void updateBot() {

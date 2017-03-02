@@ -14,7 +14,7 @@ import java.util.regex.*;
 final class Buy {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Buy");
 
-	static void m(IUser buyer, int ref, String params, IChannel channel) {
+	static void m(IUser buyer, String params, IChannel channel) {
 		Pattern pattern = Pattern.compile("([a-z]+)(\\s(.+))?");
 		Matcher matcher = pattern.matcher(params);
 		if (!matcher.matches()) return;
@@ -24,7 +24,7 @@ final class Buy {
 				pattern = Pattern.compile("([a-z]+)");
 				matcher = pattern.matcher(matcher.group(3));
 				if (!matcher.matches()) return;
-				new Xpot(buyer, ref, matcher.group(1), channel);
+				new Xpot(buyer, matcher.group(1), channel);
 				break;
 
 			case "reminder":
@@ -35,7 +35,7 @@ final class Buy {
 				matcher = pattern.matcher(params);
 				if (matcher.matches()) anzahl = Integer.parseInt(matcher.group());
 
-				UserData data = new UserData(buyer, ref, 129);//gems, reminder
+				UserData data = new UserData(buyer, 129);//gems, reminder
 				if (data.getGems() < (price * anzahl)) {
 					post(buyer + ", du hast zu wenig :gem:.", channel);
 					return;

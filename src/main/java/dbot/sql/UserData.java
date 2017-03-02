@@ -28,13 +28,12 @@ import java.util.List;
  */
 
 public class UserData {//implements comparable?
-	private static final String[] VALUES = {"gems", "exp", "level", "expRate", "potDur", "swagLevel", "swagPoints", "reminder"};
+	private static final String[] VALUES = {"gems", "exp", "level", "expRate", "potDur", "swagLevel", "swagPoints", "reminder"};//TODO: enum?
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.sql.UserData");
-	private final List<String> argsList = new ArrayList<>();
+	private final List<String> loadList = new ArrayList<>();
 	private String id = null;
 	private String name = null;
 	private IUser user = null;
-	private int ref = -1;
 	private int gems = -1;
 	private int level = -1;
 	private int exp = Integer.MIN_VALUE;
@@ -44,7 +43,19 @@ public class UserData {//implements comparable?
 	private int swagPoints = -1;
 	private int reminder = Integer.MIN_VALUE;
 
-	public UserData(IUser user) {}
+	public UserData() {}
+
+	public UserData(String id, int gems, int level, int exp, int expRate, int potDur, int swagLevel, int swagPoints, int reminder) {
+		this.id = id;
+		this.gems = gems;
+		this.level = level;
+		this.exp = exp;
+		this.expRate = expRate;
+		this.potDur = potDur;
+		this.swagLevel = swagLevel;
+		this.swagPoints = swagPoints;
+		this.reminder = reminder;
+	}
 
 	public UserData(IUser user, int load) {
 		if (load < 1) {
@@ -54,64 +65,12 @@ public class UserData {//implements comparable?
 		this.user = user;
 		id = user.getID();
 		name = user.getName();
-		String query = "SELECT ";
-		int bit = 0;
-		boolean last = false;
-		/*
-		TODO: LOADLOGIK
-		 */
-
-	}
-
-	public UserData(IUser user, int ref, int load) {
-		if (load < 1 || ref < 0) {
-			LOGGER.error("load oder ref < 0 (load: {}, ref: {}) in constructor", load, ref);
-			throw new IllegalArgumentException("ref darf nicht < 0 und load < 1 sein!");
-		}
-		this.user = user;
-		id = user.getID();
-		name = user.getName();
-		this.ref = ref;
-		String query = "SELECT ";
-		int bit = 0;
-		boolean last = false;
-		while (load != 0) {
-			//if (bit != 0) query += ", ";
-			if (last) query += ", ";
-			if ((load & 1) == 1) {
-				query += "`" + VALUES[bit] + "`";
-				argsList.add(VALUES[bit]);
-				/*for (int i = 0; i < VALUES[bit].length; i++) {
-					if (i != 0) query += ", ";
-					query += "`" + VALUES[bit][i] + "`";
-					argsList.add(VALUES[bit][i]);
-
-				}*/
-				last = true;//geht vielleicht besser
-			} else {
-				last = false;
-			}
-			load >>= 1;
-			bit += 1;
-		}
-		query += " FROM `users` WHERE `id` = ?";//TODO: übersichtlicher
-		//System.out.println(query);
-		try (Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(query)) {
+		fillLoadList(load);
+		try(Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(genSelectQuery())) {
 			ps.setString(1, id);
 			ResultSet rs = ps.executeQuery();
-			if (!rs.next()) {//user not in DB
-				LOGGER.info("ADDING USER TO DATABASE: " + name);
-				String queryUser = "INSERT INTO `users` (`id`, `name`) VALUES (?, ?)";
-				try (PreparedStatement psUser = con.prepareStatement(queryUser)) {//TODO: übersichtlicher machen (+ref)
-					psUser.setString(1, user.getID());
-					psUser.setString(2, user.getName());
-					psUser.executeUpdate();
-					con.commit();
-				}
-				rs = ps.executeQuery();
-				rs.next();
-			}
-			for (String args : argsList) {//TODO: schon ziemlich fail so...
+			rs.next();
+			for (String args : loadList) {//TODO: schon ziemlich fail so...
 				switch (args) {
 					case "gems":
 						gems = rs.getInt(args);
@@ -143,51 +102,61 @@ public class UserData {//implements comparable?
 				}
 			}
 			rs.close();
-
-			String checkGuild = "SELECT `id` FROM `guild" + ref + "` WHERE `id` = ?";
-			try(PreparedStatement psGuild = con.prepareStatement(checkGuild)) {
-				//psGuild.setString(1, "guild" + ref);
-				psGuild.setString(1, id);
-				rs = psGuild.executeQuery();
-				if (!rs.next()) {
-					String addGuild = "INSERT INTO `guild" + ref + "` (id, name) VALUES (?, (SELECT `name` FROM `users` WHERE `id` = ?))";
-					try(PreparedStatement psAddGuild = con.prepareStatement(addGuild)) {
-						//psAddGuild.setString(1, "guild" + ref);
-						psAddGuild.setString(1, id);
-						psAddGuild.setString(2, id);
-						psAddGuild.executeUpdate();
-						con.commit();
-					}
-				}
-				rs.close();
-			}
 		} catch(SQLException e) {
-			LOGGER.error("SQL failed in constructor", e);
+			e.printStackTrace();//TODO: log
 		}
 	}
 
-	/*public static void addUser(IUser user) {
+	private void fillLoadList(int load) {
+		if (load < 1) {
+			LOGGER.error("load < 1 (load: {}) in constructor", load);//TODO: throw Exception
+			throw new IllegalArgumentException("load darf nicht < 1 sein!");
+		}
+		int bit = 0;
+		while (load != 0) {
+			if ((load & 1) == 1) {
+				loadList.add(VALUES[bit]);
+			}
+			load >>= 1;
+			bit += 1;
+		}
+	}
+
+	private String genSelectQuery() {
+		String query = "SELECT ";
+		for (String arg : loadList) {
+			query += "`" + arg + "`,";
+		}
+		query = query.substring(0, query.length() - 1);
+		query += " FROM `users` WHERE `id` = ?";
+		return query;
+	}
+
+	public static void addUser(IUser user, int ref) {
 		String id = user.getID();
 		String name = user.getName();
 		LOGGER.info("ADDING USER TO DATABASE: " + name);
-		String queryAddUser = "INSERT INTO `users` (`id`, `name`) VALUES (?, ?)";
-		try (Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement psUser = con.prepareStatement(queryAddUser)) {//TODO: übersichtlicher machen (+ref)
+		String upsertUser = "INSERT INTO `users` (`id`, `name`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `id` = `id`";
+		String upsertGuild = "INSERT INTO `guild" + ref + "` (`id`, `name`) VALUES (?, (SELECT `name` FROM `users` WHERE `id` = ?)) ON DUPLICATE KEY UPDATE `id` = `id`";
+		try (Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement psUser = con.prepareStatement(upsertUser); PreparedStatement psGuild = con.prepareStatement(upsertGuild)) {//TODO: übersichtlicher machen (+ref)
 			psUser.setString(1, user.getID());
 			psUser.setString(2, user.getName());
+			psGuild.setString(1, id);
+			psGuild.setString(2, id);
 			psUser.executeUpdate();
 			con.commit();
+			psGuild.executeUpdate();
+			con.commit();
 		} catch(SQLException e) {
-			e.printStackTrace();//TODO: logger
+			e.printStackTrace();//TODO: log
 		}
-		rs = ps.executeQuery();
-		rs.next();
-	}*/
-
-	public static void addUsers(List<IUser> userList) {
-		addUsers(userList, -1);
 	}
 
-	public static void addUsers(List<IUser> userList, int ref) {
+	/*public static String genUpsertUser(IUser user) {
+
+	}*/
+
+	public static void addUsers(List<IUser> userList, int ref) {//TODO: ref < 0 check mit throw?
 		String upsertUser = "INSERT INTO `users` (`id`, `name`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `id` = `id`";
 		try(Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(upsertUser)) {
 			for (IUser user : userList) {
@@ -195,29 +164,67 @@ public class UserData {//implements comparable?
 				ps.setString(2, user.getName());
 				ps.addBatch();
 			}
-			ps.executeBatch();
-			//ps.clearBatch();
+			ps.executeBatch();//TODO: returned int[] zur info/fehlerbehebung nutzen
 			ps.close();
-			if (ref >= 0) {
-				String upsertGuild = "INSERT INTO `guild" + ref + "` (`id`, `name`) VALUES (?, (SELECT `name` FROM `users` WHERE `id` = ?))";
-				try(PreparedStatement psGuild = con.prepareStatement(upsertGuild)) {
-					for (IUser user : userList) {
-						psGuild.setString(1, user.getID());
-						psGuild.setString(2, user.getID());
-						psGuild.addBatch();
-					}
-					ps.executeBatch();
+			con.commit();
+			String upsertGuild = "INSERT INTO `guild" + ref + "` (`id`, `name`) VALUES (?, (SELECT `name` FROM `users` WHERE `id` = ?)) ON DUPLICATE KEY UPDATE `id` = `id`";
+			try(PreparedStatement psGuild = con.prepareStatement(upsertGuild)) {
+				for (IUser user : userList) {
+					psGuild.setString(1, user.getID());
+					psGuild.setString(2, user.getID());
+					psGuild.addBatch();
 				}
+				psGuild.executeBatch();//TODO: returned int[] zur info/fehlerbehebung nutzen
+				psGuild.close();
+				con.commit();
 			}
 		} catch(SQLException e) {
-			e.printStackTrace();//TODO: logger
+			e.printStackTrace();//TODO: log
 		}
 	}
+
+	/*public String genUpdateQuery() {
+		String update = "UPDATE `users` SET ";
+		for (String args : loadList) {
+			switch (args) {//TODO: muss besser gehen
+				case "gems":
+					update += "`" + args + "` = " + gems;
+					break;
+				case "exp":
+					update += "`" + args + "` = " + exp;
+					break;
+				case "level":
+					update += "`" + args + "` = " + level;
+					break;
+				case "expRate":
+					update += "`" + args + "` = " + expRate;
+					break;
+				case "potDur":
+					update += "`" + args + "` = " + potDur;
+					break;
+				case "swagLevel":
+					update += "`" + args + "` = " + swagLevel;
+					break;
+				case "swagPoints":
+					update += "`" + args + "` = " + swagPoints;
+					break;
+				case "reminder":
+					update += "`" + args + "` = " + reminder;
+					break;
+				default:
+					LOGGER.error("Switch default in update from {}", args);
+					break;
+			}
+		}
+		update = update.substring(0, update.length() - 1);//delete last ","
+		update += " WHERE `id` = ?";
+		return update;
+	}*/
 
 	public void update() {//lieber string für batch-update returnen?
 		//"UPDATE `users` SET `gems` = `gems` + " + gems + ", `exp` = " + exp + " WHERE `id` = " + user.getID()
 		String update = "UPDATE `users` SET ";//TODO: übersicht
-		for (String args : argsList) {
+		for (String args : loadList) {
 			switch (args) {
 				case "gems":
 					update += "`" + args + "` = " + gems;
@@ -247,7 +254,7 @@ public class UserData {//implements comparable?
 					LOGGER.error("Switch default in update from {}", args);
 					break;
 			}
-			if (argsList.indexOf(args) != argsList.size() - 1) {
+			if (loadList.indexOf(args) != loadList.size() - 1) {
 				update += ", ";
 			}
 		}
@@ -261,10 +268,9 @@ public class UserData {//implements comparable?
 		}
 	}
 
-	public static Object getData(IUser user, int ref, String data) {
-		String query = "SELECT `" + data + "` FROM `users` WHERE `id` = ?";//TODO: übersicht
+	public static Object getData(IUser user, String data) {
+		String query = "SELECT `" + data + "` FROM `users` WHERE `id` = ?";
 		try (Connection conn = SQLPool.getDataSource().getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
-			//ps.setString(1, data);
 			ps.setString(1, user.getID());
 			try (ResultSet rs = ps.executeQuery()) {
 				rs.next();
@@ -274,6 +280,17 @@ public class UserData {//implements comparable?
 			LOGGER.error("SQL failed in getData", e);
 		}
 		return null;
+	}
+
+	public static String getUpdateAllQuery() {
+		//"UPDATE `users` SET `gems` = ?, `exp` = ? WHERE `id` = ?;
+		String query = "UPDATE `users` SET ";
+		for (String value : VALUES) {
+			query += "`" + value + ", = ?, ";
+		}
+		query = query.substring(0, query.length() - 2);//", " entfernen
+		query += "WHERE `id` = ?";
+		return query;
 	}
 	
 	public String getId() {
@@ -309,7 +326,7 @@ public class UserData {//implements comparable?
 		while (exp >= getLevelThreshold(level)) {
 			exp -= getLevelThreshold(level);
 			level++;
-			post(":tada: DING! " + name + " ist Level " + level + "! :tada:", Statics.GUILD_LIST.getBotChannel(ref));
+			//post(":tada: DING! " + name + " ist Level " + level + "! :tada:", Statics.GUILD_LIST.getBotChannel(ref));//TODO: post
 			LOGGER.info("{} leveled to Level {}", name, level);
 		}
 	}
@@ -325,7 +342,7 @@ public class UserData {//implements comparable?
 	public void prestige() {
 		if (level < 100) {
 			LOGGER.info("{} Level ist nicht hoch genug zum prestigen", name);
-			post(name + ", du musst mindestens Level 100 sein.", Statics.GUILD_LIST.getBotChannel(ref));
+			//post(name + ", du musst mindestens Level 100 sein.", Statics.GUILD_LIST.getBotChannel(ref));//TODO: post
 			return;
 		}
 		int swagPointGain = (int)Math.ceil(Math.sqrt((double)gems / 10000.0) * ((double)swagLevel + 2.0) / ((double)swagPoints + 2.0)) + level - 100;
@@ -369,7 +386,7 @@ public class UserData {//implements comparable?
 				setExpRate(1000);
 				LOGGER.info("{} XPot empty", name);
 				if (reminder > 0) {
-					post("Hey, dein XPot zeigt keine Wirkung mehr...", user);//TODO: kauf und staffelung prüfen
+					post("Hey, dein XPot hat keine Wirkung mehr...", user);//TODO: kauf und staffelung prüfen
 					LOGGER.info("{} got reminded", name);
 					reminder--;
 				}
@@ -396,7 +413,7 @@ public class UserData {//implements comparable?
 	public static int getLevelThreshold(int level) {//TODO: angucken
 		//level--;
 		if (level < 1) {
-			LOGGER.warn("level is < 1; getLevelThreshold({})", level);
+			LOGGER.error("level is < 1; getLevelThreshold({})", level);
 			throw new IllegalArgumentException("Level darf nicht < 1 sein!");
 		} else if (level < 100) {
 			return level * 80 + 1000;

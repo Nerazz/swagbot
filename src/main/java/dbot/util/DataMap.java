@@ -15,8 +15,9 @@ public class DataMap<K, V> {
 		pairs.add(new Pair(key, value));
 	}
 
-	public void putWithNulls(int index, K key, V value) {
+	public synchronized void putWithNulls(int index, K key, V value) {
 		if (index >= 0 && index <= pairs.size()) {
+			pairs.remove(index);//FIXME: immernoch buggy
 			pairs.add(index, new Pair(key, value));
 			return;
 		}
@@ -103,6 +104,16 @@ public class DataMap<K, V> {
 	/*public boolean contains(Object o) {
 		return pairs.contains(o);
 	}*/
+
+	@Override
+	public String toString() {//TODO: besser
+		String s = "[";
+		for (int i = 0; i < pairs.size(); i++) {
+			s += i + ":<" + getKey(i) + "; " + getValue(i) + ">\n";
+		}
+		s += "]";
+		return s;
+	}
 
 	private class Pair {
 		private final K key;

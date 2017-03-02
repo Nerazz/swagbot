@@ -1,10 +1,14 @@
 package dbot.listeners;
 
+import dbot.Statics;
+import dbot.sql.UserData;
 import dbot.util.Poster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.api.events.IListener;
 import sx.blah.discord.handle.impl.events.UserJoinEvent;
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
@@ -17,15 +21,18 @@ public class UserJoinListener implements IListener<UserJoinEvent> {
 
 	@Override
 	public void handle(UserJoinEvent event) {
+		IUser user = event.getUser();
+		IGuild guild = event.getGuild();
+		UserData.addUser(user, Statics.GUILD_LIST.getRef(guild));
 		try {
-			event.getUser().addRole(event.getGuild().getRolesByName("Newfags").get(0));
-			LOGGER.info("added role(Newfags) to {}", event.getUser().getName());
+			user.addRole(guild.getRolesByName("Newfags").get(0));
+			LOGGER.info("added role(Newfags) to {}", user.getName());
 			Poster.post(	"Willkommen auf dem nicesten Discord-Server ever :)" +
 					"\nWenn du Lust hast, schau doch mal im #botspam vorbei, hier kann man ne nice Runde gamblen und co :)" +
 					"\nZusätzlich solltest du #botspam auf @mention stellen (oder muten)" +
-					"\nBei Fragen am Besten an @DPD oder @Stammboys wenden.", event.getUser());
+					"\nBei Fragen am Besten an @DPD oder @Stammboys wenden.", user);
 		} catch(MissingPermissionsException | DiscordException | RateLimitException e) {
-			LOGGER.error("Error while adding role to {} (or couldn't send message)", event.getUser().getName(), e);
+			LOGGER.error("Error while adding role to {} (or couldn't send message)", user.getName(), e);
 		}
 	}
 
