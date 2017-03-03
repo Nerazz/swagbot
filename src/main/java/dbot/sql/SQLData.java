@@ -1,9 +1,13 @@
 package dbot.sql;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Created by Niklas on 23.10.2016.
  */
 public class SQLData {
+	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.sql.SQLData");
 	private final String[] strings;
 	private final Object[] data;
 	private final int size;
@@ -18,7 +22,7 @@ public class SQLData {
 		for (int i = 0; i < strings.length; i++) {
 			if (strings[i].equals(s)) return data[i];
 		}
-		System.out.println("column not found: " + s);//TODO: logger
+		LOGGER.error("column not found: {}", s);
 		return null;
 	}
 

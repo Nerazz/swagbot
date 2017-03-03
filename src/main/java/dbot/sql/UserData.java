@@ -5,6 +5,7 @@ import static dbot.util.Poster.post;
 import dbot.Statics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IUser;
 
 import java.sql.Connection;
@@ -45,8 +46,9 @@ public class UserData {//implements comparable?
 
 	public UserData() {}
 
-	public UserData(String id, int gems, int level, int exp, int expRate, int potDur, int swagLevel, int swagPoints, int reminder) {
+	public UserData(String id, String name, int gems, int level, int exp, int expRate, int potDur, int swagLevel, int swagPoints, int reminder) {
 		this.id = id;
+		this.name = name;
 		this.gems = gems;
 		this.level = level;
 		this.exp = exp;
@@ -59,7 +61,7 @@ public class UserData {//implements comparable?
 
 	public UserData(IUser user, int load) {
 		if (load < 1) {
-			LOGGER.error("load < 1 (load: {}) in constructor", load);//TODO: throw Exception
+			LOGGER.error("load < 1 (load: {}) in constructor", load);
 			throw new IllegalArgumentException("load darf nicht < 1 sein!");
 		}
 		this.user = user;
@@ -103,13 +105,13 @@ public class UserData {//implements comparable?
 			}
 			rs.close();
 		} catch(SQLException e) {
-			e.printStackTrace();//TODO: log
+			LOGGER.error("failed loading user: {}", user.getName(), e);
 		}
 	}
 
 	private void fillLoadList(int load) {
 		if (load < 1) {
-			LOGGER.error("load < 1 (load: {}) in constructor", load);//TODO: throw Exception
+			LOGGER.error("load < 1 (load: {}) in constructor", load);
 			throw new IllegalArgumentException("load darf nicht < 1 sein!");
 		}
 		int bit = 0;
@@ -133,6 +135,10 @@ public class UserData {//implements comparable?
 	}
 
 	public static void addUser(IUser user, int ref) {
+		if (ref < 0) {
+			LOGGER.error("ref < 0 (ref: {}) in constructor", ref);
+			throw new IllegalArgumentException("ref darf nicht < 0 sein!");
+		}
 		String id = user.getID();
 		String name = user.getName();
 		LOGGER.info("ADDING USER TO DATABASE: " + name);
@@ -148,7 +154,7 @@ public class UserData {//implements comparable?
 			psGuild.executeUpdate();
 			con.commit();
 		} catch(SQLException e) {
-			e.printStackTrace();//TODO: log
+			LOGGER.error("failed adding user: {}", user.getName(), e);
 		}
 	}
 
@@ -156,7 +162,11 @@ public class UserData {//implements comparable?
 
 	}*/
 
-	public static void addUsers(List<IUser> userList, int ref) {//TODO: ref < 0 check mit throw?
+	public static void addUsers(List<IUser> userList, int ref) {
+		if (ref < 0) {
+			LOGGER.error("ref < 0 (ref: {}) in constructor", ref);
+			throw new IllegalArgumentException("ref darf nicht < 0 sein!");
+		}
 		String upsertUser = "INSERT INTO `users` (`id`, `name`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `id` = `id`";
 		try(Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(upsertUser)) {
 			for (IUser user : userList) {
@@ -179,7 +189,7 @@ public class UserData {//implements comparable?
 				con.commit();
 			}
 		} catch(SQLException e) {
-			e.printStackTrace();//TODO: log
+			LOGGER.error("failed adding users:", e);
 		}
 	}
 
@@ -326,7 +336,11 @@ public class UserData {//implements comparable?
 		while (exp >= getLevelThreshold(level)) {
 			exp -= getLevelThreshold(level);
 			level++;
-			//post(":tada: DING! " + name + " ist Level " + level + "! :tada:", Statics.GUILD_LIST.getBotChannel(ref));//TODO: post
+			List<IChannel> channelList = Statics.GUILD_LIST.getAllBotChannels();
+			for (IChannel channel : channelList) {
+				post(":tada: DING! " + name + " ist Level " + level + "! :tada:", channel);//TODO: nur auf guilds posten, auf denen der user ist!!!
+			}
+			//post(":tada: DING! " + name + " ist Level " + level + "! :tada:", Statics.GUILD_LIST.getBotChannel(ref));
 			LOGGER.info("{} leveled to Level {}", name, level);
 		}
 	}

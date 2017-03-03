@@ -16,8 +16,8 @@ public class DataMap<K, V> {
 	}
 
 	public synchronized void putWithNulls(int index, K key, V value) {
-		if (index >= 0 && index <= pairs.size()) {
-			pairs.remove(index);//FIXME: immernoch buggy
+		if (index >= 0 && index < pairs.size()) {//wenn index == size wird if übersprungen und forloop wegen nulls = 0 nicht ausgeführt -> guild wird wie gewollt hinten angehängt
+			pairs.remove(index);
 			pairs.add(index, new Pair(key, value));
 			return;
 		}

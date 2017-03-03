@@ -18,7 +18,7 @@ import java.util.List;
 
 import static dbot.util.Poster.post;
 
-public class MainTimer implements Runnable{//TODO: namen ändern
+public class MainTimer implements Runnable{
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.timer.MainTimer");
 	//private static final Presences ONLINE = Presences.valueOf("ONLINE");
 	private static final IDiscordClient BOT_CLIENT = Statics.BOT_CLIENT;
@@ -28,11 +28,7 @@ public class MainTimer implements Runnable{//TODO: namen ändern
 	private static int dayCount		= 0;
 
 	public MainTimer() {
-		try {
-			BOT_CLIENT.changeStatus(Status.game("frisch online"));
-		} catch(Exception e) {
-			e.printStackTrace();//TODO: log
-		}
+		BOT_CLIENT.changeStatus(Status.game("frisch online"));
 	}
 
 	@Override
@@ -73,8 +69,7 @@ public class MainTimer implements Runnable{//TODO: namen ändern
 			}
 			String lockQuery = 		"LOCK TABLES `users` WRITE";
 			String freeQuery = 		"UNLOCK TABLES";
-			String selectQuery =	"SELECT `id`, `gems`, `level`, `exp`, `swagLevel`, `swagPoints`, `reminder`, `expRate`, `potDur` " +
-									"FROM `users` WHERE `id` IN (";
+			String selectQuery =	"SELECT * FROM `users` WHERE `id` IN (";
 			for (String id : idList) {
 				selectQuery += id + ", ";
 			}
@@ -89,7 +84,10 @@ public class MainTimer implements Runnable{//TODO: namen ändern
 				rs.beforeFirst();*/
 				while (rs.next()) {
 					//public UserData(String id, int gems, int level, int exp, int expRate, int potDur, int swagLevel, int swagPoints, int reminder) {
-					userData = new UserData(rs.getString("id"), rs.getInt("gems"), rs.getInt("level"), rs.getInt("exp"), rs.getInt("expRate"), rs.getInt("potDur"), rs.getInt("swagLevel"), rs.getInt("swagPoints"), rs.getInt("reminder"));
+					userData = new UserData(rs.getString("id"), rs.getString("name"), rs.getInt("gems"), rs.getInt("level"), rs.getInt("exp"),
+							rs.getInt("expRate"), rs.getInt("potDur"), rs.getInt("swagLevel"), rs.getInt("swagPoints"),
+							rs.getInt("reminder"));//TODO: besser machen!!
+
 					if (userData.getSwagLevel() > 0) {
 						double tmpPoints = (double) userData.getSwagPoints();
 						userData.addGems((int) Math.round(3.0 + tmpPoints / 5.0 * (tmpPoints / (tmpPoints + 5.0) + 1.0)));
@@ -99,7 +97,10 @@ public class MainTimer implements Runnable{//TODO: namen ändern
 					int exp = (int) ((Math.round(Math.random() * 3) + 4 + userData.getSwagLevel()) * userData.getExpRate()) / 1000;
 					userData.addExp(exp);
 					userData.reducePotDuration();
-					String update = "UPDATE `users` SET `gems` = " + userData.getGems() + ", `level` = " + userData.getLevel() + ", `exp` = " + userData.getExp() + ", `reminder` = " + userData.getReminder() + ", `expRate` = " + userData.getExpRate() + ", `potDur` = " + userData.getPotDuration() + " WHERE `id` = " + userData.getId();//TODO: besser!!
+					String update = "UPDATE `users` SET `gems` = " + userData.getGems() + ", `level` = " + userData.getLevel() + ", `exp` = " + userData.getExp() +
+							", `reminder` = " + userData.getReminder() + ", `expRate` = " + userData.getExpRate() + ", `potDur` = " + userData.getPotDuration() +
+							" WHERE `id` = " + userData.getId();//TODO: besser!!
+
 					statement.addBatch(update);
 				}
 				rs.close();
@@ -107,7 +108,7 @@ public class MainTimer implements Runnable{//TODO: namen ändern
 				statement.execute(freeQuery);//auch zum batch dazu?
 				con.commit();
 			} catch(SQLException e) {
-				e.printStackTrace();//TODO: log
+				LOGGER.error("batchUpdate failed:", e);
 			}
 
 			/*//"gems", "exp", "level", "expRate", "potDur", "swagLevel", "swagPoints", "reminder"
@@ -142,7 +143,7 @@ public class MainTimer implements Runnable{//TODO: namen ändern
 			}*/
 			System.out.println("done");
 		}catch(Exception e) {
-			e.printStackTrace();//TODO: log
+			LOGGER.error("Exception in MainTimer:", e);//TODO: notwendig hier? testen (exception wird auch um Timer schon gefangen!)
 		}
 	}
 }

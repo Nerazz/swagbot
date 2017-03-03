@@ -4,11 +4,15 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
 import dbot.listeners.*;
 import dbot.sql.SQLPool;
+import dbot.util.GuildList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
+import sx.blah.discord.api.internal.ShardImpl;
+import sx.blah.discord.handle.impl.obj.Channel;
+import sx.blah.discord.handle.impl.obj.Guild;
 import sx.blah.discord.util.DiscordException;
 
 import java.io.*;
@@ -21,7 +25,7 @@ import java.sql.SQLException;
  * @author	Niklas Zd
  */
 public class Bot {
-	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.Bot");//TODO: alle final logger capslock
+	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.Bot");
 	//private static final Events EVENTS = new Events();
 	//private static IDiscordClient botClient = null;
 
@@ -38,8 +42,6 @@ public class Bot {
 			dispatcher.registerListener(new DisconnectedListener());
 			dispatcher.registerListener(new UserJoinListener());
 			dispatcher.registerListener(new MessageListener());
-			//Events listeners = new Events();
-			//botClient.getDispatcher().registerListener(listeners);
 			LOGGER.debug("Added Listeners");
 		} catch(DiscordException e) {
 			LOGGER.error("Error while creating new Bot", e);

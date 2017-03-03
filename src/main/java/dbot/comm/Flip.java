@@ -215,7 +215,7 @@ public class Flip {
 					post += "\nID»'" + rs.getInt("id") + "' Einsatz»'" + rs.getInt("pot") + "' Seite»'" + rs.getString("side") + "' Host»'" + (rs.getString("name")) + "'";
 				}
 				rs.close();
-				post += "```";//TODO: keine, wenn leer (!rs.next)
+				post += "\n```";//TODO: keine, wenn leer (!rs.next)
 				for (IMessage message : Statics.POST_LIST) {
 					edit(message, post);
 					System.out.println("update");

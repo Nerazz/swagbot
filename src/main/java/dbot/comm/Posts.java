@@ -57,7 +57,7 @@ class Posts {
 		}
 	}
 
-	static void top(IChannel channel) {//global top;TODO: umbenennen zu !globalTop oder so
+	static void globalTop(IChannel channel) {
 		String message = "TOP 5:";
 		ArrayList<SQLData> topList = getScoreList();
 		for (int i = 0; (i < topList.size()) && (i < 5); i++) {
@@ -70,7 +70,7 @@ class Posts {
 		post(message, channel);
 	}
 
-	static void localTop(IChannel channel) {//local top
+	static void localTop(IChannel channel) {
 		String message = "TOP 5:";
 		int ref = Statics.GUILD_LIST.getRef(channel.getGuild());
 		//System.out.println(Statics.GUILD_LIST.toString());
@@ -141,6 +141,8 @@ class Posts {
 				"v5.5.0\n" +
 				"- multi-guild-support\n" +
 				"- geupdatet auf D4J-v2.7.0" +
+				"v5.5.1\n" +
+				"- flip-post-delete-fix\n" +
 				//"- viele Commands vorerst wieder disabled :("
 
 				"```"
@@ -164,7 +166,6 @@ class Posts {
 
 	static void commands(IChannel channel) {
 		post(	"```xl\n" +
-				"1/4 läuft immer noch nicht, rip\n" +
 				"!commands               |diese Liste\n" +
 				"!changelog              |letzte Anderungen\n" +
 				"!info                   |allgemeine Infos zum Swagbot\n" +
@@ -172,19 +173,19 @@ class Posts {
 				"!stats                  |Infos des Schreibenden\n" +
 				"!gems                   |Eingebers Gems\n" +
 				"!buy 'x'                |kauft Item 'x'\n" +
-				"!top                    |Rangliste der Top5\n" +
+				"!top                    |Rangliste der lokalen Top5\n" +
+				"!gtop                   |Rangliste der globalen Top5\n" +
 				//"!rank                   |postet umgebende Range des Schreibenden\n" +
-				//"!give '@person' 'gems'  |gibt Person Gems\n" +
+				"!give '@person' 'gems'  |gibt Person Gems\n" +
 				"!flip 'gems' ('top/kek')|offnet Coinflip-Raum (statt 'gems' ist auch 'allin' moglich)\n" +
 				"!flip join 'ID'         |flippt gegen den Raumersteller\n" +
-				"!flip close             |schliesst eigenen Flipraum (Gems werden erstattet)\n" +
+				"!flip close 'ID'        |schliesst eigenen Flipraum (Gems werden erstattet)\n" +
 				"!flip close all         |siehe !flip close fur alle\n" +
 				"!remind                 |togglet Reminder\n" +
 				"!prestigeinfo           |Infos zum Prestigen\n" +
 				"!roll                   |Roll zwischen 1 und 100\n" +
 				"!roll 'x'               |Roll zwischen 1 und 'x'\n" +
 				"!roll 'x' 'y'           |Roll zwischen 'x' und 'y'" +
-				"!sourcecode ('com')     |Link zum Sourcecode, auch für viele Befehle" +
 				"```"
 		, channel);
 	}

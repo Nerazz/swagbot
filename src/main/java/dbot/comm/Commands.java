@@ -52,7 +52,7 @@ public class Commands {
 				
 				case "globaltop":
 				case "gtop":
-					Posts.top(channel);
+					Posts.globalTop(channel);
 					break;
 
 				case "top":
@@ -61,8 +61,8 @@ public class Commands {
 
 				case "rank":
 					//Posts.rank(database.sortByScore(), author);
-					Posts.rank(author, channel);
-					//post("coming soon(TM)", channel);
+					//Posts.rank(author, channel);
+					post("coming soon(TM)", channel);
 					break;
 				
 				case "buy":

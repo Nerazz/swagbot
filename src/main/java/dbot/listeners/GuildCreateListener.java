@@ -41,7 +41,7 @@ public class GuildCreateListener implements IListener<GuildCreateEvent> {
 				try {
 					LOCK.wait();
 				} catch (InterruptedException e) {
-					e.printStackTrace();//TODO: log
+					LOGGER.error("LOCK interrupted:", e);
 				}
 			}
 		}
@@ -55,7 +55,6 @@ public class GuildCreateListener implements IListener<GuildCreateEvent> {
 				rs = getGuildRef(con, ps, guild);
 			}
 			int ref = rs.getInt("ref");
-			System.out.println(guild.getName() + " ref: " + ref);
 			IChannel channel = guild.getChannelByID(rs.getString("botChannel"));
 			Statics.GUILD_LIST.addGuild(ref, guild, channel);//TODO: vielleicht besser machbar
 			System.out.println(Statics.GUILD_LIST.toString());
@@ -78,22 +77,21 @@ public class GuildCreateListener implements IListener<GuildCreateEvent> {
 			LOGGER.info("creating botChannel on {}", guild.getName());
 			Future<String> fID = RequestBuffer.request(() -> {//TODO: erst nach permission createn (bei neuem server fail)
 				try {
-					IChannel botChannel = guild.createChannel("testchannel");//TODO: name
+					IChannel botChannel = guild.createChannel("botspam");
 					EnumSet<Permissions> allPerms = EnumSet.allOf(Permissions.class);
 					EnumSet<Permissions> nonePerms = EnumSet.noneOf(Permissions.class);
 					EnumSet<Permissions> addPerms = EnumSet.of(Permissions.READ_MESSAGES, Permissions.SEND_MESSAGES, Permissions.READ_MESSAGE_HISTORY);
 					EnumSet<Permissions> remPerms = EnumSet.of(Permissions.MANAGE_CHANNEL, Permissions.MANAGE_PERMISSIONS, Permissions.MANAGE_MESSAGES);
 					botChannel.overrideUserPermissions(Statics.BOT_CLIENT.getOurUser(), allPerms, nonePerms);
 					botChannel.overrideRolePermissions(guild.getEveryoneRole(), addPerms, remPerms);
-					botChannel.changeTopic("swag");//TODO: topic
+					botChannel.changeTopic(":robot: !commands :robot:");
 					return botChannel.getID();
 				} catch (MissingPermissionsException | DiscordException e) {
-					e.printStackTrace();//TODO: log
+					LOGGER.error("future failed:", e);
 				}
 				return null;
 			});
 			psInsertGuild.setString(3, fID.get());
-			System.out.println(Statics.BOT_CLIENT.isReady());
 			psInsertGuild.executeUpdate();
 			con.commit();//hier ref erstellt
 			rs = ps.executeQuery();
@@ -118,17 +116,17 @@ public class GuildCreateListener implements IListener<GuildCreateEvent> {
 			//TODO: add guild.getUsers() to users + guildREF
 			//LOGGER.info("Init for new Server ({}) done.", guild.getName());
 		} catch(SQLException | InterruptedException | ExecutionException e) {
-			e.printStackTrace();//TODO: log
+			LOGGER.error("SQL or future failed:", e);
 		}
 		return rs;
 	}
 
 	public static void createPost(IChannel channel) {
-		Future<IMessage> fMessage = Poster.post("Offene Flip-Räume:```xl\nkeine```", channel);
+		Future<IMessage> fMessage = Poster.post("Offene Flip-Räume:```xl\nkeine```", channel, -1);
 		try {
 			Statics.POST_LIST.add(fMessage.get());
 		} catch(InterruptedException | ExecutionException e) {
-			e.printStackTrace();//TODO: log
+			LOGGER.error("future failed:", e);
 		}
 	}
 }
