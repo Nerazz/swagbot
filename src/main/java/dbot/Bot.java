@@ -3,38 +3,26 @@ package dbot;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
 import dbot.listeners.*;
-import dbot.sql.SQLPool;
-import dbot.util.GuildList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
-import sx.blah.discord.api.internal.ShardImpl;
-import sx.blah.discord.handle.impl.obj.Channel;
-import sx.blah.discord.handle.impl.obj.Guild;
 import sx.blah.discord.util.DiscordException;
-
-import java.io.*;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * Bot - Mainclass
  * @author	Niklas Zd
  */
-public class Bot {
+final class Bot {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.Bot");
-	//private static final Events EVENTS = new Events();
-	//private static IDiscordClient botClient = null;
 
 	public static void main(String[] args) {
 		LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 		StatusPrinter.print(lc);
 		//updateBot();
 		try {
-			IDiscordClient botClient = new ClientBuilder().withToken(Statics.BOT_TOKEN).setMaxReconnectAttempts(5).login();
+			IDiscordClient botClient = new ClientBuilder().withToken(Statics.BOT_TOKEN).setMaxReconnectAttempts(5).login();//0.25 * pow(2,x), 0 < x < 5[min] -> 5 sind ca 16min gesamt
 			Statics.BOT_CLIENT = botClient;
 			EventDispatcher dispatcher = botClient.getDispatcher();
 			dispatcher.registerListener(new ReadyListener());

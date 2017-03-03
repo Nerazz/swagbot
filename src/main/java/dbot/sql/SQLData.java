@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by Niklas on 23.10.2016.
  */
-public class SQLData {
+public final class SQLData {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.sql.SQLData");
 	private final String[] strings;
 	private final Object[] data;

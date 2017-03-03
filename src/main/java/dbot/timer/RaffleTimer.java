@@ -1,19 +1,9 @@
 package dbot.timer;
 
-import dbot.sql.UserData;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static dbot.util.Poster.post;
-
 /**
  * Created by niklas on 29.09.16.
  */
-class RaffleTimer implements Runnable {
+final class RaffleTimer implements Runnable {
 
 	@Override
 	public void run() {

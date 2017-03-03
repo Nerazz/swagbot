@@ -9,7 +9,6 @@ import dbot.sql.UserData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.handle.obj.IMessage;
 
@@ -18,9 +17,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.regex.*;
-import java.util.concurrent.*;
 
-public class Flip {
+final class Flip {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Flip");
 	//private static IMessage roomPost = null;
 	private static final String startString = "Offene Flip-Räume:```xl\n";

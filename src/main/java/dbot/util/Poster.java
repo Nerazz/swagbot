@@ -11,13 +11,11 @@ import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Poster {
+public final class Poster {
 	private static final IDiscordClient bClient = Statics.BOT_CLIENT;
 	//private static final IChannel channel = Statics.GUILD.getChannelByID(Statics.ID_BOTSPAM);
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.util.Poster");

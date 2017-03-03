@@ -28,7 +28,7 @@ import java.util.List;
  *
  */
 
-public class UserData {//implements comparable?
+public final class UserData {//implements comparable?
 	private static final String[] VALUES = {"gems", "exp", "level", "expRate", "potDur", "swagLevel", "swagPoints", "reminder"};//TODO: enum?
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.sql.UserData");
 	private final List<String> loadList = new ArrayList<>();
@@ -39,78 +39,63 @@ public class UserData {//implements comparable?
 	private int level = -1;
 	private int exp = Integer.MIN_VALUE;
 	private int expRate = Integer.MIN_VALUE;//1000 == 100%
-	private int potDur = -1;
+	private int potDur = -1;//TODO: potDur -> potDuration in DB, setter, getter?
 	private int swagLevel = -1;
 	private int swagPoints = -1;
 	private int reminder = Integer.MIN_VALUE;
 
 	public UserData() {}
 
-	public UserData(String id, String name, int gems, int level, int exp, int expRate, int potDur, int swagLevel, int swagPoints, int reminder) {
-		this.id = id;
-		this.name = name;
-		this.gems = gems;
-		this.level = level;
-		this.exp = exp;
-		this.expRate = expRate;
-		this.potDur = potDur;
-		this.swagLevel = swagLevel;
-		this.swagPoints = swagPoints;
-		this.reminder = reminder;
-	}
-
 	public UserData(IUser user, int load) {
-		if (load < 1) {
-			LOGGER.error("load < 1 (load: {}) in constructor", load);
-			throw new IllegalArgumentException("load darf nicht < 1 sein!");
-		}
 		this.user = user;
 		id = user.getID();
 		name = user.getName();
-		fillLoadList(load);
-		try(Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(genSelectQuery())) {
-			ps.setString(1, id);
-			ResultSet rs = ps.executeQuery();
-			rs.next();
-			for (String args : loadList) {//TODO: schon ziemlich fail so...
-				switch (args) {
-					case "gems":
-						gems = rs.getInt(args);
-						break;
-					case "exp":
-						exp = rs.getInt(args);
-						break;
-					case "level":
-						level = rs.getInt(args);
-						break;
-					case "expRate":
-						expRate = rs.getInt(args);
-						break;
-					case "potDur":
-						potDur = rs.getInt(args);
-						break;
-					case "swagLevel":
-						swagLevel = rs.getInt(args);
-						break;
-					case "swagPoints":
-						swagPoints = rs.getInt(args);
-						break;
-					case "reminder":
-						reminder = rs.getInt(args);
-						break;
-					default:
-						LOGGER.error("Switch default in constructor from {}", args);
-						break;
+		if(load > 0) {
+			fillLoadList(load);
+			try (Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(genSelectQuery())) {
+				ps.setString(1, id);
+				ResultSet rs = ps.executeQuery();
+				rs.next();
+				for (String args : loadList) {//TODO: schon ziemlich fail so...
+					switch (args) {
+						case "gems":
+							gems = rs.getInt(args);
+							break;
+						case "exp":
+							exp = rs.getInt(args);
+							break;
+						case "level":
+							level = rs.getInt(args);
+							break;
+						case "expRate":
+							expRate = rs.getInt(args);
+							break;
+						case "potDur":
+							potDur = rs.getInt(args);
+							break;
+						case "swagLevel":
+							swagLevel = rs.getInt(args);
+							break;
+						case "swagPoints":
+							swagPoints = rs.getInt(args);
+							break;
+						case "reminder":
+							reminder = rs.getInt(args);
+							break;
+						default:
+							LOGGER.error("Switch default in constructor from {}", args);
+							break;
+					}
 				}
+				rs.close();
+			} catch (SQLException e) {
+				LOGGER.error("failed loading user: {}", user.getName(), e);
 			}
-			rs.close();
-		} catch(SQLException e) {
-			LOGGER.error("failed loading user: {}", user.getName(), e);
 		}
 	}
 
 	private void fillLoadList(int load) {
-		if (load < 1) {
+		if (load < 1) {//TODO: kann eigentlich nicht passieren
 			LOGGER.error("load < 1 (load: {}) in constructor", load);
 			throw new IllegalArgumentException("load darf nicht < 1 sein!");
 		}
@@ -376,21 +361,9 @@ public class UserData {//implements comparable?
 	public int getExpRate() {
 		return expRate;
 	}
-	
-	public void setExpRate(int expRate) {
-		this.expRate = expRate;
-	}
-	
+
 	public int getPotDuration() {
 		return potDur;
-	}
-	
-	public void setPotDuration(int potDur) {
-		if (potDur < 0) {
-			LOGGER.error("{} potDuration ist < 0 in setPotDuration", name);
-			throw new IllegalArgumentException("PotDuration darf nicht < 0 sein!");
-		}
-		this.potDur = potDur;
 	}
 	
 	public void reducePotDuration() {
@@ -434,6 +407,66 @@ public class UserData {//implements comparable?
 		} else {
 			return 10000 + 7500 * (int)Math.round(Math.pow(level - 100, 1.5));
 		}
+	}
+
+	public void setGems(int gems) {
+		if (gems < 0) {
+			LOGGER.error("{} gems < 0 ({})", name, gems);
+			throw new IllegalArgumentException("gems < 0");
+		}
+		this.gems = gems;
+	}
+
+	public void setLevel(int level) {
+		if (level < 1) {
+			LOGGER.error("{} level < 1 ({})", name, level);
+			throw new IllegalArgumentException("level < 1");
+		}
+		this.level = level;
+	}
+
+	public void setExp(int exp) {
+		if (exp < 0) {
+			LOGGER.error("{} exp < 0 ({})", name, exp);
+			throw new IllegalArgumentException("exp < 0");
+		}
+		this.exp = exp;
+	}
+
+	public void setSwagLevel(int swagLevel) {
+		if (swagLevel < 0) {
+			LOGGER.error("{} swagLevel < 0 ({})", name, swagLevel);
+			throw new IllegalArgumentException("swagLevel < 0");
+		}
+		this.swagLevel = swagLevel;
+	}
+
+	public void setSwagPoints(int swagPoints) {
+		if (swagPoints < 0) {
+			LOGGER.error("{} swagPoints < 0 ({})", name, swagPoints);
+			throw new IllegalArgumentException("swagPoints < 0");
+		}
+		this.swagPoints = swagPoints;
+	}
+
+	public void setReminder(int reminder) {
+		this.reminder = reminder;
+	}
+
+	public void setExpRate(int expRate) {
+		if (expRate < 0) {
+			LOGGER.error("{} expRate < 0 ({})", name, expRate);
+			throw new IllegalArgumentException("expRate < 0");
+		}
+		this.expRate = expRate;
+	}
+
+	public void setPotDur(int potDur) {
+		if (potDur < 0) {
+			LOGGER.error("{} potDur < 0 ({})", name, potDur);
+			throw new IllegalArgumentException("potDur < 0");
+		}
+		this.potDur = potDur;
 	}
 
 	@Override

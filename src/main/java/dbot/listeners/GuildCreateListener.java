@@ -27,7 +27,7 @@ import java.util.concurrent.Future;
 /**
  * Created by Niklas on 23.02.2017.
  */
-public class GuildCreateListener implements IListener<GuildCreateEvent> {
+public final class GuildCreateListener implements IListener<GuildCreateEvent> {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.listeners.GuildCreateListener");
 	static final Object LOCK = new Object();
 

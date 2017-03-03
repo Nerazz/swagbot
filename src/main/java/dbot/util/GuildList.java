@@ -11,10 +11,9 @@ import java.util.List;
 /**
  * Created by Niklas on 18.02.2017.
  */
-public class GuildList {//TODO: lieber DataMap extenden und add overriden für addWithNulls
+public final class GuildList {//TODO: lieber DataMap extenden und add overriden für addWithNulls
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.util.GuildList");
 	private final DataMap<IGuild, String[]> guildList = new DataMap<>();//TODO: lieber GuildID als Key?; ref = index
-	//private ArrayList<String[]> guildList = new ArrayList<>();
 
 	public GuildList() {}
 
@@ -35,8 +34,7 @@ public class GuildList {//TODO: lieber DataMap extenden und add overriden für a
 
 	public int getRef(IGuild guild) {
 		if (guild == null) {
-			LOGGER.error("guild is null!");
-			throw new NullPointerException("guild is null");
+			return -1;
 		}
 		return guildList.getKeyIndex(guild);
 	}

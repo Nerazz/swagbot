@@ -10,7 +10,7 @@ import sx.blah.discord.handle.obj.IMessage;
 /**
  * Created by Niklas on 23.02.2017.
  */
-public class MessageListener implements IListener<MessageReceivedEvent> {
+public final class MessageListener implements IListener<MessageReceivedEvent> {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.listeners.MessageListener");
 
 	@Override

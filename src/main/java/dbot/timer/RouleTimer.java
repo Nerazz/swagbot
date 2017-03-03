@@ -1,16 +1,5 @@
 package dbot.timer;
 
-import sx.blah.discord.handle.obj.IVoiceChannel;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IChannel;
-
-import sx.blah.discord.util.MissingPermissionsException;
-import sx.blah.discord.util.DiscordException;
-
-import java.util.List;
-import java.util.*;
-
 
 /*public class RouleTimer implements Runnable {
 	

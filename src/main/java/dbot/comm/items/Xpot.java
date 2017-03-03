@@ -62,7 +62,7 @@ public class Xpot {//Buy extenden oder ähnliches?
 		} else {
 			data.subGems(price);
 			data.setExpRate(amp);
-			data.setPotDuration(duration);
+			data.setPotDur(duration);
 			post(user + ", hier ist dein XPot (x" + amp / 1000 + ") für " + duration + " min!", channel);
 			LOGGER.info("{} -> XPot for {} (x{})", user.getName(), price, amp);
 			data.update();

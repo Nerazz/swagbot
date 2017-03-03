@@ -1,24 +1,5 @@
 package dbot.comm;
 
-import dbot.util.DataMap;
-import dbot.sql.UserData;
-import dbot.timer.LottoTimer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static dbot.util.Poster.post;
-import static java.util.concurrent.TimeUnit.SECONDS;
-
 /**
  * Created by Niklas on 19.10.2016.
  */

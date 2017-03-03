@@ -1,23 +1,11 @@
 package dbot.timer;
 
-import static dbot.util.Poster.post;
-import static dbot.util.Poster.edit;
-import static dbot.util.Poster.buildNum;
-
-import dbot.sql.UserData;
 import dbot.comm.Lotto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import sx.blah.discord.handle.obj.IMessage;
-
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 /**
  * Created by niklas on 29.09.16.
  */
-public class LottoTimer extends Lotto implements Runnable {
+public final class LottoTimer extends Lotto implements Runnable {
 
 	@Override
 	public void run() {

@@ -6,7 +6,6 @@ import static dbot.util.Poster.post;
 import static dbot.util.Poster.del;
 
 import dbot.sql.UserData;
-import dbot.timer.DelTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IChannel;
@@ -16,14 +15,13 @@ import sx.blah.discord.util.DiscordException;
 
 import java.util.regex.*;
 
-public class Commands {
+public final class Commands {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Commands");
 
 	public static void trigger(IMessage message) {
 		IUser author = message.getAuthor();
 		IChannel channel = message.getChannel();
-		//System.out.println();
 		int ref = Statics.GUILD_LIST.getRef(message.getGuild());
 		LOGGER.debug("Message({}): {}", author.getName(), message.getContent());
 		Pattern pattern = Pattern.compile("^!([a-z]+)(\\s(.+))?");
@@ -83,7 +81,7 @@ public class Commands {
 					Lotto.addTicket(dAuthor, params);
 					break;*/
 
-				case "give":
+				case "give"://TODO: geht nicht auf neraz
 					UserData userData = new UserData(author, 1);//gems
 					UserData userDataReceiver = new UserData(message.getMentions().get(0), 1);//gems
 					System.out.println(message.getContent());

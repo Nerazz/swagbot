@@ -17,12 +17,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Niklas on 13.09.2016.
  */
-class Posts {
+final class Posts {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Posts");
 	private static final String medals[] = {":first_place:", ":second_place:", ":third_place:", ":military_medal:"};
 
@@ -108,10 +107,6 @@ class Posts {
 		post(message);
 	}*/
 
-	public static void rankNew() {//TODO: nicht public
-
-	}
-
 	static void info(IChannel channel) {
 		post(	"v" + Statics.VERSION + "; D4J v" + Statics.DFJ_VERSION + "\n" +
 				"» Jede Minute erhalten Leute nach Status:\n" +
@@ -119,7 +114,7 @@ class Posts {
 		, channel);
 	}
 
-	static void changelog(IChannel channel) {//TODO: umdrehen? (neuster shit oben?)
+	static void changelog(IChannel channel) {//TODO: umdrehen? (neuster shit oben?); letzte 3 hauptversionen?
 		post(	"```neuer Shit:\n" +
 				"v5.2.x - v5.3.x:\n" +
 				"- man kann wieder leveln + Swag wird eingerechnet\n" +
@@ -135,16 +130,18 @@ class Posts {
 				"v5.4.2\n" +
 				"- flip Fix Nr.1 (flippen ohne Seite nicht mölich)\n" +
 				"v5.4.3\n" +
-				"flip Fix Nr.2 ((Gemverlust duch bestimmte flips))\n" +
+				"- flip Fix Nr.2 ((Gemverlust duch bestimmte flips))\n" +
 				"v5.4.4\n" +
-				"xpRate reset nach XPot Fix\n" +
+				"- xpRate reset nach XPot Fix\n" +
 				"v5.5.0\n" +
 				"- multi-guild-support\n" +
 				"- geupdatet auf D4J-v2.7.0" +
 				"v5.5.1\n" +
 				"- flip-post-delete-fix\n" +
-				//"- viele Commands vorerst wieder disabled :("
-
+				"v5.5.2\n" +
+				"- whisper bot crash fix\n" +
+				"- minütliche Updates stark verbessert\n" +
+				"- reminder crash gefixt\n" +
 				"```"
 		, channel);
 	}
@@ -202,7 +199,7 @@ class Posts {
 		, channel);
 	}
 
-	static ArrayList<SQLData> getScoreList(int ref) {
+	private static ArrayList<SQLData> getScoreList(int ref) {
 		String strings[] = {"name", "level", "exp"};
 		String query = "SELECT `users`.`name`, `level`, `exp` FROM `users` JOIN `guild" + ref + "` AS guild ON `users`.`id` = guild.`id` ORDER BY `level` DESC, `exp` DESC";
 		ArrayList<SQLData> dataList = new ArrayList<>();
@@ -223,7 +220,7 @@ class Posts {
 		return dataList;
 	}
 
-	static ArrayList<SQLData> getScoreList() {//TODO: return List<>?; in util oder sql verschieben?
+	private static ArrayList<SQLData> getScoreList() {//TODO: return List<>?; in util oder sql verschieben?
 		String strings[] = {"name", "level", "exp"};
 		String query = "SELECT `name`, `level`, `exp` FROM `users` ORDER BY `level` DESC, `exp` DESC";
 		ArrayList<SQLData> dataList = new ArrayList<>();

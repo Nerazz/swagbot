@@ -1,13 +1,12 @@
 package dbot.timer;
 
-import dbot.Bot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Created by niklas on 28.09.16.
  */
-public class RelogTimer implements Runnable {//TODO: name: RelogTimer
+public final class RelogTimer implements Runnable {//TODO: name: RelogTimer
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.timer.RelogTimer");
 	private static boolean isRunning = false;
 	private static int dcCount = 0;

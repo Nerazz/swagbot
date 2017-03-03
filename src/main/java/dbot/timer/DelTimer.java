@@ -1,15 +1,12 @@
 package dbot.timer;
 
-import dbot.Statics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IMessage;
 
 import sx.blah.discord.util.*;
 
-import static dbot.util.Poster.post;
-
-public class DelTimer implements Runnable {//TODO: vielleicht statt neuen Threads messages in list und über MainTimer löschen
+public final class DelTimer implements Runnable {//TODO: vielleicht statt neuen Threads messages in list und über MainTimer löschen
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.timer.DelTimer");
 	//private static final MessageList MESSAGE_LIST = new MessageList(Statics.BOT_CLIENT, Statics.BOT_CLIENT.getChannelByID(Statics.ID_BOTSPAM));
 	private IMessage message = null;

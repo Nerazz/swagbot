@@ -2,7 +2,7 @@ package dbot.comm;
 
 import sx.blah.discord.handle.obj.IVoiceChannel;
 
-class Play {
+final class Play {
 	
 	/*static final String VICE = "Maiki Vanics - Vice(Original Mix).mp3";
 	static final String HIGHNOON = "highnoon.mp3";

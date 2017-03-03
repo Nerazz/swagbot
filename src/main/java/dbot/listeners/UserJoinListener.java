@@ -16,7 +16,7 @@ import sx.blah.discord.util.RateLimitException;
 /**
  * Created by Niklas on 23.02.2017.
  */
-public class UserJoinListener implements IListener<UserJoinEvent> {
+public final class UserJoinListener implements IListener<UserJoinEvent> {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.listeners.UserJoinListener");
 
 	@Override

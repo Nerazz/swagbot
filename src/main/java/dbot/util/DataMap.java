@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by niklas on 30.09.16.
  */
-public class DataMap<K, V> {
+final class DataMap<K, V> {
 	private final List<Pair> pairs = new ArrayList<>();
 
 	public DataMap() {}
@@ -137,11 +137,13 @@ public class DataMap<K, V> {
 		}
 
 		@Override
+		@SuppressWarnings("unchecked")
 		public boolean equals(Object that) {
 			if (that == null) return false;
-			if (this == that) return true;
-			if (!that.getClass().equals(getClass())) return false;
-			return (this.key.equals(((Pair)that).key));//TODO: suppresswarnings?; value miteinbeziehen?
+			if (that == this) return true;
+			if (!(that instanceof DataMap.Pair)) return false;
+			//if (!that.getClass().equals(getClass())) return false;
+			return (this.key.equals(((Pair)that).key) && this.value.equals(((Pair)that).value));//suppressed unchecked cast
 		}
 
 		@Override

@@ -31,7 +31,7 @@ final class Buy {
 				int price = 100;
 				int anzahl = 1;
 				params = "" + matcher.group(3);
-				pattern = pattern.compile("\\d+");//sollte negative abfangen
+				pattern = Pattern.compile("\\d+");//sollte negative abfangen
 				matcher = pattern.matcher(params);
 				if (matcher.matches()) anzahl = Integer.parseInt(matcher.group());
 

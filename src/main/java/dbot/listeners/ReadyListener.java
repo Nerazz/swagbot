@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by Niklas on 23.02.2017.
  */
-public class ReadyListener implements IListener<ReadyEvent> {
+public final class ReadyListener implements IListener<ReadyEvent> {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.listeners.ReadyListener");
 
 	@Override
@@ -25,7 +25,7 @@ public class ReadyListener implements IListener<ReadyEvent> {
 		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 		MainTimer mainTimer = new MainTimer();
 		try {
-			executor.scheduleAtFixedRate(mainTimer, 5, 60, TimeUnit.SECONDS);//TODO: care, 60sec
+			executor.scheduleAtFixedRate(mainTimer, 5, 10, TimeUnit.SECONDS);//TODO: care, 60sec
 		} catch(Exception e) {
 			LOGGER.error("MainTimer RIP!!", e);
 		}

@@ -7,16 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import java.io.File;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
  * Created by Niklas on 22.10.2016.
  */
-public class SQLPool {
+public final class SQLPool {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.sql.SQLPool");
 	private static final DataSource dataSource;
 	//private static final HikariDataSource ds;

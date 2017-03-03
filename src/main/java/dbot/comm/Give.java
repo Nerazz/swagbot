@@ -2,7 +2,6 @@ package dbot.comm;
 
 import static dbot.util.Poster.post;
 
-import dbot.Statics;
 import dbot.sql.UserData;
 
 import java.util.regex.*;
@@ -10,8 +9,6 @@ import java.util.regex.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.Presences;
 
 final class Give {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Give");
