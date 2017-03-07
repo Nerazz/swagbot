@@ -12,7 +12,7 @@ public final class DelTimer implements Runnable {//TODO: vielleicht statt neuen 
 	private IMessage message = null;
 	private int duration = 60000;
 	
-	public DelTimer(IMessage message, int duration) {
+	public DelTimer(IMessage message, int duration) {//TODO: deltimer besser machen, vielleicht messages in 5 sekunden intervallen zusammen löschen oder so?/ alle 5 min batchdelete?
 		this.message = message;
 		this.duration = duration;
 		//MESSAGE_LIST.add(message);

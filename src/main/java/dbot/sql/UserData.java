@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -143,10 +144,6 @@ public final class UserData {//implements comparable?
 		}
 	}
 
-	/*public static String genUpsertUser(IUser user) {
-
-	}*/
-
 	public static void addUsers(List<IUser> userList, int ref) {
 		if (ref < 0) {
 			LOGGER.error("ref < 0 (ref: {}) in constructor", ref);
@@ -276,17 +273,6 @@ public final class UserData {//implements comparable?
 		}
 		return null;
 	}
-
-	public static String getUpdateAllQuery() {
-		//"UPDATE `users` SET `gems` = ?, `exp` = ? WHERE `id` = ?;
-		String query = "UPDATE `users` SET ";
-		for (String value : VALUES) {
-			query += "`" + value + ", = ?, ";
-		}
-		query = query.substring(0, query.length() - 2);//", " entfernen
-		query += "WHERE `id` = ?";
-		return query;
-	}
 	
 	public String getId() {
 		return id;
@@ -338,10 +324,10 @@ public final class UserData {//implements comparable?
 		return swagLevel;
 	}
 
-	public void prestige() {
+	public void prestige(int ref) {
 		if (level < 100) {
 			LOGGER.info("{} Level ist nicht hoch genug zum prestigen", name);
-			//post(name + ", du musst mindestens Level 100 sein.", Statics.GUILD_LIST.getBotChannel(ref));//TODO: post
+			post(name + ", du musst mindestens Level 100 sein.", Statics.GUILD_LIST.getBotChannel(ref));//TODO: post
 			return;
 		}
 		int swagPointGain = (int)Math.ceil(Math.sqrt((double)gems / 10000.0) * ((double)swagLevel + 2.0) / ((double)swagPoints + 2.0)) + level - 100;
@@ -351,7 +337,7 @@ public final class UserData {//implements comparable?
 		//TODO: ordentliches gem-abziehen, nicer post
 		level = 1;
 		swagLevel++;
-		LOGGER.info("{} now is swagLevel {} with {} swagPoints", name, swagLevel, swagPoints);
+		LOGGER.info("{} now is swagLevel {} with {} swagPoints", name, swagLevel, swagPoints);//TODO: wieviele gems wurden abgezogen?
 	}
 
 	public int getSwagPoints() {
@@ -360,6 +346,10 @@ public final class UserData {//implements comparable?
 	
 	public int getExpRate() {
 		return expRate;
+	}
+
+	public String getFormattedExpRate() {
+		return new DecimalFormat("#.##").format(((double)expRate) / 1000);
 	}
 
 	public int getPotDuration() {

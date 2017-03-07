@@ -9,7 +9,7 @@
 # private
 /src/main/java/dbot/Statics.java
 /logs
-*.json
+database.json
 #*.log
 
 # Package Files #

@@ -10,6 +10,8 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.util.DiscordException;
 
+import java.io.*;
+
 /**
  * Bot - Mainclass
  * @author	Niklas Zd
@@ -20,7 +22,6 @@ final class Bot {
 	public static void main(String[] args) {
 		LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 		StatusPrinter.print(lc);
-		//updateBot();
 		try {
 			IDiscordClient botClient = new ClientBuilder().withToken(Statics.BOT_TOKEN).setMaxReconnectAttempts(5).login();//0.25 * pow(2,x), 0 < x < 5[min] -> 5 sind ca 16min gesamt
 			Statics.BOT_CLIENT = botClient;
@@ -34,6 +35,7 @@ final class Bot {
 		} catch(DiscordException e) {
 			LOGGER.error("Error while creating new Bot", e);
 		}
+
 		//Object object = new Object();
 		//URL url = object.getClass().getClassLoader().getResource("hikari.properties");
 		//System.out.println(url.toString());

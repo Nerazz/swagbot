@@ -58,12 +58,12 @@ public class Xpot {//Buy extenden oder ähnliches?
 		if (data.getGems() < price) {
 			post(user + ", du hast zu wenig :gem:.", channel);
 		}else if (data.getPotDuration() > 0) {
-			post(user + ", letzter XPot(x" + data.getExpRate() / 1000 + ") ist noch für " + data.getPotDuration() + " min aktiv.", channel);
+			post(user + ", letzter XPot(x" + data.getExpRate() / 1000 + ") ist noch für " + data.getPotDuration() + " min aktiv.", channel);//TODO: formatierung
 		} else {
 			data.subGems(price);
 			data.setExpRate(amp);
 			data.setPotDur(duration);
-			post(user + ", hier ist dein XPot (x" + amp / 1000 + ") für " + duration + " min!", channel);
+			post(user + ", hier ist dein XPot (x" + amp / 1000 + ") für " + duration + " min!", channel);//TODO: formatieung
 			LOGGER.info("{} -> XPot for {} (x{})", user.getName(), price, amp);
 			data.update();
 		}

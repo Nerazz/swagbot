@@ -17,7 +17,6 @@ import java.util.regex.Pattern;
 
 public final class Poster {
 	private static final IDiscordClient bClient = Statics.BOT_CLIENT;
-	//private static final IChannel channel = Statics.GUILD.getChannelByID(Statics.ID_BOTSPAM);
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.util.Poster");
 	private static final String NUMBER_STRINGS[] = {":zero:", ":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:", ":nine:"};
 
@@ -83,7 +82,10 @@ public final class Poster {
 
 	public static String buildNum(int n) {
 		Matcher matcher = Pattern.compile("(\\d)(\\d)?(\\d)?").matcher(String.valueOf(n));
-		if (!matcher.matches()) LOGGER.error("failed building number: {}", n);//TODO: nötig, aber nicht mit wtf...
+		if (!matcher.matches()) {
+			LOGGER.error("failed building number: {}", n);
+			return "ERROR";
+		}
 		String s = NUMBER_STRINGS[Integer.parseInt(matcher.group(1))];
 		if (matcher.group(2) != null) {
 			s += NUMBER_STRINGS[Integer.parseInt(matcher.group(2))];

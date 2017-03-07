@@ -25,7 +25,7 @@ public final class ReadyListener implements IListener<ReadyEvent> {
 		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 		MainTimer mainTimer = new MainTimer();
 		try {
-			executor.scheduleAtFixedRate(mainTimer, 5, 10, TimeUnit.SECONDS);//TODO: care, 60sec
+			executor.scheduleAtFixedRate(mainTimer, 5, 60, TimeUnit.SECONDS);//TODO: care, 60sec
 		} catch(Exception e) {
 			LOGGER.error("MainTimer RIP!!", e);
 		}

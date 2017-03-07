@@ -7,6 +7,7 @@ import dbot.comm.items.Xpot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IChannel;
+import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
 import java.util.regex.*;
@@ -14,8 +15,12 @@ import java.util.regex.*;
 final class Buy {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Buy");
 
-	static void m(IUser buyer, String params, IChannel channel) {
-		Pattern pattern = Pattern.compile("([a-z]+)(\\s(.+))?");
+	static void m(IMessage message) {
+		IUser buyer = message.getAuthor();
+		String params = message.getContent().toLowerCase();
+		IChannel channel = message.getChannel();
+
+		Pattern pattern = Pattern.compile("([a-z]+)(\\s(.+))?");//TODO: besser machen (siehe roll)
 		Matcher matcher = pattern.matcher(params);
 		if (!matcher.matches()) return;
 		switch (matcher.group(1)) {

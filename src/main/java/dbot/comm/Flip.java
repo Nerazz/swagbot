@@ -20,22 +20,18 @@ import java.util.regex.*;
 
 final class Flip {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Flip");
-	//private static IMessage roomPost = null;
 	private static final String startString = "Offene Flip-Räume:```xl\n";
 	private static final int MIN_BET = 500;
 
-	/*static {
-		Future<IMessage> fMessage = post(startString + "keine```", -1, channel);//TODO: von db laden
-		try {
-			roomPost = fMessage.get();
-		} catch(InterruptedException|ExecutionException e) {
-			LOGGER.error("Error bei init", e);
-		}
-	}*/
-
-	static void m(IUser author, String params, int ref, IChannel channel) {
+	//static void m(IUser author, String params, int ref, IChannel channel) {
+	static void m(IMessage message) {
+		IUser author = message.getAuthor();
+		IChannel channel = message.getChannel();
+		int ref = Statics.GUILD_LIST.getRef(message.getGuild());
+		String params = message.getContent().toLowerCase();//TODO: besser machen(siehe roll)
+		params += "";//TODO: besser?
 		UserData uData = new UserData(author, 1);//gems
-		Pattern pattern = Pattern.compile("(\\d+|[a-z]+)(\\s(\\d+|[a-z]+))?");
+		Pattern pattern = Pattern.compile("(\\d+|[a-z]+)(\\s(\\d+|[a-z]+))?");//TODO: strikter, wirklich nur erlaubte params
 		Matcher matcher = pattern.matcher(params);
 		if (!matcher.matches()) return;
 		switch (matcher.group(1)) {
@@ -102,7 +98,6 @@ final class Flip {
 		} catch(SQLException e) {
 			LOGGER.error("SQL failed in open", e);
 		}
-		System.out.println("open.update");
 		updateRoomPost();
 	}
 
@@ -199,10 +194,6 @@ final class Flip {
 		}
 		updateRoomPost();
 	}
-
-	/*static IMessage getRoomPost() {
-		return roomPost;
-	}*/
 
 	private static void updateRoomPost() {
 		try {

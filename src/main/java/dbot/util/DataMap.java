@@ -23,7 +23,7 @@ final class DataMap<K, V> {
 		}
 		int nulls = index - pairs.size();
 		for (int i = 0; i < nulls; i++) {
-			pairs.add(new Pair(null, null));
+			pairs.add(new Pair(null, null));//TODO: keine nulls einfügen sondern empty pairs
 		}
 		pairs.add(new Pair(key, value));
 	}
