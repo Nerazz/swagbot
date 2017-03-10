@@ -309,7 +309,7 @@ public final class UserData {//implements comparable?
 			level++;
 			List<IChannel> channelList = Statics.GUILD_LIST.getAllBotChannels();
 			for (IChannel channel : channelList) {
-				post(":tada: DING! " + name + " ist Level " + level + "! :tada:", channel);//TODO: nur auf guilds posten, auf denen der user ist!!!
+				post(":tada: DING! " + name + " is now level " + level + "! :tada:", channel);//TODO: nur auf guilds posten, auf denen der user ist!!!
 			}
 			//post(":tada: DING! " + name + " ist Level " + level + "! :tada:", Statics.GUILD_LIST.getBotChannel(ref));
 			LOGGER.info("{} leveled to Level {}", name, level);
@@ -327,7 +327,7 @@ public final class UserData {//implements comparable?
 	public void prestige(int ref) {
 		if (level < 100) {
 			LOGGER.info("{} Level ist nicht hoch genug zum prestigen", name);
-			post(name + ", du musst mindestens Level 100 sein.", Statics.GUILD_LIST.getBotChannel(ref));//TODO: post
+			post(name + ", you have to be at least level 100.", Statics.GUILD_LIST.getBotChannel(ref));//TODO: post
 			return;
 		}
 		int swagPointGain = (int)Math.ceil(Math.sqrt((double)gems / 10000.0) * ((double)swagLevel + 2.0) / ((double)swagPoints + 2.0)) + level - 100;
@@ -363,7 +363,7 @@ public final class UserData {//implements comparable?
 				setExpRate(1000);
 				LOGGER.info("{} XPot empty", name);
 				if (reminder > 0) {
-					post("Hey, dein XPot hat keine Wirkung mehr...", user);//TODO: kauf und staffelung prüfen
+					post("Hey, your XPot is empty...", user);//TODO: kauf und staffelung prüfen
 					LOGGER.info("{} got reminded", name);
 					reminder--;
 				}

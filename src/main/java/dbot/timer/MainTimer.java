@@ -92,7 +92,7 @@ public final class MainTimer implements Runnable{
 					psUpdate.setInt(2, userData.getLevel());
 					psUpdate.setInt(3, userData.getExp());
 					psUpdate.setInt(4, userData.getReminder());
-					psUpdate.setInt(5, userData.getExp());
+					psUpdate.setInt(5, userData.getExpRate());
 					psUpdate.setInt(6, userData.getPotDuration());
 					psUpdate.setString(7, userData.getId());
 

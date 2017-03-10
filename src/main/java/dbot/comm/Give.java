@@ -15,7 +15,7 @@ import sx.blah.discord.handle.obj.IUser;
 final class Give {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Give");
 
-	static void m(IMessage message) {
+	static void main(IMessage message) {
 		IUser author = message.getAuthor();
 		String params = message.getContent().toLowerCase();
 		IChannel channel = message.getChannel();

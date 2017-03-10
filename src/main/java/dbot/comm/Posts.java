@@ -18,10 +18,7 @@ import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -35,40 +32,44 @@ import java.util.ArrayList;
  */
 final class Posts {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Posts");
-	private static final String medals[] = {"crown", ":first_place:", ":second_place:", ":third_place:", ":military_medal:"};
-	private static String info = "ERROR", changelog = "ERROR", commands = "ERROR", shop = "ERROR", prestigeInfo = "ERROR";
+	private static final String medals[] = {":crown:", ":first_place:", ":second_place:", ":third_place:", ":military_medal:"};
+	private static String info = "ERROR", changelog = "ERROR", commands = "ERROR", shop = "ERROR", prestigeInfo = "ERROR", planned = "ERROR";
 
 	static {
-		String fileName = "files/posts.json";
-		URL url = ClassLoader.getSystemClassLoader().getResource(fileName);
-		if (url == null) {
-			LOGGER.error("Couldn't find URL");
-			System.exit(-1);
-		}
-		String filePath = url.getFile();
-		System.out.println("Filepath: " + filePath);
-		File file = new File(filePath);
-		if (file.exists()) {
-			LOGGER.info("found posts.json");
-		} else {
-			LOGGER.error("posts.json not found");
-			try {
-				Statics.BOT_CLIENT.logout();
-			} catch(DiscordException e) {
-				LOGGER.error("ERROR logging out", e);
+		String json = "";
+		try {
+			//System.out.println(new File(Posts.class.getResource("/files").getPath()));
+			InputStream is = Posts.class.getResourceAsStream("/files/posts.json");
+			try(BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+				String line;
+				while ((line = br.readLine()) != null) {
+					json += line;
+				}
 			}
-			System.exit(-1);
+		} catch(IOException e) {
+			LOGGER.error("couldn't find posts.json", e);
 		}
-		try(BufferedReader br = new BufferedReader(new FileReader(file.getAbsolutePath()))) {
+
+		JsonObject jObj = new Gson().fromJson(json, JsonObject.class);
+		info = getStringFromJson("info", jObj);
+		changelog = getStringFromJson("changelog", jObj);
+		commands = getStringFromJson("commands", jObj);
+		shop = getStringFromJson("shop", jObj);
+		prestigeInfo = getStringFromJson("prestigeInfo", jObj);
+		planned = getStringFromJson("planned", jObj);
+
+		/*try(BufferedReader br = new BufferedReader(new FileReader(file))) {
 			JsonObject jObj = new Gson().fromJson(br, JsonObject.class);
 			info = getStringFromJson("info", jObj);
 			changelog = getStringFromJson("changelog", jObj);
 			commands = getStringFromJson("commands", jObj);
 			shop = getStringFromJson("shop", jObj);
 			prestigeInfo = getStringFromJson("prestigeInfo", jObj);
+			planned = getStringFromJson("planned", jObj);
+
 		} catch(IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	private static String getStringFromJson(String s, JsonObject jObj) {//TODO: s und data umbenennen
@@ -86,16 +87,16 @@ final class Posts {
 		UserData uData = new UserData(user, 255);//exp, level, expRate, potDur, swagLevel, swagPoints, reminder
 		String post = "";
 		if (uData.getSwagLevel() > 0) post += String.format(" :trident:%s   :sparkles:%s", buildNum(uData.getSwagLevel()), buildNum(uData.getSwagPoints()));
-		post += String.format("%nLevel %s (%d/%d Exp)", buildNum(uData.getLevel()), uData.getExp(), UserData.getLevelThreshold(uData.getLevel()));
-		post += String.format("%n%d:gem:", uData.getGems());
+		post += String.format("%nLevel %s (%d/%d exp)", buildNum(uData.getLevel()), uData.getExp(), UserData.getLevelThreshold(uData.getLevel()));
+		post += String.format("%n:gem:%d", uData.getGems());
 
 		if (uData.getPotDuration() > 0) {
-			post += String.format("%nBoost(x%s) ist noch %d min aktiv", uData.getFormattedExpRate(), uData.getPotDuration());
+			post += String.format("%nBoost(x%s) %d min remaining", uData.getFormattedExpRate(), uData.getPotDuration());
 		} else {
-			post += "\nKein aktiver Boost";
+			post += "\nno active boost";
 		}
 		if (uData.getReminder() != 0) {
-			post += String.format("%n%d Reminder", Math.abs(uData.getReminder()));
+			post += String.format("%n%d reminder", Math.abs(uData.getReminder()));
 			if (uData.getReminder() > 0) {
 				post += " (on)";
 			} else {
@@ -107,7 +108,8 @@ final class Posts {
 
 	static void gems(IMessage message) {
 		IUser author = message.getAuthor();
-		post(author + ", du hast " + UserData.getData(author, "gems") + ":gem:.", message.getChannel());
+		post(String.format(author + ", you have %d:gem:.", UserData.getData(author, "gems")), message.getChannel());
+		//post(author + ", du hast " + UserData.getData(author, "gems") + ":gem:.", message.getChannel());
 	}
 
 	private static String medalGen(int i) {
@@ -149,7 +151,7 @@ final class Posts {
 		String authorId = author.getID();
 		int i = 0;
 		while ((i < topList.size()) && (!topList.get(i).getString("id").equals(authorId))) i++;
-		String message = "Umgebende Ränge:";
+		String message = "adjacent ranks:";
 		if (i != 0) message += "\n" + medalGen(i - 1) + topList.get(i - 1).getString("name") + " - ?";//TODO:!
 		message += "\n" + medalGen(i) + topList.get(i).getString("name") + " - ?";
 		if (i != topList.size()) message += "\n" + medalGen(i + 1) + topList.get(i + 1).getString("name") + " - ?";
@@ -160,7 +162,7 @@ final class Posts {
 		UserData uData = new UserData(message.getAuthor(), 128);//reminder
 		uData.negateReminder();
 		uData.update();
-		post("Reminder getogglet", message.getChannel());
+		post("toggled reminder", message.getChannel());
 	}
 
 	static void prestige(IMessage message) {
@@ -207,6 +209,10 @@ final class Posts {
 
 	static void prestigeInfo(IMessage message) {
 		post(prestigeInfo, message.getChannel());
+	}
+
+	static void planned(IMessage message) {
+		post(planned, message.getChannel());
 	}
 
 	private static ArrayList<SQLData> getScoreList(int ref) {

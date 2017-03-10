@@ -11,6 +11,7 @@ import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.util.DiscordException;
 
 import java.io.*;
+import java.net.URL;
 
 /**
  * Bot - Mainclass

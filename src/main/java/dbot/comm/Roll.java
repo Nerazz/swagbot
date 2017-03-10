@@ -13,7 +13,7 @@ final class Roll {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Roll");
 	private static final String desc = "testDesc";
 
-	static void m(IMessage message) {
+	static void main(IMessage message) {
 		IChannel channel = message.getChannel();
 		IUser author = message.getAuthor();
 		String content = message.getContent().toLowerCase();
@@ -28,29 +28,33 @@ final class Roll {
 		if (g1 == null) {//keine parameter
 			int rnd = (int)(Math.random() * 100) + 1;
 			if (rnd != 100) {
-				post(":game_die: " + author + " hat eine " + rnd + " gewürfelt! :game_die:", channel);
+				post(String.format(":game_die: %s rolled %d! :game_die:", author, rnd), channel);
+				//post(":game_die: " + author + " rolled " + rnd + "! :game_die:", channel);
 			}
 			else {
-				post(":slot_machine: " + author + " hat eine :100: gewürfelt!!! :slot_machine:\ngz :ok_hand:", channel);
+				post(String.format("slot_machine: %s rolled :100:!!! :slot_machine:%n:ok_hand: :ok_hand: :ok_hand: ", author), channel);
+				//post(":slot_machine: " + author + " hat eine :100: gewürfelt!!! :slot_machine:\ngz :ok_hand:", channel);
 			}
 		} else {//g1 != null
 			int first = Integer.parseInt(g1);
 			if (first < 1) {
-				post("Es sind nur Zahlen > 0 erlaubt", channel);
+				post("Given number is < 1", channel);
 				return;
 			}
 			if (g2 == null) {
 				int rnd = (int)(Math.random() * first) + 1;
-				post(":game_die: " + author + " hat eine " + rnd + " aus " + first + " gewürfelt! :game_die:", channel);
+				post(String.format(":game_die: %s rolled %d out of %d! :game_die:", author, rnd, first), channel);
+				//post(":game_die: " + author + " hat eine " + rnd + " aus " + first + " gewürfelt! :game_die:", channel);
 			} else {//g2 != null
 				int second = Integer.parseInt(g2);
 				if (second < 1) {
-					post("Es sind nur Zahlen > 0 erlaubt", channel);
+					post("Given number is < 1", channel);
 				} else if (first > second) {
-					post("Die erste Zahl sollte größer als die zweite sein", channel);
+					post("The first number has to be smaller then the second.", channel);
 				} else {
 					int rnd = (int)(Math.random() * (second - first + 1)) + first;
-					post(":game_die: " + author + " hat eine " + rnd + " aus " + first + " - " + second + " gewürfelt! :game_die:", channel);
+					post(String.format(":game_die: %s rolled %d out of %d - %d! :game_die:", author, rnd, first, second), channel);
+					//post(":game_die: " + author + " hat eine " + rnd + " aus " + first + " - " + second + " gewürfelt! :game_die:", channel);
 				}
 			}
 		}

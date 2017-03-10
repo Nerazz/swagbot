@@ -27,15 +27,16 @@ public final class Commands {
 		COMMANDS.put("changelog", Posts::changelog);
 		COMMANDS.put("shop", Posts::shop);
 		COMMANDS.put("prestige", Posts::prestigeInfo);
+		COMMANDS.put("planned", Posts::planned);
 		//COMMANDS.put("ichwilljetztwirklichresettenundkennedieregelnzuswagpointsundcomindestenseinigermassen", Posts::prestige);TODO: erst prestige fixen
-		COMMANDS.put("roll", Roll::m);
+		COMMANDS.put("roll", Roll::main);
 		COMMANDS.put("stats", Posts::stats);
 		COMMANDS.put("gems", Posts::gems);
 		COMMANDS.put("gtop", Posts::globalTop);
 		COMMANDS.put("ltop", Posts::localTop);
-		COMMANDS.put("buy", Buy::m);//FIXME
-		COMMANDS.put("flip", Flip::m);//FIXME
-		COMMANDS.put("give", Give::m);
+		COMMANDS.put("buy", Buy::main);
+		COMMANDS.put("flip", Flip::main);//FIXME
+		COMMANDS.put("give", Give::main);
 		COMMANDS.put("remind", Posts::remind);
 		//COMMANDS.put("rank", Posts::rank);
 		//COMMANDS.put("lotto", Lotto::m);
@@ -47,7 +48,7 @@ public final class Commands {
 		Consumer<IMessage> consumer = COMMANDS.get(command);
 		if (consumer == null) {
 			LOGGER.info("Command '{}' not found", message.getContent());
-			post("Command nicht erkannt...", message.getChannel());
+			post("Command not found", message.getChannel());
 		} else {
 			consumer.accept(message);
 		}
@@ -55,12 +56,12 @@ public final class Commands {
 
 	public static void adminTrigger(IMessage message, String command) {
 		if (!message.getAuthor().getID().equals(Statics.ID_NERAZ)) {
-			post(message.getAuthor().getName() + ", du bist kein Admin :confused:", message.getChannel());
+			post(message.getAuthor().getName() + ", u need to be admin for this kinda stuff", message.getChannel());
 			return;
 		}
 		Consumer<IMessage> consumer = ADMIN_COMMANDS.get(command);
 		if (consumer == null) {
-			post("Command nicht erkannt...", message.getChannel());
+			post("Command not found...", message.getChannel());
 		} else {
 			consumer.accept(message);
 		}

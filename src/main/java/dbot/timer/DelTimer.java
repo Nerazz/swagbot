@@ -57,7 +57,7 @@ public final class DelTimer implements Runnable {//TODO: vielleicht statt neuen 
 			} else {
 				LOGGER.warn("tried to delete null-message");
 			}
-		} catch(MissingPermissionsException | RateLimitException | InterruptedException | DiscordException e) {
+		} catch(MissingPermissionsException | RateLimitException | InterruptedException | DiscordException e) {//TODO: requesten, nicht ratelimit catchen
 			LOGGER.error("Error while deleting message", e);
 		}
 	}
