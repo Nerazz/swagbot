@@ -1,25 +1,37 @@
 package dbot.timer;
 
+import dbot.Statics;
 import dbot.comm.Lotto;
+import dbot.sql.SQLPool;
+import dbot.sql.UserData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import sx.blah.discord.handle.obj.IMessage;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+import static dbot.util.Poster.buildNum;
+import static dbot.util.Poster.edit;
+import static dbot.util.Poster.post;
 
 /**
  * Created by niklas on 29.09.16.
  */
 public final class LottoTimer extends Lotto implements Runnable {
-
-	@Override
-	public void run() {
-		System.out.println("RIP");
-	}
-	/*private static final Logger LOGGER = LoggerFactory.getLogger("dbot.timer.LottoTimer");
+	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.timer.LottoTimer");
 
 	@Override
 	public void run() {//TODO: jeden tag um 8 oder so ziehung
 		closed = true;
-		System.out.println("Pot: " + pot);
-
 		String winPost = "L O T T O Z I E H U N G!!\nGewonnen hat die Nummer:  ";
-		Future<IMessage> fWinMessage = post(winPost);
+		Future<IMessage> fWinMessage = post(winPost, Statics.GUILD_LIST.getBotChannel(1));//TODO: für alle botspams
 		IMessage winMessage = null;
 		try {
 			winMessage = fWinMessage.get();
@@ -27,6 +39,7 @@ public final class LottoTimer extends Lotto implements Runnable {
 			e.printStackTrace();
 		}
 		gen();
+
 		LAST_WINS.add(-(int)Math.round(Math.random()));//Kinn oder kein Kinn, das ist hier die Frage
 		Collections.sort(LAST_WINS);
 		System.out.println("gezogene Nummern: " + LAST_WINS);
@@ -47,7 +60,15 @@ public final class LottoTimer extends Lotto implements Runnable {
 		delayEdit(winMessage, winPost);
 		TICKET_MAP.clear();
 		rotateDay(true);
-		Database.getInstance().getServerData().setLastLottoDay(lastDay);
+		//Database.getInstance().getServerData().setLastLottoDay(lastDay);TODO: eigentlich kein kommentar, nur wegen DB auskommentiert
+		String query = "TRUNCATE TABLE `lotto`";
+		try(Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(query)) {
+			ps.executeUpdate();
+			con.commit();
+		} catch(SQLException e) {
+			e.printStackTrace();//TODO: log
+		}
+
 		closed = false;
 	}
 
@@ -119,12 +140,12 @@ public final class LottoTimer extends Lotto implements Runnable {
 				}
 			}
 		}
-		post(winMsg);
+		post(winMsg, Statics.GUILD_LIST.getBotChannel(1));//TODO: für alle
 		pot -= raus;
 		int toAdd = POT_MAX / 4;
-		post("Ich pack mal " + toAdd + ":gem: in den Pot :wink::ok_hand:");
+		post("Ich pack mal " + toAdd + ":gem: in den Pot :wink::ok_hand:", Statics.GUILD_LIST.getBotChannel(1));//TODO: für alle
 		pot += toAdd;
-		Database.getInstance().getServerData().setLottoPot(pot);
+		//Database.getInstance().getServerData().setLottoPot(pot);//TODO: setLottoPot in db
 	}
 
 	private static void delayEdit(IMessage message, String s) {
@@ -134,6 +155,5 @@ public final class LottoTimer extends Lotto implements Runnable {
 		} catch(InterruptedException e) {
 			e.printStackTrace();
 		}
-	}*/
-
+	}
 }

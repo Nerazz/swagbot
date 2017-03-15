@@ -6,7 +6,7 @@ import dbot.util.Poster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.api.events.IListener;
-import sx.blah.discord.handle.impl.events.UserJoinEvent;
+import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.DiscordException;
@@ -26,7 +26,7 @@ public final class UserJoinListener implements IListener<UserJoinEvent> {
 		int ref = Statics.GUILD_LIST.getRef(guild);
 		UserData.addUser(user, ref);
 		try {
-			switch(ref) {//TODO: in DB packen?
+			switch(ref) {//TODO: in DB packen?;lieber nach guildId filtern?
 				case 0:
 					user.addRole(guild.getRolesByName("Newfags").get(0));
 					//LOGGER.info("added role(Newfags) to {}", user.getName());

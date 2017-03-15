@@ -1,9 +1,6 @@
 package dbot.comm;
 
-import static dbot.util.Poster.post;
-
 import dbot.comm.items.Reminder;
-import dbot.sql.UserData;
 import dbot.comm.items.Xpot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +22,9 @@ final class Buy {
 	}
 
 	static void main(IMessage message) {
-		IUser buyer = message.getAuthor();
 		String content = message.getContent().toLowerCase();
-		IChannel channel = message.getChannel();
 
 		Matcher matcher = Pattern.compile("^!buy\\s([a-z]+)").matcher(content);
-
 		if (!matcher.lookingAt()) {
 			LOGGER.error("Matcher matcht nicht!({})", content);
 			return;

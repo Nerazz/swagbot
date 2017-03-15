@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by niklas on 30.09.16.
  */
-final class DataMap<K, V> {
+public final class DataMap<K, V> {
 	private final List<Pair> pairs = new ArrayList<>();
 
 	public DataMap() {}

@@ -3,7 +3,6 @@ package dbot.comm;
 import dbot.*;
 
 import static dbot.util.Poster.post;
-import static dbot.util.Poster.del;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,7 @@ public final class Commands {
 		COMMANDS.put("changelog", Posts::changelog);
 		COMMANDS.put("shop", Posts::shop);
 		COMMANDS.put("prestige", Posts::prestigeInfo);
-		COMMANDS.put("planned", Posts::planned);
+		COMMANDS.put("plan", Posts::plan);
 		//COMMANDS.put("ichwilljetztwirklichresettenundkennedieregelnzuswagpointsundcomindestenseinigermassen", Posts::prestige);TODO: erst prestige fixen
 		COMMANDS.put("roll", Roll::main);
 		COMMANDS.put("stats", Posts::stats);
@@ -35,11 +34,13 @@ public final class Commands {
 		COMMANDS.put("gtop", Posts::globalTop);
 		COMMANDS.put("ltop", Posts::localTop);
 		COMMANDS.put("buy", Buy::main);
-		COMMANDS.put("flip", Flip::main);//FIXME
+		COMMANDS.put("flip", Flip::main);
 		COMMANDS.put("give", Give::main);
 		COMMANDS.put("remind", Posts::remind);
+		COMMANDS.put("mute", Posts::mute);//FIXME(missingPermissionException)
 		//COMMANDS.put("rank", Posts::rank);
-		//COMMANDS.put("lotto", Lotto::m);
+		COMMANDS.put("lotto", Lotto::main);//FIXME(timer läuft nicht ordentlich)
+		COMMANDS.put("test", Posts::test);
 
 		ADMIN_COMMANDS.put("folo", Admin::forceLogout);
 	}
@@ -56,7 +57,7 @@ public final class Commands {
 
 	public static void adminTrigger(IMessage message, String command) {
 		if (!message.getAuthor().getID().equals(Statics.ID_NERAZ)) {
-			post(message.getAuthor().getName() + ", u need to be admin for this kinda stuff", message.getChannel());
+			post(message.getAuthor().getName() + ", you need to be admin for this kinda stuff", message.getChannel());
 			return;
 		}
 		Consumer<IMessage> consumer = ADMIN_COMMANDS.get(command);

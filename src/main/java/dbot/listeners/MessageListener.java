@@ -5,9 +5,8 @@ import dbot.util.Poster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.api.events.IListener;
-import sx.blah.discord.handle.impl.events.MessageReceivedEvent;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.util.MissingPermissionsException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

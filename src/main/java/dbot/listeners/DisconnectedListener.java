@@ -3,7 +3,7 @@ package dbot.listeners;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.api.events.IListener;
-import sx.blah.discord.handle.impl.events.DisconnectedEvent;
+import sx.blah.discord.handle.impl.events.shard.DisconnectedEvent;
 
 /**
  * Created by Niklas on 23.02.2017.

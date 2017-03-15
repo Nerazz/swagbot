@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * num		load
+ * num		loadQuery
  * 1		gems
  * 2		exp
  * 4		level
@@ -33,19 +33,33 @@ public final class UserData {//implements comparable?
 	private static final String[] VALUES = {"gems", "exp", "level", "expRate", "potDur", "swagLevel", "swagPoints", "reminder"};//TODO: enum?
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.sql.UserData");
 	private final List<String> loadList = new ArrayList<>();
-	private String id = null;
-	private String name = null;
-	private IUser user = null;
-	private int gems = -1;
-	private int level = -1;
-	private int exp = Integer.MIN_VALUE;
-	private int expRate = Integer.MIN_VALUE;//1000 == 100%
-	private int potDur = -1;//TODO: potDur -> potDuration in DB, setter, getter?
-	private int swagLevel = -1;
-	private int swagPoints = -1;
-	private int reminder = Integer.MIN_VALUE;
+	private final String id;
+	private final String name;
+	private final IUser user;
+	private int gems;//TODO: getter exceptions?
+	private int level;
+	private int exp;
+	private int expRate;//1000 == 100%
+	private int potDur;//TODO: potDur -> potDuration in DB, setter, getter?
+	private int swagLevel;
+	private int swagPoints;
+	private int reminder;
 
-	public UserData() {}
+	/*private UserData(UserDataBuilder builder) {
+		this.id = builder.id;
+		this.name = builder.name;
+		this.user = builder.user;
+		this.gems = builder.gems;
+		this.level = builder.level;
+		this.exp = builder.exp;
+		this.expRate = builder.expRate;
+		this.potDur = builder.potDur;
+		this.swagLevel = builder.swagLevel;
+		this.swagPoints = builder.swagPoints;
+		this.reminder = builder.reminder;
+	}*/
+
+	//public UserData() {}
 
 	public UserData(IUser user, int load) {
 		this.user = user;
@@ -97,8 +111,8 @@ public final class UserData {//implements comparable?
 
 	private void fillLoadList(int load) {
 		if (load < 1) {//TODO: kann eigentlich nicht passieren
-			LOGGER.error("load < 1 (load: {}) in constructor", load);
-			throw new IllegalArgumentException("load darf nicht < 1 sein!");
+			LOGGER.error("loadQuery < 1 (loadQuery: {}) in constructor", load);
+			throw new IllegalArgumentException("loadQuery darf nicht < 1 sein!");
 		}
 		int bit = 0;
 		while (load != 0) {
@@ -476,5 +490,53 @@ public final class UserData {//implements comparable?
 	public int hashCode() {
 		return Integer.parseInt(id);
 	}
+
+	/*public static class UserDataBuilder {
+		private static final Logger LOGGER = LoggerFactory.getLogger("dbot.sql.UserData.UserDataBuilder");
+		private String loadQuery = "SELECT ";
+		private final List<String> loadList = new ArrayList<>();
+		private final String id;
+		private final String name;
+		private final IUser user;
+		private int gems;
+		private int level;
+		private int exp;
+		private int expRate;
+		private int potDur;
+		private int swagLevel;
+		private int swagPoints;
+		private int reminder;
+
+		public UserDataBuilder(IUser user) {
+			this.user = user;
+			id = user.getID();
+			name = user.getName();
+		}
+
+		public UserDataBuilder withGems() {
+			loadQuery += "`gems`, ";
+			return this;
+		}
+
+		public UserDataBuilder withLevel() {
+			loadQuery += "`level`, ";
+			return this;
+		}
+
+		public UserData build() {
+			loadQuery = loadQuery.substring(0, loadQuery.length() - 2) + " FROM `users` WHERE `id` = ?";
+			try(Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(loadQuery)) {
+				ps.setString(1, id);
+				ResultSet rs = ps.executeQuery();
+				if (!rs.next()) {
+					//TODO: addUser
+				}
+			} catch(SQLException e) {
+				e.printStackTrace();//TODO: log
+			}
+
+			return new UserData(this);
+		}
+	}*/
 	
 }

@@ -7,7 +7,7 @@
     <properties>
         <java.version>1.8</java.version>
         <project.name>swagbot</project.name>
-        <project.version>5.6.0</project.version>
+        <project.version>5.7.0</project.version>
     </properties>
 
 	<groupId>nerazz.dbot</groupId>
@@ -25,7 +25,7 @@
 		<dependency>
 			<groupId>com.github.austinv11</groupId>
 			<artifactId>Discord4j</artifactId>
-			<version>2.7.0</version>
+			<version>dev-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>

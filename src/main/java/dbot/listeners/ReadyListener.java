@@ -1,5 +1,6 @@
 package dbot.listeners;
 
+import dbot.comm.Lotto;
 import dbot.timer.MainTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,6 @@ public final class ReadyListener implements IListener<ReadyEvent> {
 		} catch(Exception e) {
 			LOGGER.error("MainTimer RIP!!", e);
 		}
+		Lotto.init();
 	}
-
 }

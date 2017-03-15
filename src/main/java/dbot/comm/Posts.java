@@ -13,18 +13,17 @@ import dbot.sql.SQLPool;
 import dbot.sql.UserData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.DiscordException;
+import sx.blah.discord.util.EmbedBuilder;
 
 import java.io.*;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
@@ -110,6 +109,39 @@ final class Posts {
 		IUser author = message.getAuthor();
 		post(String.format(author + ", you have %d:gem:.", UserData.getData(author, "gems")), message.getChannel());
 		//post(author + ", du hast " + UserData.getData(author, "gems") + ":gem:.", message.getChannel());
+	}
+
+	static void test(IMessage message) {
+		EmbedBuilder eb = new EmbedBuilder();
+		eb.appendField("title", "testcontent", true);
+		eb.withColor(255, 100, 0);
+		File file = new File(Posts.class.getResource("/test.png").getPath());
+		if (file.exists()) {
+			System.out.println("file found: " + file.getAbsoluteFile());
+		}
+		String path = "attachment://test.png";
+		EmbedObject eo =  eb.build();
+		eo.image = new EmbedObject.ImageObject(path, null, 128, 128);
+		IChannel channel = message.getChannel();
+		try {
+			channel.sendFile(eo, file);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	static void mute(IMessage message) {
+		try {
+			Statics.GUILD_LIST.getGuild(1).setMuteUser(message.getAuthor(), true);
+			try {
+				Thread.sleep(5000);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			Statics.GUILD_LIST.getGuild(1).setMuteUser(message.getAuthor(), false);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static String medalGen(int i) {
@@ -211,7 +243,7 @@ final class Posts {
 		post(prestigeInfo, message.getChannel());
 	}
 
-	static void planned(IMessage message) {
+	static void plan(IMessage message) {
 		post(planned, message.getChannel());
 	}
 

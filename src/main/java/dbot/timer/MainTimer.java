@@ -7,14 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.Presences;
-import sx.blah.discord.handle.obj.Status;
+import sx.blah.discord.handle.obj.StatusType;
 
 import java.sql.*;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public final class MainTimer implements Runnable{
+public final class MainTimer implements Runnable {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.timer.MainTimer");
 	private static final IDiscordClient BOT_CLIENT = Statics.BOT_CLIENT;
 
@@ -23,7 +22,8 @@ public final class MainTimer implements Runnable{
 	private static int dayCount		= 0;
 
 	public MainTimer() {
-		BOT_CLIENT.changeStatus(Status.game("frisch online"));
+		BOT_CLIENT.changePlayingText("freshus onlus");
+		//BOT_CLIENT.changeStatus(Status.game("frisch online"));
 	}
 
 	@Override
@@ -44,15 +44,17 @@ public final class MainTimer implements Runnable{
 				}
 
 				if (dayCount != 0) {
-					BOT_CLIENT.changeStatus(Status.game("seit " + dayCount + "d " + hourCount + "h online"));
+					BOT_CLIENT.changePlayingText(String.format("for %dd %dh online", dayCount, hourCount));
+					//BOT_CLIENT.changeStatus(Status.game("seit " + dayCount + "d " + hourCount + "h online"));
 				} else if (hourCount != 0) {
-					BOT_CLIENT.changeStatus(Status.game("seit " + hourCount + "h " + minuteCount + "m online"));
+					BOT_CLIENT.changePlayingText(String.format("for %dh %dm online", hourCount, minuteCount));
+					//BOT_CLIENT.changeStatus(Status.game("seit " + hourCount + "h " + minuteCount + "m online"));
 				} else {
-					BOT_CLIENT.changeStatus(Status.game("seit " + minuteCount + "m online"));
+					BOT_CLIENT.changePlayingText(String.format("for %dm online", minuteCount));
+					//BOT_CLIENT.changeStatus(Status.game("seit " + minuteCount + "m online"));
 				}
 			}
-
-			Map<String, IUser> onlineUsers = Statics.BOT_CLIENT.getUsers().stream().filter(u -> u.getPresence().equals(Presences.ONLINE)).collect(Collectors.toMap(IUser::getID, u -> u));
+			Map<String, IUser> onlineUsers = Statics.BOT_CLIENT.getUsers().stream().filter(u -> u.getPresence().getStatus().equals(StatusType.ONLINE)).collect(Collectors.toMap(IUser::getID, u -> u));
 			System.out.println(onlineUsers.size() + " users online");
 			String lockQuery = 		"LOCK TABLES `users` WRITE";
 			String freeQuery = 		"UNLOCK TABLES";

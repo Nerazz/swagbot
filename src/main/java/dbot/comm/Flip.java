@@ -96,7 +96,7 @@ final class Flip {
 			ResultSet rs = ps.executeQuery("SELECT LAST_INSERT_ID() FROM `flip`");
 			rs.next();
 			LOGGER.info("{} opened FlipRoom, ID: {}, Pot: {}, Seite: {}", uData.getName(), bet, rs.getInt(1), side);
-			post(String.format("%s, opened a new room (ID: %d) for %d:gem: (%s)!", uData.getName(), rs.getInt(1), side), channel);
+			post(String.format("%s, opened a new room (ID: %d) for %d:gem: (%s)!", uData.getName(), rs.getInt(1), bet, side), channel);
 			//post(uData.getName() + " opened a new room with " + bet + ":gem: geöffnet mit ID: " + rs.getInt(1) + " (" + side + ")", channel);
 			rs.close();
 		} catch(SQLException e) {
