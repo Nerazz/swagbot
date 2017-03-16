@@ -3,6 +3,7 @@ package dbot.comm;
 import static dbot.util.Poster.post;
 
 import dbot.sql.UserData;
+import dbot.sql.impl.UserDataImpl;
 
 import java.util.regex.*;
 
@@ -26,8 +27,8 @@ final class Give {
 			return;
 		}
 
-		UserData dGiver = new UserData(author, 1);//gems
-		UserData dGetter = new UserData(message.getMentions().get(0), 1);//gems
+		UserData dGiver = new UserDataImpl(author, 1);//gems
+		UserData dGetter = new UserDataImpl(message.getMentions().get(0), 1);//gems
 
 		if (!matcher.matches()) return;
 		int gems = Integer.parseInt(matcher.group(1));

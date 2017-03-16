@@ -13,7 +13,7 @@ import java.util.List;
  */
 public final class GuildList {//TODO: lieber DataMap extenden und add overriden für addWithNulls
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.util.GuildList");
-	private final DataMap<IGuild, String[]> guildList = new DataMap<>();//TODO: lieber GuildID als Key?; ref = index
+	private final DataMap<IGuild, String[]> GUILD_LIST = new DataMap<>();//TODO: lieber GuildID als Key?; ref = index
 
 	public GuildList() {}
 
@@ -29,14 +29,14 @@ public final class GuildList {//TODO: lieber DataMap extenden und add overriden 
 			throw new IllegalArgumentException("ref is < 0");
 		}
 		String[] info = {botChannel.getID()};
-		guildList.putWithNulls(ref, guild, info);
+		GUILD_LIST.putWithNulls(ref, guild, info);
 	}
 
 	public int getRef(IGuild guild) {
 		if (guild == null) {
 			return -1;
 		}
-		return guildList.getKeyIndex(guild);
+		return GUILD_LIST.getKeyIndex(guild);
 	}
 
 	public IChannel getBotChannel(IGuild guild) {
@@ -44,7 +44,7 @@ public final class GuildList {//TODO: lieber DataMap extenden und add overriden 
 			LOGGER.error("guild is null!");
 			throw new NullPointerException("guild is null");
 		}
-		return guild.getChannelByID(guildList.getValueOfKey(guild)[0]);
+		return guild.getChannelByID(GUILD_LIST.getValueOfKey(guild)[0]);
 	}
 
 	public IChannel getBotChannel(int ref) {
@@ -52,25 +52,25 @@ public final class GuildList {//TODO: lieber DataMap extenden und add overriden 
 			LOGGER.error("ref is < 0: {}", ref);
 			throw new IllegalArgumentException("ref is < 0");
 		}
-		IGuild guild = guildList.getKey(ref);//TODO: null abfangen
+		IGuild guild = GUILD_LIST.getKey(ref);//TODO: null abfangen
 		if (guild == null) {
 			LOGGER.warn("returned channel is null");
 			return null;
 		}
-		return guild.getChannelByID(guildList.getValue(ref)[0]);
+		return guild.getChannelByID(GUILD_LIST.getValue(ref)[0]);
 	}
 
 	public List<IChannel> getAllBotChannels() {
 		List<IChannel> botChannels = new ArrayList<>();
-		for (int ref = 0; ref < guildList.size(); ref++) {
-			if (guildList.getKey(ref) == null) continue;
+		for (int ref = 0; ref < GUILD_LIST.size(); ref++) {
+			if (GUILD_LIST.getKey(ref) == null) continue;
 			botChannels.add(getBotChannel(ref));
 		}
 		return botChannels;
 	}
 
 	public int size() {
-		return guildList.size();
+		return GUILD_LIST.size();
 	}
 
 	public IGuild getGuild(int index) {
@@ -78,16 +78,16 @@ public final class GuildList {//TODO: lieber DataMap extenden und add overriden 
 			LOGGER.error("index is < 0: {}", index);
 			throw new IllegalArgumentException("index is < 0");
 		}
-		return guildList.getKey(index);
+		return GUILD_LIST.getKey(index);
 	}
 
 	@Override
 	public String toString() {//TODO: besser
 		String s = "GuildList: [";
-		/*for (int i = 0; i < guildList.size(); i++) {
-			s += guildList.toString()
+		/*for (int i = 0; i < GUILD_LIST.size(); i++) {
+			s += GUILD_LIST.toString()
 		}*/
-		s += guildList.toString();
+		s += GUILD_LIST.toString();
 		s += "]";
 		return s;
 	}

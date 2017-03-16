@@ -4,6 +4,7 @@ import dbot.Statics;
 import dbot.comm.Lotto;
 import dbot.sql.SQLPool;
 import dbot.sql.UserData;
+import dbot.sql.impl.UserDataImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IMessage;

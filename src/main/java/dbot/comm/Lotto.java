@@ -3,6 +3,7 @@ package dbot.comm;
 import dbot.Statics;
 import dbot.sql.SQLPool;
 import dbot.sql.UserData;
+import dbot.sql.impl.UserDataImpl;
 import dbot.timer.LottoTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static dbot.util.Poster.post;
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Created by Niklas on 19.10.2016.
@@ -85,7 +85,7 @@ public class Lotto {
 				guessedList.add(first);
 				guessedList.add(second);
 				guessedList.add(third);
-				UserData userData = new UserData(Statics.BOT_CLIENT.getUserByID(ownerID), 1);//gems
+				UserData userData = new UserDataImpl(Statics.BOT_CLIENT.getUserByID(ownerID), 1);//gems
 				TICKET_MAP.put(userData, guessedList);
 			}
 		} catch(SQLException e) {
@@ -126,7 +126,7 @@ public class Lotto {
 		}
 
 		IUser author = message.getAuthor();
-		UserData userData = new UserData(author, 1);//gems
+		UserData userData = new UserDataImpl(author, 1);//gems
 
 		if (closed) {
 			System.out.println("closed");

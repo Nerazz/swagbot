@@ -1,7 +1,7 @@
-package dbot.listeners;
+package dbot.listener;
 
 import dbot.comm.Lotto;
-import dbot.timer.MainTimer;
+import dbot.timer.TickTimer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.api.events.IListener;
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
  * Created by Niklas on 23.02.2017.
  */
 public final class ReadyListener implements IListener<ReadyEvent> {
-	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.listeners.ReadyListener");
+	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.listener.ReadyListener");
 
 	@Override
 	public void handle(ReadyEvent event) {
@@ -24,11 +24,11 @@ public final class ReadyListener implements IListener<ReadyEvent> {
 			GuildCreateListener.LOCK.notifyAll();
 		}
 		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-		MainTimer mainTimer = new MainTimer();
+		TickTimer tickTimer = new TickTimer();
 		try {
-			executor.scheduleAtFixedRate(mainTimer, 5, 60, TimeUnit.SECONDS);//TODO: care, 60sec
+			executor.scheduleAtFixedRate(tickTimer, 5, 60, TimeUnit.SECONDS);//TODO: care, 60sec
 		} catch(Exception e) {
-			LOGGER.error("MainTimer RIP!!", e);
+			LOGGER.error("TickTimer RIP!!", e);
 		}
 		Lotto.init();
 	}

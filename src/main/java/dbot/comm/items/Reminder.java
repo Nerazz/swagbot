@@ -1,6 +1,7 @@
 package dbot.comm.items;
 
 import dbot.sql.UserData;
+import dbot.sql.impl.UserDataImpl;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import org.slf4j.Logger;
@@ -34,7 +35,7 @@ public final class Reminder {
 			anzahl = ANZAHL;
 		}
 		IUser buyer = message.getAuthor();
-		UserData data = new UserData(buyer, 129);//gems, reminder
+		UserData data = new UserDataImpl(buyer, 129);//gems, reminder
 		IChannel channel = message.getChannel();
 		if (data.getGems() < (PRICE * anzahl)) {
 			post(buyer + ", you don't have enough :gem:.", channel);

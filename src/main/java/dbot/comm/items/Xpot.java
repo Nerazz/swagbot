@@ -3,6 +3,7 @@ package dbot.comm.items;
 import static dbot.util.Poster.post;
 
 import dbot.sql.UserData;
+import dbot.sql.impl.UserDataImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IChannel;
@@ -21,7 +22,7 @@ public final class Xpot {//Buy extenden oder ähnliches?
 	//public static void main(IUser user, String pot, IChannel channel) {
 	public static void main(IMessage message) {
 		String content = message.getContent().toLowerCase();
-		UserData uData = new UserData(message.getAuthor(), 25);//gems, expRate, potDuration
+		UserData uData = new UserDataImpl(message.getAuthor(), 25);//gems, expRate, potDuration
 		IChannel channel = message.getChannel();
 
 		Matcher matcher = Pattern.compile("^!buy\\s[a-z]+\\s([a-z]+)").matcher(content);
@@ -69,19 +70,19 @@ public final class Xpot {//Buy extenden oder ähnliches?
 	}
 
 	private static void use(UserData uData, int duration, int amp, int price, IChannel channel) {//duration in ticks
-		//UserData uData = new UserData(user, 25);//gems, expRate, potDur
+		//UserDataImpl uData = new UserDataImpl(user, 25);//gems, expRate, potDur
 		IUser user = uData.getUser();
 		if (uData.getGems() < price) {
 			post(user + ", you don't have enough :gem:.", channel);
-		}else if (uData.getPotDuration() > 0) {
-			//post(String.format("%nBoost(x%s) ist noch %d min aktiv", uData.getFormattedExpRate(), uData.getPotDuration()), channel);
-			post(String.format("%s, your boost(x%s) is still active for another %d min", uData.getName(), uData.getFormattedExpRate(), uData.getPotDuration()), channel);
-			//post(user + ", letzter XPot(x" + uData.getExpRate() / 1000 + ") ist noch für " + uData.getPotDuration() + " min aktiv.", channel);//TODO: formatierung
+		}else if (uData.getPotDur() > 0) {
+			//post(String.format("%nBoost(x%s) ist noch %d min aktiv", uData.getFormattedExpRate(), uData.getPotDur()), channel);
+			post(String.format("%s, your boost(x%s) is still active for another %d min", uData.getName(), uData.getFormattedExpRate(), uData.getPotDur()), channel);
+			//post(user + ", letzter XPot(x" + uData.getExpRate() / 1000 + ") ist noch für " + uData.getPotDur() + " min aktiv.", channel);//TODO: formatierung
 		} else {
 			uData.subGems(price);
 			uData.setExpRate(amp);
 			uData.setPotDur(duration);
-			post(String.format(user + ", here's your XPot(x%s) which lasts %d min!", uData.getFormattedExpRate(), uData.getPotDuration()), channel);
+			post(String.format(user + ", here's your XPot(x%s) which lasts %d min!", uData.getFormattedExpRate(), uData.getPotDur()), channel);
 			//post(user + ", hier ist dein XPot (x" + amp / 1000 + ") für " + duration + " min!", channel);//TODO: formatieung
 			LOGGER.info("{} -> XPot for {} (x{})", user.getName(), price, amp);
 			uData.update();

@@ -1,4 +1,4 @@
-package dbot.listeners;
+package dbot.listener;
 
 import dbot.comm.Commands;
 import dbot.util.Poster;
@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  * Created by Niklas on 23.02.2017.
  */
 public final class MessageListener implements IListener<MessageReceivedEvent> {
-	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.listeners.MessageListener");
+	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.listener.MessageListener");
 
 	@Override
 	public void handle(MessageReceivedEvent event) {

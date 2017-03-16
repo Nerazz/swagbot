@@ -6,6 +6,7 @@ import static dbot.util.Poster.edit;
 import dbot.sql.SQLPool;
 import dbot.Statics;
 import dbot.sql.UserData;
+import dbot.sql.impl.UserDataImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.handle.obj.IChannel;
@@ -29,7 +30,7 @@ final class Flip {
 		IChannel channel = message.getChannel();
 		int ref = Statics.GUILD_LIST.getRef(message.getGuild());
 		String params = message.getContent().toLowerCase();//TODO: besser machen(siehe roll)
-		UserData uData = new UserData(author, 1);//gems
+		UserData uData = new UserDataImpl(author, 1);//gems
 		params = params.substring(6, params.length());//!flip abschneiden
 		Pattern pattern = Pattern.compile("(\\d+|[a-z]+)(\\s(\\d+|[a-z]+))?");//TODO: strikter, wirklich nur erlaubte params
 		Matcher matcher = pattern.matcher(params);
@@ -123,7 +124,7 @@ final class Flip {
 			} else if (clientData.getId().equals(rs.getString("hostID"))) {
 				post(clientData.getUser() + ", you can't flip with yourself...", channel);
 			} else {
-				UserData hostData = new UserData(Statics.GUILD_LIST.getGuild(ref).getUserByID(rs.getString("hostID")), 1);//gems;
+				UserData hostData = new UserDataImpl(Statics.GUILD_LIST.getGuild(ref).getUserByID(rs.getString("hostID")), 1);//gems;
 				int pot = rs.getInt("pot");
 				String side = rs.getString("side");
 				rs.close();

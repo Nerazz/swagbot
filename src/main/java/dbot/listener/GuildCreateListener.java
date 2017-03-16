@@ -1,8 +1,8 @@
-package dbot.listeners;
+package dbot.listener;
 
 import dbot.Statics;
 import dbot.sql.SQLPool;
-import dbot.sql.UserData;
+import dbot.sql.impl.UserDataImpl;
 import dbot.util.Poster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ import java.util.concurrent.Future;
  * Created by Niklas on 23.02.2017.
  */
 public final class GuildCreateListener implements IListener<GuildCreateEvent> {
-	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.listeners.GuildCreateListener");
+	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.listener.GuildCreateListener");
 	static final Object LOCK = new Object();
 
 	@Override
@@ -59,7 +59,7 @@ public final class GuildCreateListener implements IListener<GuildCreateEvent> {
 			Statics.GUILD_LIST.addGuild(ref, guild, channel);//TODO: vielleicht besser machbar
 			System.out.println(Statics.GUILD_LIST.toString());
 			rs.close();
-			UserData.addUsers(guild.getUsers(), ref);
+			UserDataImpl.addUsers(guild.getUsers(), ref);
 
 			createPost(channel);
 		} catch(SQLException e) {

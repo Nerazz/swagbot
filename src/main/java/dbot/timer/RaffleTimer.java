@@ -10,7 +10,7 @@ final class RaffleTimer implements Runnable {
 		System.out.println("RIP");
 	}
 	/*private static final Logger LOGGER = LoggerFactory.getLogger("dbot.timer.RaffleTimer");
-	private List<UserData> dataList = new LinkedList<>();
+	private List<UserDataImpl> dataList = new LinkedList<>();
 	private List<Integer> betList = new LinkedList<>();
 	private int pot = 0;
 	//private static boolean isRunning = false;
@@ -23,7 +23,7 @@ final class RaffleTimer implements Runnable {
 
 	}
 
-	public static void m(UserData userData, String params) {
+	public static void m(UserDataImpl userData, String params) {
 		Matcher matcher = Pattern.compile("\\d+").matcher(params);//TODO: alle regexes so machen
 		if (!matcher.matches()) return;
 		int bet = Integer.parseInt(matcher.group());
@@ -74,7 +74,7 @@ final class RaffleTimer implements Runnable {
 		}
 		closed = true;
 		System.out.println("closed timer");
-		//UserData winner =
+		//UserDataImpl winner =
 		int rng = (int)Math.round(Math.random() * (pot - 1) + 1);//0 muss übersprungen werden!, tuts noch nicht
 		System.out.println("rng: " + rng);
 		int x = 0, i = 0;
@@ -83,7 +83,7 @@ final class RaffleTimer implements Runnable {
 			System.out.println("i: " + i + "x: " + x);
 			i++;
 		}
-		UserData winner = dataList.get(i);
+		UserDataImpl winner = dataList.get(i);
 		post(winner.getName() + " hat mit " + betList.get(i) + " gewonnen!");
 		LOGGER.info("{} hat mit {} gewonnen.", winner.getName(), rng);
 

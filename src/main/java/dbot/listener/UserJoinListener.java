@@ -1,7 +1,7 @@
-package dbot.listeners;
+package dbot.listener;
 
 import dbot.Statics;
-import dbot.sql.UserData;
+import dbot.sql.impl.UserDataImpl;
 import dbot.util.Poster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,14 +17,14 @@ import sx.blah.discord.util.RateLimitException;
  * Created by Niklas on 23.02.2017.
  */
 public final class UserJoinListener implements IListener<UserJoinEvent> {
-	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.listeners.UserJoinListener");
+	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.listener.UserJoinListener");
 
 	@Override
 	public void handle(UserJoinEvent event) {
 		IUser user = event.getUser();
 		IGuild guild = event.getGuild();
 		int ref = Statics.GUILD_LIST.getRef(guild);
-		UserData.addUser(user, ref);
+		UserDataImpl.addUser(user, ref);
 		try {
 			switch(ref) {//TODO: in DB packen?;lieber nach guildId filtern?
 				case 0:

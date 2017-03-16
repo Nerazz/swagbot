@@ -11,6 +11,7 @@ import dbot.*;
 import dbot.sql.SQLData;
 import dbot.sql.SQLPool;
 import dbot.sql.UserData;
+import dbot.sql.impl.UserDataImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
@@ -83,14 +84,14 @@ final class Posts {
 	static void stats(IMessage message) {
 		IUser user = message.getAuthor();
 		IChannel channel = message.getChannel();
-		UserData uData = new UserData(user, 255);//exp, level, expRate, potDur, swagLevel, swagPoints, reminder
+		UserData uData = new UserDataImpl(user, 255);//exp, level, expRate, potDur, swagLevel, swagPoints, reminder
 		String post = "";
 		if (uData.getSwagLevel() > 0) post += String.format(" :trident:%s   :sparkles:%s", buildNum(uData.getSwagLevel()), buildNum(uData.getSwagPoints()));
-		post += String.format("%nLevel %s (%d/%d exp)", buildNum(uData.getLevel()), uData.getExp(), UserData.getLevelThreshold(uData.getLevel()));
+		post += String.format("%nLevel %s (%d/%d exp)", buildNum(uData.getLevel()), uData.getExp(), UserDataImpl.getLevelThreshold(uData.getLevel()));
 		post += String.format("%n:gem:%d", uData.getGems());
 
-		if (uData.getPotDuration() > 0) {
-			post += String.format("%nBoost(x%s) %d min remaining", uData.getFormattedExpRate(), uData.getPotDuration());
+		if (uData.getPotDur() > 0) {
+			post += String.format("%nBoost(x%s) %d min remaining", uData.getFormattedExpRate(), uData.getPotDur());
 		} else {
 			post += "\nno active boost";
 		}
@@ -107,8 +108,8 @@ final class Posts {
 
 	static void gems(IMessage message) {
 		IUser author = message.getAuthor();
-		post(String.format(author + ", you have %d:gem:.", UserData.getData(author, "gems")), message.getChannel());
-		//post(author + ", du hast " + UserData.getData(author, "gems") + ":gem:.", message.getChannel());
+		post(String.format("%s, you have %d:gem:.", author, (int)UserDataImpl.getData(author, "gems")), message.getChannel());//TODO: besser, nicht getData
+		//post(author + ", du hast " + UserDataImpl.getData(author, "gems") + ":gem:.", message.getChannel());
 	}
 
 	static void test(IMessage message) {
@@ -157,8 +158,8 @@ final class Posts {
 		ArrayList<SQLData> topList = getScoreList();
 		for (int i = 0; (i < topList.size()) && (i < 5); i++) {
 			SQLData uData = topList.get(i);
-			//double score = ((Integer)data.get("level")).doubleValue() + Math.floor(((Integer)data.get("exp")).doubleValue() / (double)UserData.getLevelThreshold((Integer)data.get("level")) * 100) / 100;
-			double score = uData.getInt("level") + (double)uData.getInt("exp") / (double)UserData.getLevelThreshold(uData.getInt("level"));
+			//double score = ((Integer)data.get("level")).doubleValue() + Math.floor(((Integer)data.get("exp")).doubleValue() / (double)UserDataImpl.getLevelThreshold((Integer)data.get("level")) * 100) / 100;
+			double score = uData.getInt("level") + (double)uData.getInt("exp") / (double) UserDataImpl.getLevelThreshold(uData.getInt("level"));
 			post += "\n" + medalGen(i) + uData.getString("name") + " - " + String.format("%.2f", score);
 		}
 		post(post, message.getChannel());
@@ -171,8 +172,8 @@ final class Posts {
 		ArrayList<SQLData> topList = getScoreList(ref);
 		for (int i = 0; (i < topList.size()) && (i < 5); i++) {
 			SQLData uData = topList.get(i);
-			//double score = ((Integer)data.get("level")).doubleValue() + Math.floor(((Integer)data.get("exp")).doubleValue() / (double)UserData.getLevelThreshold((Integer)data.get("level")) * 100) / 100;
-			double score = uData.getInt("level") + (double)uData.getInt("exp") / (double)UserData.getLevelThreshold(uData.getInt("level"));
+			//double score = ((Integer)data.get("level")).doubleValue() + Math.floor(((Integer)data.get("exp")).doubleValue() / (double)UserDataImpl.getLevelThreshold((Integer)data.get("level")) * 100) / 100;
+			double score = uData.getInt("level") + (double)uData.getInt("exp") / (double) UserDataImpl.getLevelThreshold(uData.getInt("level"));
 			post += "\n" + medalGen(i) + uData.getString("name") + " - " + String.format("%.2f", score);
 		}
 		post(post, channel);
@@ -191,15 +192,15 @@ final class Posts {
 	}
 
 	static void remind(IMessage message) {
-		UserData uData = new UserData(message.getAuthor(), 128);//reminder
+		UserData uData = new UserDataImpl(message.getAuthor(), 128);//reminder
 		uData.negateReminder();
 		uData.update();
 		post("toggled reminder", message.getChannel());
 	}
 
 	static void prestige(IMessage message) {
-		UserData uData = new UserData(message.getAuthor(), 101);//gems, level, SL, SP
-		uData.prestige(Statics.GUILD_LIST.getRef(message.getGuild()));
+		UserData uData = new UserDataImpl(message.getAuthor(), 101);//gems, level, SL, SP
+		uData.prestige();
 	}
 
 	/*static void rank(DataMap<IUser, Double> dataMap, IUser author) {
