@@ -30,7 +30,7 @@ final class Flip {
 		IChannel channel = message.getChannel();
 		int ref = Statics.GUILD_LIST.getRef(message.getGuild());
 		String params = message.getContent().toLowerCase();//TODO: besser machen(siehe roll)
-		UserData uData = new UserDataImpl(author, 1);//gems
+		UserData uData = new UserDataImpl(author);//gems
 		params = params.substring(6, params.length());//!flip abschneiden
 		Pattern pattern = Pattern.compile("(\\d+|[a-z]+)(\\s(\\d+|[a-z]+))?");//TODO: strikter, wirklich nur erlaubte params
 		Matcher matcher = pattern.matcher(params);
