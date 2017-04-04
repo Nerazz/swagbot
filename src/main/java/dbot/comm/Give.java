@@ -27,8 +27,8 @@ final class Give {
 			return;
 		}
 
-		UserData dGiver = new UserDataImpl(author, 1);//gems
-		UserData dGetter = new UserDataImpl(message.getMentions().get(0), 1);//gems
+		UserData dGiver = UserDataImpl.getUserData(author);
+		UserData dGetter = UserDataImpl.getUserData(message.getMentions().get(0));
 
 		if (!matcher.matches()) return;
 		int gems = Integer.parseInt(matcher.group(1));

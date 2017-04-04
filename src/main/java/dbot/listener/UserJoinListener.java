@@ -24,7 +24,7 @@ public final class UserJoinListener implements IListener<UserJoinEvent> {
 		IUser user = event.getUser();
 		IGuild guild = event.getGuild();
 		int ref = Statics.GUILD_LIST.getRef(guild);
-		UserDataImpl.addUser(user, ref);
+		//UserDataImpl.addUser(user, ref);TODO: nur zum testen auskommentiert
 		try {
 			switch(ref) {//TODO: in DB packen?;lieber nach guildId filtern?
 				case 0:

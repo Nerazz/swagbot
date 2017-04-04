@@ -30,7 +30,7 @@ final class Flip {
 		IChannel channel = message.getChannel();
 		int ref = Statics.GUILD_LIST.getRef(message.getGuild());
 		String params = message.getContent().toLowerCase();//TODO: besser machen(siehe roll)
-		UserData uData = new UserDataImpl(author);//gems
+		UserData uData = UserDataImpl.getUserData(author);
 		params = params.substring(6, params.length());//!flip abschneiden
 		Pattern pattern = Pattern.compile("(\\d+|[a-z]+)(\\s(\\d+|[a-z]+))?");//TODO: strikter, wirklich nur erlaubte params
 		Matcher matcher = pattern.matcher(params);
@@ -124,7 +124,9 @@ final class Flip {
 			} else if (clientData.getId().equals(rs.getString("hostID"))) {
 				post(clientData.getUser() + ", you can't flip with yourself...", channel);
 			} else {
-				UserData hostData = new UserDataImpl(Statics.GUILD_LIST.getGuild(ref).getUserByID(rs.getString("hostID")), 1);//gems;
+				IUser user = Statics.GUILD_LIST.getGuild(ref).getUserByID(rs.getString("hostID"));
+				UserData hostData = UserDataImpl.getUserData(user);
+				//UserData hostData = new UserDataImpl(Statics.GUILD_LIST.getGuild(ref).getUserByID(rs.getString("hostID")), 1);//gems;
 				int pot = rs.getInt("pot");
 				String side = rs.getString("side");
 				rs.close();

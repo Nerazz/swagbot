@@ -59,7 +59,7 @@ public final class GuildCreateListener implements IListener<GuildCreateEvent> {
 			Statics.GUILD_LIST.addGuild(ref, guild, channel);//TODO: vielleicht besser machbar
 			System.out.println(Statics.GUILD_LIST.toString());
 			rs.close();
-			UserDataImpl.addUsers(guild.getUsers(), ref);
+			//UserDataImpl.addUsers(guild.getUsers(), ref);TODO: wieder adden oder multiguild abschaffen
 
 			createPost(channel);
 		} catch(SQLException e) {

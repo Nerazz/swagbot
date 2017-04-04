@@ -85,7 +85,7 @@ public class Lotto {
 				guessedList.add(first);
 				guessedList.add(second);
 				guessedList.add(third);
-				UserData userData = new UserDataImpl(Statics.BOT_CLIENT.getUserByID(ownerID), 1);//gems
+				UserData userData = UserDataImpl.getUserData(Statics.BOT_CLIENT.getUserByID(ownerID));
 				TICKET_MAP.put(userData, guessedList);
 			}
 		} catch(SQLException e) {
@@ -126,7 +126,7 @@ public class Lotto {
 		}
 
 		IUser author = message.getAuthor();
-		UserData userData = new UserDataImpl(author, 1);//gems
+		UserData userData = UserDataImpl.getUserData(author);
 
 		if (closed) {
 			System.out.println("closed");

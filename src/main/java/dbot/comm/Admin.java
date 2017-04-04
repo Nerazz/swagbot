@@ -7,11 +7,20 @@ import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.DiscordException;
 
 /**
- * Created by Niklas on 04.03.2017.
+ * Admin commands
+ *
+ * @author Niklas Zd
+ * @since 04.03.2017
  */
 final class Admin {
+	/** logger */
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Admin");
 
+	/**
+	 * forces the bot to logout and exits program
+	 *
+	 * @param message not used
+	 */
 	static void forceLogout(IMessage message) {
 		try {
 			Statics.BOT_CLIENT.logout();

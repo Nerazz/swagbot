@@ -14,9 +14,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+/**
+ * class for triggering methods of called commands
+ * loads all connected methods to hashmap on load of class
+ *
+ * @author Niklas Zd
+ */
 public final class Commands {
+	/** logger */
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Commands");
+	/** command map */
 	private static final Map<String, Consumer<IMessage>> COMMANDS = new HashMap<>();
+	/** command map for admins */
 	private static final Map<String, Consumer<IMessage>> ADMIN_COMMANDS = new HashMap<>();
 
 	static {
@@ -45,6 +54,12 @@ public final class Commands {
 		ADMIN_COMMANDS.put("folo", Admin::forceLogout);
 	}
 
+	/**
+	 * calls method of triggered command
+	 *
+	 * @param message for pass through
+	 * @param command command that is called
+	 */
 	public static void trigger(IMessage message, String command) {
 		Consumer<IMessage> consumer = COMMANDS.get(command);
 		if (consumer == null) {
@@ -55,6 +70,12 @@ public final class Commands {
 		}
 	}
 
+	/**
+	 * calls method of triggered admin command
+	 *
+	 * @param message for pass through
+	 * @param command command that is called
+	 */
 	public static void adminTrigger(IMessage message, String command) {
 		if (!message.getAuthor().getID().equals(Statics.ID_NERAZ)) {
 			post(message.getAuthor().getName() + ", you need to be admin for this kinda stuff", message.getChannel());
@@ -68,54 +89,7 @@ public final class Commands {
 		}
 	}
 
-	static List<String> getCommands() {
+	/*static List<String> getCommands() {für schlaue command-help liste?
 		return new ArrayList<>(COMMANDS.keySet());//Liste aller Keys
-	}
+	}*/
 }
-
-	/*
-		int ref = Statics.GUILD_LIST.getRef(message.getGuild());
-		LOGGER.debug("Message({}): {}", author.getName(), message.getContent());
-		Pattern pattern = Pattern.compile("^!([a-z]+)(\\s(.+))?");
-		Matcher matcher = pattern.matcher(message.getContent().toLowerCase());
-		if (matcher.matches()) {
-			String params = matcher.group(3);
-			
-			switch (matcher.group(1)) {
-
-
-				case "rank":
-					//Posts.rank(database.sortByScore(), author);
-					//Posts.rank(author, channel);
-					post("coming soon(TM)", channel);
-					break;
-				
-
-
-				/*case "raffle":
-					RaffleTimer.m(dAuthor, params);
-					break;*/
-
-				/*case "lotto":
-					Lotto.addTicket(dAuthor, params);
-					break;*/
-
-
-				/*case "ichwilljetztwirklichresettenundkennedieregelnzuswagpointsundcomindestenseinigermassen":
-					dAuthor.prestige();
-					break;*/
-	/*
-					case "logout":
-					case "lo":
-						//Flip.closeAll();
-						//DelTimer.add(message);
-						//DelTimer.deleteAll();
-						//del(Flip.getRoomPost());
-						try {
-							post("Logging out...:ok_hand:", channel, -1);
-							Statics.BOT_CLIENT.logout();
-							System.exit(0);
-						} catch(DiscordException e) {
-							LOGGER.error("Error while logging out", e);
-						}
-						break;*/

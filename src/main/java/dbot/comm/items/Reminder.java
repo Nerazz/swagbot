@@ -14,13 +14,21 @@ import java.util.regex.Pattern;
 import static dbot.util.Poster.post;
 
 /**
- * Created by Niklas on 07.03.2017.
+ * Item reminder
+ *
+ * @author Niklas Zd
+ * @since 07.03.2017
  */
 public final class Reminder {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.items.Reminder");
 	private static final int PRICE = 100;
 	private static final int ANZAHL = 1;
 
+	/**
+	 * checks for sufficient gems and gives author bought number of reminder
+	 *
+	 * @param message passed message to extract all relevant data
+	 */
 	public static void main(IMessage message) {
 		String content = message.getContent().toLowerCase();
 		Matcher matcher = Pattern.compile("^!buy\\sreminder(?:\\s(\\d+))?").matcher(content);
@@ -35,7 +43,7 @@ public final class Reminder {
 			anzahl = ANZAHL;
 		}
 		IUser buyer = message.getAuthor();
-		UserData data = new UserDataImpl(buyer, 129);//gems, reminder
+		UserData data = UserDataImpl.getUserData(buyer);
 		IChannel channel = message.getChannel();
 		if (data.getGems() < (PRICE * anzahl)) {
 			post(buyer + ", you don't have enough :gem:.", channel);

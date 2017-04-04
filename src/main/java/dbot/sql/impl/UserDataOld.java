@@ -31,6 +31,7 @@ import java.util.List;
  *
  */
 
+@Deprecated
 public final class UserDataOld implements UserData {//implements comparable?
 	private static final String[] VALUES = {"gems", "exp", "level", "expRate", "potDur", "swagLevel", "swagPoints", "reminder"};//TODO: enum?
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.sql.impl.UserDataImpl");

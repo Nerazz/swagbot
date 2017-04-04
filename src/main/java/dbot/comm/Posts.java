@@ -28,11 +28,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
- * Created by Niklas on 13.09.2016.
+ * bundled posts parsing and generating
+ * loads posts from json on classloading
+ *
+ * @author Niklas Zd
+ * @since 13.09.2016
  */
 final class Posts {
+	/** logger*/
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Posts");
+	/** medal array for top list */
 	private static final String medals[] = {":crown:", ":first_place:", ":second_place:", ":third_place:", ":military_medal:"};
+	/** strings to load json info in */
 	private static String info = "ERROR", changelog = "ERROR", commands = "ERROR", shop = "ERROR", prestigeInfo = "ERROR", planned = "ERROR";
 
 	static {
@@ -72,6 +79,13 @@ final class Posts {
 		}*/
 	}
 
+	/**
+	 * concatenates a JsonArray to one large String
+	 *
+	 * @param s name of JsonArray
+	 * @param jObj simple JsonObject of jsonFile
+	 * @return concatenated String
+	 */
 	private static String getStringFromJson(String s, JsonObject jObj) {//TODO: s und data umbenennen
 		JsonArray jArr = jObj.getAsJsonArray(s);
 		String data = "";
@@ -81,10 +95,15 @@ final class Posts {
 		return data;
 	}
 
+	/**
+	 * posts stats of user
+	 *
+	 * @param message to extract author and channel
+	 */
 	static void stats(IMessage message) {
-		IUser user = message.getAuthor();
+		IUser author = message.getAuthor();
 		IChannel channel = message.getChannel();
-		UserData uData = new UserDataImpl(user, 255);//exp, level, expRate, potDur, swagLevel, swagPoints, reminder
+		UserData uData = UserDataImpl.getUserData(author);
 		String post = "";
 		if (uData.getSwagLevel() > 0) post += String.format(" :trident:%s   :sparkles:%s", buildNum(uData.getSwagLevel()), buildNum(uData.getSwagPoints()));
 		post += String.format("%nLevel %s (%d/%d exp)", buildNum(uData.getLevel()), uData.getExp(), UserDataImpl.getLevelThreshold(uData.getLevel()));
@@ -103,16 +122,22 @@ final class Posts {
 				post += " (off)";
 			}
 		}
-		post(user + post, channel);
+		post(author + post, channel);
 	}
 
+	/**
+	 * displays gems of user
+	 *
+	 * @param message to extract author and channel
+	 */
 	static void gems(IMessage message) {
 		IUser author = message.getAuthor();
-		post(String.format("%s, you have %d:gem:.", author, (int)UserDataImpl.getData(author, "gems")), message.getChannel());//TODO: besser, nicht getData
+		int gems = UserDataImpl.getUserData(author).getGems();
+		post(String.format("%s, you have %d:gem:.", author, gems), message.getChannel());//TODO: besser, nicht getData
 		//post(author + ", du hast " + UserDataImpl.getData(author, "gems") + ":gem:.", message.getChannel());
 	}
 
-	static void test(IMessage message) {
+	static void test(IMessage message) {//TODO: embed
 		EmbedBuilder eb = new EmbedBuilder();
 		eb.appendField("title", "testcontent", true);
 		eb.withColor(255, 100, 0);
@@ -145,6 +170,12 @@ final class Posts {
 		}
 	}
 
+	/**
+	 * generates place or medal String from medalArray
+	 *
+	 * @param i number of medal
+	 * @return String with medal, otherwise place
+	 */
 	private static String medalGen(int i) {
 		if (i < 5) {
 			return medals[i];
@@ -153,6 +184,11 @@ final class Posts {
 		}
 	}
 
+	/**
+	 * generates top message for all guilds
+	 *
+	 * @param message to extract author and channel
+	 */
 	static void globalTop(IMessage message) {
 		String post = "TOP 5:";
 		ArrayList<SQLData> topList = getScoreList();
@@ -165,10 +201,15 @@ final class Posts {
 		post(post, message.getChannel());
 	}
 
+	/**
+	 * generates top message for current guild
+	 *
+	 * @param message to extract author and channel
+	 */
 	static void localTop(IMessage message) {
 		IChannel channel = message.getChannel();
 		String post = "TOP 5:";
-		int ref = Statics.GUILD_LIST.getRef(channel.getGuild());
+		int ref = Statics.GUILD_LIST.getRef(channel.getGuild());//TODO: was, wenn bot gewhispert wird
 		ArrayList<SQLData> topList = getScoreList(ref);
 		for (int i = 0; (i < topList.size()) && (i < 5); i++) {
 			SQLData uData = topList.get(i);
@@ -179,27 +220,44 @@ final class Posts {
 		post(post, channel);
 	}
 
-	static void rank(IUser author, IChannel channel) {//TODO: global oder local?; bestimmt nice mit sql lösbar
+	/**
+	 * displays adjacent users with ranks
+	 *
+	 * @param message to extract author and channel
+	 */
+	static void rank(IMessage message) {//TODO: global oder local?; bestimmt nice mit sql lösbar
+		IUser author = message.getAuthor();
+		IChannel channel = message.getChannel();
 		ArrayList<SQLData> topList = getScoreList();
 		String authorId = author.getID();
 		int i = 0;
 		while ((i < topList.size()) && (!topList.get(i).getString("id").equals(authorId))) i++;
-		String message = "adjacent ranks:";
-		if (i != 0) message += "\n" + medalGen(i - 1) + topList.get(i - 1).getString("name") + " - ?";//TODO:!
-		message += "\n" + medalGen(i) + topList.get(i).getString("name") + " - ?";
-		if (i != topList.size()) message += "\n" + medalGen(i + 1) + topList.get(i + 1).getString("name") + " - ?";
-		post(message, channel);
+		String post = "adjacent ranks:";
+		if (i != 0) post += "\n" + medalGen(i - 1) + topList.get(i - 1).getString("name") + " - ?";//TODO:!
+		post += "\n" + medalGen(i) + topList.get(i).getString("name") + " - ?";
+		if (i != topList.size()) post += "\n" + medalGen(i + 1) + topList.get(i + 1).getString("name") + " - ?";
+		post(post, channel);
 	}
 
+	/**
+	 * displays reminder toggle message
+	 *
+	 * @param message to extract author and channel
+	 */
 	static void remind(IMessage message) {
-		UserData uData = new UserDataImpl(message.getAuthor(), 128);//reminder
+		UserData uData = UserDataImpl.getUserData(message.getAuthor());
 		uData.negateReminder();
 		uData.update();
 		post("toggled reminder", message.getChannel());
 	}
 
+	/**
+	 * prestiges author
+	 *
+	 * @param message to extract author and channel
+	 */
 	static void prestige(IMessage message) {
-		UserData uData = new UserDataImpl(message.getAuthor(), 101);//gems, level, SL, SP
+		UserData uData = UserDataImpl.getUserData(message.getAuthor());
 		uData.prestige();
 	}
 
@@ -213,18 +271,38 @@ final class Posts {
 		post(message);
 	}*/
 
+	/**
+	 * posts info string
+	 *
+	 * @param message to extract channel
+	 */
 	static void info(IMessage message) {
 		post(info, message.getChannel());
 	}
 
+	/**
+	 * posts changelog string
+	 *
+	 * @param message to extract channel
+	 */
 	static void changelog(IMessage message) {//TODO: umdrehen? (neuster shit oben?); letzte 3 hauptversionen?
 		post(changelog, message.getChannel());
 	}
 
+	/**
+	 * posts shop string
+	 *
+	 * @param message to extract channel
+	 */
 	static void shop(IMessage message) {
 		post(shop, message.getChannel());
 	}
 
+	/**
+	 * posts commands string
+	 *
+	 * @param message to extract channel
+	 */
 	static void commands(IMessage message) {
 		post(commands, message.getChannel());
 	}
@@ -240,14 +318,30 @@ final class Posts {
 		}
 	}*/
 
+	/**
+	 * posts prestigeInfo string
+	 *
+	 * @param message to extract channel
+	 */
 	static void prestigeInfo(IMessage message) {
 		post(prestigeInfo, message.getChannel());
 	}
 
+	/**
+	 * posts planned string
+	 *
+	 * @param message to extract channel
+	 */
 	static void plan(IMessage message) {
 		post(planned, message.getChannel());
 	}
 
+	/**
+	 * generates local score list
+	 *
+	 * @param ref reference of guild
+	 * @return List of scores
+	 */
 	private static ArrayList<SQLData> getScoreList(int ref) {
 		String strings[] = {"name", "level", "exp"};
 		String query = "SELECT `users`.`name`, `level`, `exp` FROM `users` JOIN `guild" + ref + "` AS guild ON `users`.`id` = guild.`id` ORDER BY `level` DESC, `exp` DESC";
@@ -269,6 +363,11 @@ final class Posts {
 		return dataList;
 	}
 
+	/**
+	 * generates score list over all guilds
+	 *
+	 * @return List of scores
+	 */
 	private static ArrayList<SQLData> getScoreList() {//TODO: return List<>?; in util oder sql verschieben?
 		String strings[] = {"name", "level", "exp"};
 		String query = "SELECT `name`, `level`, `exp` FROM `users` ORDER BY `level` DESC, `exp` DESC";

@@ -14,15 +14,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by Niklas on 17.08.2016.
+ * Item Xpot
+ *
+ * @author Niklas Zd
+ * @since 17.08.2016
  */
 public final class Xpot {//Buy extenden oder ähnliches?
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.items.Xpot");
 
-	//public static void main(IUser user, String pot, IChannel channel) {
+	/**
+	 * checks for sufficient gems and searches for XPot type
+	 *
+	 * @param message passed message to extract all relevant data
+	 */
 	public static void main(IMessage message) {
 		String content = message.getContent().toLowerCase();
-		UserData uData = new UserDataImpl(message.getAuthor(), 25);//gems, expRate, potDuration
+		UserData uData = UserDataImpl.getUserData(message.getAuthor());
 		IChannel channel = message.getChannel();
 
 		Matcher matcher = Pattern.compile("^!buy\\s[a-z]+\\s([a-z]+)").matcher(content);
@@ -65,10 +72,25 @@ public final class Xpot {//Buy extenden oder ähnliches?
 		}
 	}
 
+	/**
+	 * randoms between 0 and mult
+	 *
+	 * @param mult max value
+	 * @return randomised value
+	 */
 	private static int rnd(int mult) {
 		return (int)(Math.round(Math.random() * mult));
 	}
 
+	/**
+	 * changes values of user according to XPot
+	 *
+	 * @param uData UserData to be changed
+	 * @param duration duration of XPot [normally in ticks]
+	 * @param amp amplification for exp values, 1000 == 100% rate
+	 * @param price price of XPot
+	 * @param channel where to post the gained XPot message
+	 */
 	private static void use(UserData uData, int duration, int amp, int price, IChannel channel) {//duration in ticks
 		//UserDataImpl uData = new UserDataImpl(user, 25);//gems, expRate, potDur
 		IUser user = uData.getUser();

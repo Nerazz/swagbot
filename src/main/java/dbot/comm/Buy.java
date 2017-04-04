@@ -13,14 +13,27 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.regex.*;
 
+/**
+ * searches for item that gets bought
+ * loads methods of items on load of class
+ *
+ * @author Niklas Zd
+ */
 final class Buy {
+	/** logger */
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Buy");
+	/** map of all items and connected methods */
 	private static final Map<String, Consumer<IMessage>> ITEM_MAP = new HashMap<>();
 
 	static {
-		ITEM_MAP.put("xpot", Xpot::main);
+		ITEM_MAP.put("xpot", Xpot::main);//TODO:
 	}
 
+	/**
+	 * searches wanted item
+	 *
+	 * @param message for content
+	 */
 	static void main(IMessage message) {
 		String content = message.getContent().toLowerCase();
 

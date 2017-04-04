@@ -26,7 +26,7 @@ public final class ReadyListener implements IListener<ReadyEvent> {
 		ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 		TickTimer tickTimer = new TickTimer();
 		try {
-			executor.scheduleAtFixedRate(tickTimer, 5, 60, TimeUnit.SECONDS);//TODO: care, 60sec
+			executor.scheduleAtFixedRate(tickTimer, 5, 20, TimeUnit.SECONDS);//TODO: care, 60sec
 		} catch(Exception e) {
 			LOGGER.error("TickTimer RIP!!", e);
 		}

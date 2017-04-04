@@ -11,12 +11,18 @@ import sx.blah.discord.api.events.EventDispatcher;
 import sx.blah.discord.util.DiscordException;
 
 /**
- * Bot - Mainclass
+ * Mainclass, used to start the bot
+ *
  * @author	Niklas Zd
  */
 final class Bot {
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.Bot");
 
+	/**
+	 * starts the bot and registers all needed listeners
+	 *
+	 * @param args not used
+	 */
 	public static void main(String[] args) {
 		LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 		StatusPrinter.print(lc);
