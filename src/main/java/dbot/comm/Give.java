@@ -13,9 +13,20 @@ import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 
+/**
+ * command give
+ *
+ * @author Niklas Zd
+ */
 final class Give {
+	/** logger */
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Give");
 
+	/**
+	 * transfers gems from one user to another
+	 *
+	 * @param message to extract author (giver), mention (getter)
+	 */
 	static void main(IMessage message) {
 		IUser author = message.getAuthor();
 		String params = message.getContent().toLowerCase();

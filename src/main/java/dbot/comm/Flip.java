@@ -19,12 +19,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.regex.*;
 
-final class Flip {
+/**
+ * Command flip, for creating, joining, closing flipRooms and flipping itself
+ *
+ * @author Niklas Zd
+ */
+final class Flip {//TODO: kein mindesteinsatz, auf 3 räume begrenzt
+	/** logger */
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Flip");
+	/** String that is displayed when the bot joins a guild */
 	private static final String startString = "Open flip rooms:```xl\n";
+	/** minimal bet to create a room */
 	private static final int MIN_BET = 500;
 
-	//static void m(IUser author, String params, int ref, IChannel channel) {
+	/**
+	 * filters the message for sub-commands such as join, close
+	 *
+	 * @param message to be filtered
+	 */
 	static void main(IMessage message) {
 		IUser author = message.getAuthor();
 		IChannel channel = message.getChannel();
@@ -77,6 +89,14 @@ final class Flip {
 
 	}
 
+	/**
+	 * opens a flipRoom and uploads it to the database
+	 *
+	 * @param uData room creator
+	 * @param bet value of room
+	 * @param side "coin side", top / kek
+	 * @param channel channel to post room creation message in
+	 */
 	private static void open(UserData uData, int bet, String side, IChannel channel) {
 		side += "";
 		side = side.toUpperCase();//TODO: besser machen
@@ -106,6 +126,14 @@ final class Flip {
 		updateRoomPost();
 	}
 
+	/**
+	 * lets a user join a flipRoom
+	 *
+	 * @param clientData data of joining user
+	 * @param params room id
+	 * @param ref reference of guild
+	 * @param channel channel to post error messages in
+	 */
 	private static void join(UserData clientData, String params, int ref, IChannel channel) {
 		Pattern pattern = Pattern.compile("(\\d+)");
 		Matcher matcher = pattern.matcher(params);
@@ -148,17 +176,33 @@ final class Flip {
 		}
 	}
 
-	private static void afterFlip(UserData winner, UserData looser, int pot, String side, IChannel channel) {//TODO: geht bestimmt besser (weniger params?); CARE BEI WINNER == LOOSER
+	/**
+	 * calculations for winners / losers gems
+	 *
+	 * @param winner userdata of winner
+	 * @param loser userdata of loser
+	 * @param pot value of flipRoom
+	 * @param side "coin side" flip / kek
+	 * @param channel channel to post winmessage in
+	 */
+	private static void afterFlip(UserData winner, UserData loser, int pot, String side, IChannel channel) {//TODO: geht bestimmt besser (weniger params?); CARE BEI WINNER == LOOSER
 		winner.addGems(pot * 2);
 		winner.update();
-		looser.update();//TODO: richtig so? gefühlt wird min. 2x geupdatet pro person
-		LOGGER.info("{} won {} Gems vs {}", winner.getName(), pot * 2, looser.getName());
-		//post(winner.getName() + " hat mit " + side + " gegen " + looser.getName() + " gewonnen und gewinnt " + pot + ":gem:!!", channel);
-		post(String.format("%s won with %s vs %s and gets %d:gem:!!", winner.getName(), side, looser.getName(), pot), channel);
-		post(String.format("Hey, you won %d vs %s", pot, looser.getName()), winner.getUser());
-		post(String.format(":cry: you lost your %d:gem: vs %s...", pot, winner.getName()), looser.getUser());
+		loser.update();//TODO: richtig so? gefühlt wird min. 2x geupdatet pro person
+		LOGGER.info("{} won {} Gems vs {}", winner.getName(), pot * 2, loser.getName());
+		//post(winner.getName() + " hat mit " + side + " gegen " + loser.getName() + " gewonnen und gewinnt " + pot + ":gem:!!", channel);
+		post(String.format("%s won with %s vs %s and gets %d:gem:!!", winner.getName(), side, loser.getName(), pot), channel);
+		post(String.format("Hey, you won %d vs %s", pot, loser.getName()), winner.getUser());
+		post(String.format(":cry: you lost your %d:gem: vs %s...", pot, winner.getName()), loser.getUser());
 	}
 
+	/**
+	 * closing of rooms
+	 *
+	 * @param uData userdata of room closing user
+	 * @param param contains id of room or all
+	 * @param channel channel to post error / close message in
+	 */
 	private static void close(UserData uData, String param, IChannel channel) {
 		Pattern pattern = Pattern.compile("(\\d+)|(all|a)");
 		Matcher matcher = pattern.matcher(param);
@@ -205,6 +249,9 @@ final class Flip {
 		updateRoomPost();
 	}
 
+	/**
+	 * updates room list on all guilds
+	 */
 	private static void updateRoomPost() {
 		try {
 			try (Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement("SELECT `flip`.`id`, `hostID`, `pot`, `side`, `name` FROM `flip` JOIN `users` ON `flip`.`hostID`=`users`.`id`;")) {//TODO: besser machbar?

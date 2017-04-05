@@ -9,10 +9,18 @@ import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
 import java.util.regex.*;
 
+/**
+ * rolls a dice and posts the result
+ */
 final class Roll {
+	/** logger */
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.comm.Roll");
-	private static final String desc = "testDesc";
 
+	/**
+	 * filters for number of arguments, randoms numbers and posts results
+	 *
+	 * @param message to extract arguments, author and channel
+	 */
 	static void main(IMessage message) {
 		IChannel channel = message.getChannel();
 		IUser author = message.getAuthor();
@@ -58,9 +66,5 @@ final class Roll {
 				}
 			}
 		}
-	}
-
-	String getDesc() {
-		return desc;
 	}
 }

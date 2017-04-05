@@ -32,18 +32,29 @@ import java.util.regex.Pattern;
 import static dbot.util.Poster.post;
 
 /**
- * Created by Niklas on 19.10.2016.
+ * lotto main class
+ *
+ * @author Niklas Zd
+ * @since 19.10.2016
  */
 public class Lotto {
+	/** logger */
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.timer.LottoTimer");
 	//protected static int lastDay = Database.getInstance().getServerData().getLastLottoDay();//1 = Monday, 7 = Sunday
+	/** most recent day of drawing (1(monday) - 7(sunday)) */
 	protected static int lastDay = 1;
+	/** maximal pot for bot to increase itself (tickets still go in) */
 	protected static final int POT_MAX = 420000;
+	/** price of one ticket */
 	private static final int PRICE = 250;
+	/** Map for userdata - ticketList */
 	protected static final DataMap<UserData, ArrayList<Integer>> TICKET_MAP = new DataMap<>();//id, arraylist?
 	//protected static int pot = Database.getInstance().getServerData().getLottoPot();
+	/** value of pot */
 	protected static int pot = 420000;
+	/** list of last chosen numbers */
 	protected static final ArrayList<Integer> LAST_WINS = new ArrayList<>();
+	/** status for entries */
 	protected static boolean closed = false;
 
 	/*private static final ScheduledExecutorService SCHEDULER = Executors.newScheduledThreadPool(1);
@@ -67,6 +78,9 @@ public class Lotto {
 		SCHEDULER.scheduleAtFixedRate(LOTTO_TIMER, initDelay, 60 , SECONDS);//alle 5 Tage in sec: 60 * 60 * 24 * 5*/
 	//}
 
+	/**
+	 * loads tickets from database to ram (for reloading last tickets on bot startup)
+	 */
 	public static void init() {
 		//TODO: load tickets from db
 		String query = "SELECT * FROM `lotto`";
@@ -101,6 +115,11 @@ public class Lotto {
 		}
 	}
 
+	/**
+	 * filters the message for sub commands
+	 *
+	 * @param message to extract content
+	 */
 	static void main(IMessage message) {
 		String content = message.getContent().toLowerCase();
 		Matcher matcher = Pattern.compile("^!lotto\\s(last|pool|next|(1[0-6]|[1-9])\\s(1[0-6]|[1-9])\\s(1[0-6]|[1-9])\\s(!k|k))$").matcher(content);
@@ -189,6 +208,9 @@ public class Lotto {
 
 	}
 
+	/**
+	 * posts last winning numbers
+	 */
 	private static void last() {
 		/*if (LAST_WINS.isEmpty()) {
 			post("es gab noch keine Ziehung!");
@@ -197,6 +219,11 @@ public class Lotto {
 		post("Letzte Ziehung: " + LAST_WINS);*/
 	}
 
+	/**
+	 * gets the date of next drawing
+	 *
+	 * @return date of next drawing
+	 */
 	private static LocalDateTime getNextDrawing() {
 		//return LocalDateTime.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.THURSDAY)).withHour(20).withMinute(0).withSecond(0);//jeden donnerstag 20:00:00
 		return LocalDateTime.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.of(rotateDay(false)))).withHour(20).withMinute(0).withSecond(0);//jeden donnerstag 20:00:00
@@ -207,6 +234,12 @@ public class Lotto {
 		//return LocalDateTime.now().withSecond(LocalDateTime.now().getSecond() + 10);//in 30 sekunden
 	}
 
+	/**
+	 * rotates the day to the next drawing occurrence
+	 *
+	 * @param hardChange should the next day get changed permanently
+	 * @return day of next drawing
+	 */
 	protected static int rotateDay(boolean hardChange) {
 		int tmpDay = lastDay + 5;
 		if (tmpDay > 7) tmpDay -= 7;
