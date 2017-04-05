@@ -23,11 +23,18 @@ import static dbot.util.Poster.edit;
 import static dbot.util.Poster.post;
 
 /**
- * Created by niklas on 29.09.16.
+ * handles the lotto drawing
+ *
+ * @author Niklas Zd
+ * @since 29.09.2016
  */
 public final class LottoTimer extends Lotto implements Runnable {
+	/** logger */
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.timer.LottoTimer");
 
+	/**
+	 * locks entries (and draws winner(eigentlich nicht))TODO: besser
+	 */
 	@Override
 	public void run() {//TODO: jeden tag um 8 oder so ziehung
 		closed = true;
@@ -73,6 +80,9 @@ public final class LottoTimer extends Lotto implements Runnable {
 		closed = false;
 	}
 
+	/**
+	 * draws the winning numbers
+	 */
 	private static void gen() {
 		LAST_WINS.clear();
 		ArrayList<Integer> poolList = new ArrayList<>();
@@ -87,6 +97,9 @@ public final class LottoTimer extends Lotto implements Runnable {
 		}
 	}
 
+	/**
+	 * checks for winners
+	 */
 	private void checkNumbers() {
 		List<List<UserData>> winnerList = new ArrayList<>(6);//TODO: size 0?, 6 oder 5?
 		for (int i = 0; i < 6; i++) {
@@ -107,6 +120,11 @@ public final class LottoTimer extends Lotto implements Runnable {
 		distribute(winnerList);
 	}
 
+	/**
+	 * distributes the won prizes between winners
+	 *
+	 * @param winnerList list of winners
+	 */
 	private static void distribute(final List<List<UserData>> winnerList) {
 		final double POT_FACTOR = 0.8;
 		final double BON_FACTOR = 1.5;
@@ -149,6 +167,12 @@ public final class LottoTimer extends Lotto implements Runnable {
 		//Database.getInstance().getServerData().setLottoPot(pot);//TODO: setLottoPot in db
 	}
 
+	/**
+	 * adds delay before editing a message
+	 *
+	 * @param message message to be edited
+	 * @param s string the message should become
+	 */
 	private static void delayEdit(IMessage message, String s) {
 		try {
 			Thread.sleep(3000);

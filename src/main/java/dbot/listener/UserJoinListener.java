@@ -14,11 +14,20 @@ import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 
 /**
- * Created by Niklas on 23.02.2017.
+ * Listens to UserJoinEvents
+ *
+ * @author Niklas Zd
+ * @since 23.02.2017
  */
 public final class UserJoinListener implements IListener<UserJoinEvent> {
+	/** logger */
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.listener.UserJoinListener");
 
+	/**
+	 * handles the UserJoinEvent, adds role and posts welcome message
+	 *
+	 * @param event the UserJoinEvent
+	 */
 	@Override
 	public void handle(UserJoinEvent event) {
 		IUser user = event.getUser();

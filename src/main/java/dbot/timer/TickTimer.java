@@ -15,18 +15,34 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * MainTimer, handles bot status (online) text and constant user updates for gems and exp
+ *
+ * @author Niklas Zd
+ */
 public final class TickTimer implements Runnable {
+	/** logger */
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.timer.TickTimer");
+	/** bot client */
 	private static final IDiscordClient BOT_CLIENT = Statics.BOT_CLIENT;
 
+	/** minutes since bot start */
 	private static int minutesOnline = 0;
+	/** hours since bot start */
 	private static int hoursOnline = 0;
+	/** days since bot start */
 	private static int daysOnline = 0;
 
+	/**
+	 * sets status text
+	 */
 	public TickTimer() {
 		BOT_CLIENT.changePlayingText("fresh online");
 	}
 
+	/**
+	 * handles updates on online timer and users
+	 */
 	@Override
 	public void run() {
 		System.out.println("tick");

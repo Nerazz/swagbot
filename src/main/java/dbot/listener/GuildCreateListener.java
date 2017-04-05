@@ -25,12 +25,22 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
- * Created by Niklas on 23.02.2017.
+ * Listens to GuildCreateEvents
+ *
+ * @author Niklas Zd
+ * @since 23.02.2017
  */
 public final class GuildCreateListener implements IListener<GuildCreateEvent> {
+	/** logger */
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.listener.GuildCreateListener");
+	/** lock to wait for ReadyEvent */
 	static final Object LOCK = new Object();
 
+	/**
+	 * handles the event and looks guild from database up
+	 *
+	 * @param event the GuildCreateEvent
+	 */
 	@Override
 	public void handle(GuildCreateEvent event) {
 		LOGGER.debug("GuildCreateEvent");
@@ -67,7 +77,15 @@ public final class GuildCreateListener implements IListener<GuildCreateEvent> {
 		}
 	}
 
-	private static ResultSet getGuildRef(Connection con, PreparedStatement ps, IGuild guild) {
+	/**
+	 * gets the reference of a guild or creates one and the botChannel
+	 *
+	 * @param con the database connection that should be used
+	 * @param ps PreparedStatement which contains the ref select query
+	 * @param guild guild which reference gets stored
+	 * @return ResultSet with reference and botChannelId
+	 */
+	private static ResultSet getGuildRef(Connection con, PreparedStatement ps, IGuild guild) {//TODO: ps wirklich übergeben oder lieber in dieser methode generieren?
 		ResultSet rs = null;
 		LOGGER.info("GUILD {} NOT FOUND, ADDING GUILD TO DATABASE", guild.getName());
 		String insertQuery = "INSERT INTO `guilds` (`id`, `name`, `botChannel`) VALUES (?, ?, ?)";
@@ -121,6 +139,11 @@ public final class GuildCreateListener implements IListener<GuildCreateEvent> {
 		return rs;
 	}
 
+	/**
+	 * creates flipRoom post in channel
+	 *
+	 * @param channel channel in which it should get posted
+	 */
 	public static void createPost(IChannel channel) {
 		Future<IMessage> fMessage = Poster.post("Offene Flip-Räume:```xl\nkeine```", channel, -1);
 		try {

@@ -1,7 +1,10 @@
 package dbot.util.exception;
 
 /**
- * Created by Niklas on 16.03.2017.
+ * exception if an accessed user wasn't found
+ *
+ * @author Niklas Zd
+ * @since 16.03.2017
  */
 public class UserNotFoundException extends Exception {
 	public UserNotFoundException() {}

@@ -12,11 +12,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by Niklas on 23.02.2017.
+ * Listens to MessageReceivedEvents
+ *
+ * @author Niklas Zd
+ * @since 23.02.2017
  */
 public final class MessageListener implements IListener<MessageReceivedEvent> {
+	/** logger */
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.listener.MessageListener");
 
+	/**
+	 * handles the event, checks for normal or admin command and sends it to triggers
+	 *
+	 * @param event the MessageReceivedEvent
+	 */
 	@Override
 	public void handle(MessageReceivedEvent event) {
 		IMessage message = event.getMessage();

@@ -16,6 +16,7 @@ import sx.blah.discord.util.DiscordException;
  * @author	Niklas Zd
  */
 final class Bot {
+	/** logger */
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.Bot");
 
 	/**
