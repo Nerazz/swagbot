@@ -39,7 +39,7 @@ public final class LottoTimer extends Lotto implements Runnable {
 	public void run() {//TODO: jeden tag um 8 oder so ziehung
 		closed = true;
 		String winPost = "L O T T O Z I E H U N G!!\nGewonnen hat die Nummer:  ";
-		Future<IMessage> fWinMessage = post(winPost, Statics.GUILD_LIST.getBotChannel(1));//TODO: für alle botspams
+		Future<IMessage> fWinMessage = post(winPost, Statics.tempBotSpam);
 		IMessage winMessage = null;
 		try {
 			winMessage = fWinMessage.get();
@@ -159,10 +159,10 @@ public final class LottoTimer extends Lotto implements Runnable {
 				}
 			}
 		}
-		post(winMsg, Statics.GUILD_LIST.getBotChannel(1));//TODO: für alle
+		post(winMsg, Statics.tempBotSpam);//TODO: für alle
 		pot -= raus;
 		int toAdd = POT_MAX / 4;
-		post("Ich pack mal " + toAdd + ":gem: in den Pot :wink::ok_hand:", Statics.GUILD_LIST.getBotChannel(1));//TODO: für alle
+		post("Ich pack mal " + toAdd + ":gem: in den Pot :wink::ok_hand:", Statics.tempBotSpam);
 		pot += toAdd;
 		//Database.getInstance().getServerData().setLottoPot(pot);//TODO: setLottoPot in db
 	}

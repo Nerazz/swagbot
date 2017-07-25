@@ -70,10 +70,10 @@ public final class TickTimer implements Runnable {
 			}
 
 			//Map<String, IUser> onlineUsers = Statics.BOT_CLIENT.getUsers().stream().filter(u -> u.getPresence().getStatus().equals(StatusType.ONLINE)).collect(Collectors.toMap(IUser::getID, u -> u));
-			List<String> onlineUserIds = Statics.BOT_CLIENT.getUsers().stream().filter(u -> u.getPresence().getStatus().equals(StatusType.ONLINE)).map(IUser::getID).collect(Collectors.toList());
+			List<Long> onlineUserIds = Statics.BOT_CLIENT.getUsers().stream().filter(u -> u.getPresence().getStatus().equals(StatusType.ONLINE)).map(IUser::getLongID).collect(Collectors.toList());
 
 
-			Map<String, IUser> onlineUsers = Statics.BOT_CLIENT.getUsers().stream().filter(u -> u.getPresence().getStatus().equals(StatusType.ONLINE)).collect(Collectors.toMap(IUser::getID, u -> u));
+			Map<Long, IUser> onlineUsers = Statics.BOT_CLIENT.getUsers().stream().filter(u -> u.getPresence().getStatus().equals(StatusType.ONLINE)).collect(Collectors.toMap(IUser::getLongID, u -> u));
 			System.out.println(onlineUsers.size() + " users online");
 
 			//TODO: add exp & gems, update users (mit UserDataImpl.update(List<UserDataImpl>))
@@ -88,6 +88,12 @@ public final class TickTimer implements Runnable {
 			int exp = (int) ((Math.round(Math.random() * 3) + 4 + userDataImpl.getSwagLevel()) * userDataImpl.getExpRate()) / 1000;
 			userDataImpl.addExp(exp);
 			userDataImpl.reducePotDur();*/
+			for (Map.Entry<Long, IUser> e : onlineUsers.entrySet()) {
+				UserDataImpl ud =  UserCache.getUserData(e.getValue());
+				ud.addGems(3);
+				ud.addExp(5);
+				ud.update();
+			}
 
 			UserCache.cleanNotAccessed();//TODO: nur jede Stunde oder so
 			System.out.println("done");

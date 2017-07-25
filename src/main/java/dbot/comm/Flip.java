@@ -37,10 +37,9 @@ final class Flip {//TODO: kein mindesteinsatz, auf 3 räume begrenzt
 	 *
 	 * @param message to be filtered
 	 */
-	static void main(IMessage message) {
+	/*static void main(IMessage message) {
 		IUser author = message.getAuthor();
 		IChannel channel = message.getChannel();
-		int ref = Statics.GUILD_LIST.getRef(message.getGuild());
 		String params = message.getContent().toLowerCase();//TODO: besser machen(siehe roll)
 		UserData uData = UserDataImpl.getUserData(author);
 		params = params.substring(6, params.length());//!flip abschneiden
@@ -87,7 +86,7 @@ final class Flip {//TODO: kein mindesteinsatz, auf 3 räume begrenzt
 				break;
 		}
 
-	}
+	}*/
 
 	/**
 	 * opens a flipRoom and uploads it to the database
@@ -97,7 +96,7 @@ final class Flip {//TODO: kein mindesteinsatz, auf 3 räume begrenzt
 	 * @param side "coin side", top / kek
 	 * @param channel channel to post room creation message in
 	 */
-	private static void open(UserData uData, int bet, String side, IChannel channel) {
+	/*private static void open(UserData uData, int bet, String side, IChannel channel) {
 		side += "";
 		side = side.toUpperCase();//TODO: besser machen
 		if (bet < MIN_BET) {
@@ -124,7 +123,7 @@ final class Flip {//TODO: kein mindesteinsatz, auf 3 räume begrenzt
 			LOGGER.error("SQL failed in open", e);
 		}
 		updateRoomPost();
-	}
+	}*/
 
 	/**
 	 * lets a user join a flipRoom
@@ -134,7 +133,7 @@ final class Flip {//TODO: kein mindesteinsatz, auf 3 räume begrenzt
 	 * @param ref reference of guild
 	 * @param channel channel to post error messages in
 	 */
-	private static void join(UserData clientData, String params, int ref, IChannel channel) {
+	/*private static void join(UserData clientData, String params, IChannel channel) {
 		Pattern pattern = Pattern.compile("(\\d+)");
 		Matcher matcher = pattern.matcher(params);
 
@@ -174,7 +173,7 @@ final class Flip {//TODO: kein mindesteinsatz, auf 3 räume begrenzt
 		} catch(SQLException e) {
 			LOGGER.error("SQL failed in join", e);
 		}
-	}
+	}*/
 
 	/**
 	 * calculations for winners / losers gems
@@ -211,7 +210,7 @@ final class Flip {//TODO: kein mindesteinsatz, auf 3 räume begrenzt
 			int roomID = Integer.parseInt(param);
 			try (Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement("SELECT `pot` FROM `flip` WHERE `id` = ? AND `hostID` = ?")) {
 				ps.setString(1, param);
-				ps.setString(2, uData.getId());
+				//ps.setString(2, uData.getId());//nur wegen getId->long auskommentiert
 				ResultSet rs = ps.executeQuery();
 				if (!rs.next()) {
 					post(String.format("Room %d with creator %s not found", roomID, uData.getName()), channel);
@@ -230,7 +229,7 @@ final class Flip {//TODO: kein mindesteinsatz, auf 3 räume begrenzt
 			}
 		} else {
 			try (Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement("SELECT `pot` FROM `flip` WHERE `hostID` = ?")) {
-				ps.setString(1, uData.getId());
+				//ps.setString(1, uData.getId());//nur wegen getId->long auskommentiert
 				ResultSet rs = ps.executeQuery();
 				int count = 0;
 				while (rs.next()) {

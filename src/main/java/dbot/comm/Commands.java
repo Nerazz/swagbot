@@ -30,26 +30,26 @@ public final class Commands {
 
 	static {
 		/* COMMANDS init */
-		COMMANDS.put("commands", Posts::commands);
+		/*COMMANDS.put("commands", Posts::commands);
 		COMMANDS.put("info", Posts::info);
 		COMMANDS.put("changelog", Posts::changelog);
 		COMMANDS.put("shop", Posts::shop);
 		COMMANDS.put("prestige", Posts::prestigeInfo);
-		COMMANDS.put("plan", Posts::plan);
+		COMMANDS.put("plan", Posts::plan);*/
 		//COMMANDS.put("ichwilljetztwirklichresettenundkennedieregelnzuswagpointsundcomindestenseinigermassen", Posts::prestige);TODO: erst prestige fixen
-		COMMANDS.put("roll", Roll::main);
+		/*COMMANDS.put("roll", Roll::main);
 		COMMANDS.put("stats", Posts::stats);
 		COMMANDS.put("gems", Posts::gems);
-		COMMANDS.put("gtop", Posts::globalTop);
-		COMMANDS.put("ltop", Posts::localTop);
-		COMMANDS.put("buy", Buy::main);
-		COMMANDS.put("flip", Flip::main);
-		COMMANDS.put("give", Give::main);
-		COMMANDS.put("remind", Posts::remind);
-		COMMANDS.put("mute", Posts::mute);//FIXME(missingPermissionException)
+		COMMANDS.put("gtop", Posts::globalTop);*/
+		//COMMANDS.put("ltop", Posts::localTop);
+		//COMMANDS.put("buy", Buy::main);
+		//COMMANDS.put("flip", Flip::main);
+		//COMMANDS.put("give", Give::main);
+		//COMMANDS.put("remind", Posts::remind);
+		//COMMANDS.put("mute", Posts::mute);//FIXME(missingPermissionException)
 		//COMMANDS.put("rank", Posts::rank);
-		COMMANDS.put("lotto", Lotto::main);//FIXME(timer läuft nicht ordentlich)
-		COMMANDS.put("test", Posts::test);
+		//COMMANDS.put("lotto", Lotto::main);//FIXME(timer läuft nicht ordentlich)
+		//COMMANDS.put("test", Posts::test);
 
 		ADMIN_COMMANDS.put("folo", Admin::forceLogout);
 	}
@@ -77,7 +77,7 @@ public final class Commands {
 	 * @param command command that is called
 	 */
 	public static void adminTrigger(IMessage message, String command) {
-		if (!message.getAuthor().getID().equals(Statics.ID_NERAZ)) {
+		if (!(message.getAuthor().getLongID() == Statics.ID_NERAZ)) {
 			post(message.getAuthor().getName() + ", you need to be admin for this kinda stuff", message.getChannel());
 			return;
 		}

@@ -37,7 +37,7 @@ public final class GuildCreateListener implements IListener<GuildCreateEvent> {
 	static final Object LOCK = new Object();
 
 	/**
-	 * handles the event and looks guild from database up
+	 * handles the event and looks up guild from database
 	 *
 	 * @param event the GuildCreateEvent
 	 */
@@ -55,88 +55,10 @@ public final class GuildCreateListener implements IListener<GuildCreateEvent> {
 				}
 			}
 		}
-
-		String query = "SELECT `ref`, `botChannel` FROM `guilds` WHERE `id` = ?";//TODO: geht bestimmt besser, wird zweimal abgerufen
-		try(Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(query)) {
-			ps.setString(1, guild.getID());
-			ResultSet rs = ps.executeQuery();
-			if (!rs.next()) {
-				rs.close();//zum releasen oder einfach überschreiben ok?
-				rs = getGuildRef(con, ps, guild);
-			}
-			int ref = rs.getInt("ref");
-			IChannel channel = guild.getChannelByID(rs.getString("botChannel"));
-			Statics.GUILD_LIST.addGuild(ref, guild, channel);//TODO: vielleicht besser machbar
-			System.out.println(Statics.GUILD_LIST.toString());
-			rs.close();
-			//UserDataImpl.addUsers(guild.getUsers(), ref);TODO: wieder adden oder multiguild abschaffen
-
-			createPost(channel);
-		} catch(SQLException e) {
-			LOGGER.error("SQL or Future failed in onGuildCreateEvent", e);
-		}
-	}
-
-	/**
-	 * gets the reference of a guild or creates one and the botChannel
-	 *
-	 * @param con the database connection that should be used
-	 * @param ps PreparedStatement which contains the ref select query
-	 * @param guild guild which reference gets stored
-	 * @return ResultSet with reference and botChannelId
-	 */
-	private static ResultSet getGuildRef(Connection con, PreparedStatement ps, IGuild guild) {//TODO: ps wirklich übergeben oder lieber in dieser methode generieren?
-		ResultSet rs = null;
-		LOGGER.info("GUILD {} NOT FOUND, ADDING GUILD TO DATABASE", guild.getName());
-		String insertQuery = "INSERT INTO `guilds` (`id`, `name`, `botChannel`) VALUES (?, ?, ?)";
-		try (PreparedStatement psInsertGuild = con.prepareStatement(insertQuery)) {
-			psInsertGuild.setString(1, guild.getID());
-			psInsertGuild.setString(2, guild.getName());
-			LOGGER.info("creating botChannel on {}", guild.getName());
-			Future<String> fID = RequestBuffer.request(() -> {//TODO: erst nach permission createn (bei neuem server fail)
-				try {
-					IChannel botChannel = guild.createChannel("botspam");
-					EnumSet<Permissions> allPerms = EnumSet.allOf(Permissions.class);
-					EnumSet<Permissions> nonePerms = EnumSet.noneOf(Permissions.class);
-					EnumSet<Permissions> addPerms = EnumSet.of(Permissions.READ_MESSAGES, Permissions.SEND_MESSAGES, Permissions.READ_MESSAGE_HISTORY);
-					EnumSet<Permissions> remPerms = EnumSet.of(Permissions.MANAGE_CHANNEL, Permissions.MANAGE_PERMISSIONS, Permissions.MANAGE_MESSAGES);
-					botChannel.overrideUserPermissions(Statics.BOT_CLIENT.getOurUser(), allPerms, nonePerms);
-					botChannel.overrideRolePermissions(guild.getEveryoneRole(), addPerms, remPerms);
-					botChannel.changeTopic(":robot: !commands :robot:");
-					return botChannel.getID();
-				} catch (MissingPermissionsException | DiscordException e) {
-					LOGGER.error("future failed:", e);
-				}
-				return null;
-			});
-			psInsertGuild.setString(3, fID.get());
-			psInsertGuild.executeUpdate();
-			con.commit();//hier ref erstellt
-			rs = ps.executeQuery();
-			rs.next();
-			int ref = rs.getInt("ref");
-
-			String createQuery = "CREATE TABLE `guild" + ref + "` (" +
-					"`id` varchar(128) COLLATE utf8_bin NOT NULL," +
-					"`name` varchar(128) COLLATE utf8_bin NOT NULL, " +
-					"PRIMARY KEY (`id`), " +
-					"UNIQUE KEY `id_UNIQUE` (`id`), " +
-					"KEY `id_INDEX` (`id`), " +
-					"KEY `name_INDEX` (`name`), " +
-					"CONSTRAINT `FKEY_id_G" + ref + "` FOREIGN KEY (`id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE, " +
-					"CONSTRAINT `FKEY_name_G" + ref + "` FOREIGN KEY (`name`) REFERENCES `users` (`name`) ON DELETE CASCADE ON UPDATE CASCADE" +
-					") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin";
-
-			try(PreparedStatement psCreateGuild = con.prepareStatement(createQuery)) {
-				psCreateGuild.executeUpdate();
-				con.commit();
-			}
-			//TODO: add guild.getUsers() to users + guildREF
-			//LOGGER.info("Init for new Server ({}) done.", guild.getName());
-		} catch(SQLException | InterruptedException | ExecutionException e) {
-			LOGGER.error("SQL or future failed:", e);
-		}
-		return rs;
+		IChannel channel = guild.getChannelsByName("botspam").get(0);//TODO: besser machen
+		Statics.tempBotSpam = channel;
+		Statics.tempGuild = guild;
+		createPost(channel);
 	}
 
 	/**

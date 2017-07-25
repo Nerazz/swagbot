@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +28,7 @@ public class UserCache {
 	/** logger */
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.util.UserCache");
 	/** Hashmap with id of user as key and a userdata wrapper object as value */
-	private static final Map<String, UserCacheObject> USER_CACHE = new HashMap<>();
+	private static final Map<Long, UserCacheObject> USER_CACHE = new HashMap<>();
 	/** query to select a single user and its from database */
 	private static final String SELECT_QUERY = "SELECT `ticks`, `lastSeen`, `gems`, `level`, `exp`, `swagLevel`, `swagPoints`, `reminder`, `expRate`, `potDur` FROM `users` WHERE `id` = ?";
 
@@ -40,7 +41,7 @@ public class UserCache {
 	 * @return retrieved userdata
 	 */
 	public static UserDataImpl getUserData(IUser user) {//TODO: add if nonexistent
-		String id = user.getID();
+		long id = user.getLongID();//autoboxen lassen? oder direkt Long?
 		synchronized (USER_CACHE) {
 			if (!USER_CACHE.containsKey(id)) {
 				try {
@@ -74,7 +75,7 @@ public class UserCache {
 	 * @return true if user is contained
 	 */
 	public static boolean containsUser(IUser user) {
-		return USER_CACHE.containsKey(user.getID());
+		return USER_CACHE.containsKey(user.getLongID());
 	}
 
 	/**
@@ -93,15 +94,15 @@ public class UserCache {
 	 * @param user user that was accessed
 	 */
 	public static void setAccessed(IUser user) {
-		USER_CACHE.get(user.getID()).setAccessed(true);
+		USER_CACHE.get(user.getLongID()).setAccessed(true);
 	}
 
 	/**
 	 * clears not accessed users since last call to this method and sets accessed to false otherwise
 	 */
 	public static void cleanNotAccessed() {
-		List<String> keysToDelete = new ArrayList<>();
-		for (Map.Entry<String, UserCacheObject> entry : USER_CACHE.entrySet()) {
+		List<Long> keysToDelete = new ArrayList<>();
+		for (Map.Entry<Long, UserCacheObject> entry : USER_CACHE.entrySet()) {
 			if (!entry.getValue().isAccessed()) {
 				keysToDelete.add(entry.getKey());
 			} else {
@@ -109,7 +110,7 @@ public class UserCache {
 			}
 		}
 		System.out.println("deleting " + keysToDelete.size() + " entries");
-		for (String key : keysToDelete) {
+		for (Long key : keysToDelete) {
 			synchronized (USER_CACHE) {
 				USER_CACHE.remove(key);
 			}
@@ -124,12 +125,21 @@ public class UserCache {
 	 * @throws UserNotFoundException if user wasn't found in database
 	 */
 	private static UserDataImpl loadUserFromDb(IUser user) throws UserNotFoundException {//TODO: return void?
-		String id = user.getID();
+		long id = user.getLongID();
 		try (Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(SELECT_QUERY)) {
-			ps.setString(1, id);
+			ps.setLong(1, id);
 			ResultSet rs = ps.executeQuery();
 			if (!rs.next()) {
-				//TODO: add user to DB?;
+				String insertQuery = "INSERT INTO users (id, name, lastSeen) VALUES (?, ?, ?)";
+				try (PreparedStatement psInsert = con.prepareStatement(insertQuery)) {
+					psInsert.setLong(1, id);
+					psInsert.setString(2, user.getName());
+					psInsert.setLong(3, Instant.now().toEpochMilli());
+					psInsert.executeUpdate();
+					con.commit();
+				} catch(SQLException e) {
+					e.printStackTrace();//TODO: log
+				}
 				rs = ps.executeQuery();
 				rs.next();
 			}
@@ -162,7 +172,7 @@ public class UserCache {
 		sb.append(selectQuery);
 		for (IUser user : usersToLoad) {
 			//selectQuery += user.getID() + ", ";
-			sb.append(user.getID()).append(", ");
+			sb.append(user.getLongID()).append(", ");
 		}
 		//selectQuery = selectQuery.substring(0, selectQuery.length() - 2).concat(")");
 		sb.delete(sb.length() - 2, sb.length()).append(")");
@@ -172,7 +182,7 @@ public class UserCache {
 			UserDataImpl userData;
 			while (rs.next()) {
 				userData = new UserDataImpl(
-						Statics.BOT_CLIENT.getUserByID(rs.getString("id")),//TODO: bestimmt besser möglich (user gab es vorher)
+						Statics.BOT_CLIENT.getUserByID(rs.getLong("id")),//TODO: bestimmt besser möglich (user gab es vorher)
 						rs.getInt("ticks"),
 						rs.getLong("lastSeen"),
 						rs.getInt("gems"),

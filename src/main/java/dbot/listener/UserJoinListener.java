@@ -32,27 +32,13 @@ public final class UserJoinListener implements IListener<UserJoinEvent> {
 	public void handle(UserJoinEvent event) {
 		IUser user = event.getUser();
 		IGuild guild = event.getGuild();
-		int ref = Statics.GUILD_LIST.getRef(guild);
-		//UserDataImpl.addUser(user, ref);TODO: nur zum testen auskommentiert
 		try {
-			switch(ref) {//TODO: in DB packen?;lieber nach guildId filtern?
-				case 0:
-					user.addRole(guild.getRolesByName("Newfags").get(0));
-					//LOGGER.info("added role(Newfags) to {}", user.getName());
-					Poster.post(	"Willkommen auf dem nicesten Discord-Server ever :)" +
-							"\nWenn du Lust hast, schau doch mal im #botspam vorbei, hier kann man ne nice Runde gamblen und co :)" +
-							"\nZusätzlich solltest du #botspam auf @mention stellen (oder muten)" +
-							"\nBei Fragen am Besten an @DPD oder @Stammboys wenden.", user);
-					break;
-
-				case 1:
-					user.addRole(guild.getRolesByName("Newfags").get(0));
-					break;
-
-				default:
-
-			}
-
+			user.addRole(guild.getRolesByName("Newfags").get(0));
+			//LOGGER.info("added role(Newfags) to {}", user.getName());
+			Poster.post(	"Willkommen auf dem nicesten Discord-Server ever :)" +
+					"\nWenn du Lust hast, schau doch mal im #botspam vorbei, hier kann man ne nice Runde gamblen und co :)" +
+					"\nZusätzlich solltest du #botspam auf @mention stellen (oder muten)" +
+					"\nBei Fragen am Besten an @DPD oder @Stammboys wenden.", user);
 		} catch(MissingPermissionsException | DiscordException | RateLimitException e) {
 			LOGGER.error("Error while adding role to {} (or couldn't send message)", user.getName(), e);
 		}

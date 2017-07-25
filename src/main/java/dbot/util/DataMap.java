@@ -4,17 +4,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by niklas on 30.09.16.
+ * map for multiple equal keys
+ *
+ * @author Niklas Zd
+ * @since 30.09.2016
  */
 public final class DataMap<K, V> {
+	/** list of pairs */
 	private final List<Pair> pairs = new ArrayList<>();
 
+	/**
+	 * standard constructor
+	 */
 	public DataMap() {}
 
+	/**
+	 * adds a new pair to the map
+	 *
+	 * @param key key of added pair
+	 * @param value value of added pair
+	 */
 	public void put(K key, V value) {
 		pairs.add(new Pair(key, value));
 	}
 
+	/**
+	 * adds a new pair to the map at a given index and fills it with nulls where no pair is found to that point
+	 *
+	 * @param index up to which index the map should be filled
+	 * @param key key of added pair
+	 * @param value value of added pair
+	 */
 	public synchronized void putWithNulls(int index, K key, V value) {
 		if (index >= 0 && index < pairs.size()) {//wenn index == size wird if übersprungen und forloop wegen nulls = 0 nicht ausgeführt -> guild wird wie gewollt hinten angehängt
 			pairs.remove(index);
@@ -28,6 +48,10 @@ public final class DataMap<K, V> {
 		pairs.add(new Pair(key, value));
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	public int size() {
 		return pairs.size();
 	}

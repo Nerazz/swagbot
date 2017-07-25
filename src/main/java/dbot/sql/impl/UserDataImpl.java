@@ -26,7 +26,7 @@ import static dbot.util.Poster.post;
 public final class UserDataImpl implements UserData {//methode für tick?
 	private static final Logger LOGGER = LoggerFactory.getLogger("dbot.sql.impl.UserDataImpl");
 	private static final String UPDATE_QUERY = "UPDATE `users` SET `gems` = ?, `level` = ?, `exp` = ?, `swagLevel` = ?, `swagPoints` = ?, `reminder` = ?, `expRate` = ?, `potDur` = ? WHERE `id` = ?";//lieber upsert?
-	private final String id;
+	private final long id;
 	private final String name;
 	private final IUser user;
 	private int ticks;
@@ -60,7 +60,7 @@ public final class UserDataImpl implements UserData {//methode für tick?
 			int potDur) {//TODO: private? -> Probleme mit UserCache
 
 		this.user = user;
-		id = user.getID();
+		id = user.getLongID();
 		name = user.getName();
 		this.ticks = ticks;
 		this.lastSeen = lastSeen;
@@ -97,6 +97,7 @@ public final class UserDataImpl implements UserData {//methode für tick?
 			throw new IllegalArgumentException("userList is empty!");
 		}
 		//TODO: BATCHUPDATE!!!
+		String updateQuery = "UPDTAE `users` SET"
 		/*
 			1.Fall: user is in cache
 
@@ -110,10 +111,10 @@ public final class UserDataImpl implements UserData {//methode für tick?
 	}
 
 	@Override
-	public boolean update() {//returns if update was successful
+	public boolean update() {//returns if update was successful//TODO: wirklich hier schon hochladen??? ne
 		UserCache.setAccessed(user);
 		//"UPDATE `users` SET `gems` = ?, `level` = ?, `exp` = ?, `swagLevel` = ?, `swagPoints` = ?, `reminder` = ?, `expRate` = ?, `potDur` = ?"
-		try(Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(UPDATE_QUERY)) {//TODO: lock users?
+		/*try(Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(UPDATE_QUERY)) {//TODO: lock users?
 			ps.setInt(1, gems);
 			ps.setInt(2, level);
 			ps.setInt(3, exp);
@@ -127,12 +128,12 @@ public final class UserDataImpl implements UserData {//methode für tick?
 		} catch(SQLException e) {
 			e.printStackTrace();//TODO: log
 			return false;
-		}
+		}*/
 		return true;
 	}
 
 	@Override
-	public String getId() {
+	public long getId() {
 		return id;
 	}
 
@@ -185,11 +186,7 @@ public final class UserDataImpl implements UserData {//methode für tick?
 		while (exp >= getLevelThreshold(level)) {
 			exp -= getLevelThreshold(level);
 			level++;
-			List<IChannel> channelList = Statics.GUILD_LIST.getAllBotChannels();
-			for (IChannel channel : channelList) {
-				post(":tada: DING! " + name + " is now level " + level + "! :tada:", channel);//TODO: nur auf guilds posten, auf denen der user ist!!!
-			}
-			//post(":tada: DING! " + name + " ist Level " + level + "! :tada:", Statics.GUILD_LIST.getBotChannel(ref));
+			post(":tada: DING! " + name + " is now level " + level + "! :tada:", Statics.tempBotSpam);//TODO: nur auf guilds posten, auf denen der user ist!!!
 			LOGGER.info("{} leveled to Level {}", name, level);
 		}
 	}
@@ -198,7 +195,7 @@ public final class UserDataImpl implements UserData {//methode für tick?
 	public void prestige() {
 		if (level < 100) {
 			LOGGER.info("{} Level ist nicht hoch genug zum prestigen", name);
-			post(name + ", you have to be at least level 100.", Statics.GUILD_LIST.getBotChannel(0));//TODO: post
+			post(name + ", you have to be at least level 100.", Statics.tempBotSpam);//TODO: post
 			return;
 		}
 		int swagPointGain = (int)Math.ceil(Math.sqrt((double)gems / 10000.0) * ((double)swagLevel + 2.0) / ((double)swagPoints + 2.0)) + level - 100;
@@ -315,12 +312,13 @@ public final class UserDataImpl implements UserData {//methode für tick?
 		if (that == null) return false;
 		if (this == that) return true;
 		if (!that.getClass().equals(getClass())) return false;
-		return this.id.equals(((UserDataImpl)that).id);//ACHTUNG: ES WIRD NUR ID GEPRÜFT!!
+		return this.id == ((UserDataImpl)that).id;
+		//return this.id.equals(((UserDataImpl)that).id);//ACHTUNG: ES WIRD NUR ID GEPRÜFT!!
 	}
 
 	@Override
 	public int hashCode() {
-		return Integer.parseInt(id);
-	}//TODO: ist id long?
+		return (int)id;
+	}//FIXME: geht locker besser; so unsicher
 
 }

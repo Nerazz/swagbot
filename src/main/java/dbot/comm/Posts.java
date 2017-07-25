@@ -156,7 +156,7 @@ final class Posts {
 		}
 	}
 
-	static void mute(IMessage message) {
+	/*static void mute(IMessage message) {
 		try {
 			Statics.GUILD_LIST.getGuild(1).setMuteUser(message.getAuthor(), true);
 			try {
@@ -168,7 +168,7 @@ final class Posts {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 
 	/**
 	 * generates place or medal String from medalArray
@@ -199,25 +199,6 @@ final class Posts {
 			post += "\n" + medalGen(i) + uData.getString("name") + " - " + String.format("%.2f", score);
 		}
 		post(post, message.getChannel());
-	}
-
-	/**
-	 * generates top message for current guild
-	 *
-	 * @param message to extract author and channel
-	 */
-	static void localTop(IMessage message) {
-		IChannel channel = message.getChannel();
-		String post = "TOP 5:";
-		int ref = Statics.GUILD_LIST.getRef(channel.getGuild());//TODO: was, wenn bot gewhispert wird
-		ArrayList<SQLData> topList = getScoreList(ref);
-		for (int i = 0; (i < topList.size()) && (i < 5); i++) {
-			SQLData uData = topList.get(i);
-			//double score = ((Integer)data.get("level")).doubleValue() + Math.floor(((Integer)data.get("exp")).doubleValue() / (double)UserDataImpl.getLevelThreshold((Integer)data.get("level")) * 100) / 100;
-			double score = uData.getInt("level") + (double)uData.getInt("exp") / (double) UserDataImpl.getLevelThreshold(uData.getInt("level"));
-			post += "\n" + medalGen(i) + uData.getString("name") + " - " + String.format("%.2f", score);
-		}
-		post(post, channel);
 	}
 
 	/**

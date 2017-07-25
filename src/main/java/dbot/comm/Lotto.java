@@ -155,7 +155,7 @@ public class Lotto {
 
 		String query = "SELECT COUNT(*) FROM `lotto` WHERE `ownerID` = ?";
 		try(Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(query)) { //TODO: connection besser machen, auch zum adden von tickets benutzen
-			ps.setString(1, userData.getId());
+			ps.setLong(1, userData.getId());
 			ResultSet rs = ps.executeQuery();
 			rs.next();
 			if (rs.getInt(1) >= 3) {//3 lose max
@@ -193,7 +193,7 @@ public class Lotto {
 
 		query = "INSERT INTO `lotto` (`ownerID`, `first`, `second`, `third`, `kinn`) VALUES (?, ?, ?, ?, ?)";
 		try(Connection con = SQLPool.getDataSource().getConnection(); PreparedStatement ps = con.prepareStatement(query)) {
-			ps.setString(1, userData.getId());
+			ps.setLong(1, userData.getId());
 			ps.setInt(2, guessedList.get(1));
 			ps.setInt(3, guessedList.get(2));
 			ps.setInt(4, guessedList.get(3));

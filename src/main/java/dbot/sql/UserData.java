@@ -7,7 +7,7 @@ import sx.blah.discord.handle.obj.IUser;
  */
 public interface UserData {
 	boolean update();
-	String getId();
+	long getId();
 	String getName();
 	IUser getUser();
 	int getGems();
